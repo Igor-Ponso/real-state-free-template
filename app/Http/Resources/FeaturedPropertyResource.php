@@ -2,11 +2,27 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Transforms a Property model into the data structure used by the landing page featured properties section.
+ *
+ * Resolves relationships (city, listingType, propertyType) via `whenLoaded()` and formats
+ * the monetary price from Brick\Money into a display-ready dollar string. Falls back to
+ * placeholder images when the property has no media attached.
+ *
+ * @mixin Property
+ */
 class FeaturedPropertyResource extends JsonResource
 {
+    /**
+     * Fallback image sets cycled by property ID when no media is uploaded.
+     * Each entry is a pair of images (primary + secondary) for the carousel.
+     *
+     * @var array<int, string[]>
+     */
     private const PLACEHOLDER_IMAGES = [
         ['/images/properties/penthouse.jpg', '/images/properties/penthouse-2.jpg'],
         ['/images/properties/villa.jpg', '/images/properties/villa-2.jpg'],
@@ -14,9 +30,21 @@ class FeaturedPropertyResource extends JsonResource
     ];
 
     /**
-     * Transform the resource into an array.
+     * Transform the Property model into the featured listing payload.
      *
-     * @return array<string, mixed>
+     * @return array{
+     *     id: int,
+     *     title: string,
+     *     slug: string,
+     *     location: string|null,
+     *     price: string,
+     *     bedrooms: int,
+     *     bathrooms: float,
+     *     area_sqft: string,
+     *     listing_type: string|null,
+     *     property_type: string|null,
+     *     images: string[],
+     * }
      */
     public function toArray(Request $request): array
     {
@@ -35,6 +63,12 @@ class FeaturedPropertyResource extends JsonResource
         ];
     }
 
+    /**
+     * Convert the Brick\Money price into a formatted dollar string (e.g. "$2,450,000").
+     *
+     * Extracts the minor amount (cents), divides by 100, and applies number formatting
+     * without decimal places for the landing page display.
+     */
     private function formatPrice(): string
     {
         $dollars = intdiv($this->price->getMinorAmount()->toInt(), 100);

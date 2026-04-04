@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
+ * Factory for generating fake user accounts.
+ *
+ * Creates users with verified emails, a shared hashed password ('password'),
+ * and no two-factor authentication. Provides state methods for unverified
+ * emails, social-only accounts (no password), and 2FA-enabled users.
+ *
  * @extends Factory<User>
  */
 class UserFactory extends Factory
@@ -46,9 +52,6 @@ class UserFactory extends Factory
         ]);
     }
 
-    /**
-     * Indicate that the model has two-factor authentication configured.
-     */
     /**
      * Indicate that the user was created via social login (no password).
      */

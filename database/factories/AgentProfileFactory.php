@@ -7,10 +7,25 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
+ * Factory for generating fake agent profiles.
+ *
+ * Creates realistic real estate agent profiles with professional bios,
+ * Canadian phone numbers, license numbers, randomized specializations,
+ * and social media links. Defaults to non-featured agents.
+ *
  * @extends Factory<AgentProfile>
  */
 class AgentProfileFactory extends Factory
 {
+    /**
+     * Curated collection of realistic agent biography texts.
+     *
+     * Each bio is written in the voice of a Vancouver-area luxury real estate
+     * agent, covering diverse professional backgrounds and specializations.
+     * One bio is randomly assigned per generated agent profile.
+     *
+     * @var list<string>
+     */
     private const BIOS = [
         'With over 15 years in Vancouver luxury real estate, I specialize in waterfront properties and heritage homes. My clients trust me to find residences that match their lifestyle — whether it\'s a Coal Harbour penthouse or a Shaughnessy estate. I believe every transaction should feel as exceptional as the property itself.',
         'I bring a data-driven approach to real estate, combining deep market analytics with a personal touch. Having helped over 200 families find their dream homes across the Lower Mainland, I understand that buying a home is both a financial decision and an emotional journey. Let me guide you through both.',
@@ -22,6 +37,15 @@ class AgentProfileFactory extends Factory
         'With deep roots in Vancouver\'s multicultural communities, I bridge cultures and markets to create opportunities others miss. My extensive network of architects, developers, and financial advisors means my clients get a full-service experience from the first viewing to the final signature.',
     ];
 
+    /**
+     * Define the model's default state.
+     *
+     * Generates an agent profile with a linked user, Canadian-formatted phone,
+     * a randomly selected professional bio, a license number (format RE-####-??),
+     * 1-3 specializations, LinkedIn/Instagram social links, and is_featured=false.
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         return [
@@ -41,6 +65,11 @@ class AgentProfileFactory extends Factory
         ];
     }
 
+    /**
+     * Mark the agent profile as featured.
+     *
+     * Featured agents are highlighted on the landing page's team section.
+     */
     public function featured(): static
     {
         return $this->state(fn () => ['is_featured' => true]);

@@ -13,16 +13,48 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
+ * Factory for generating fake property listings.
+ *
+ * Creates comprehensive real estate listings with randomized titles, prices,
+ * locations, physical attributes, amenities, and features. The default state
+ * produces an active, published, non-featured property that is randomly either
+ * for sale (CAD $300K-$10M) or for rent (CAD $1,500-$10,000/mo).
+ *
+ * Provides state methods for all lifecycle stages: active, featured, draft,
+ * sold, rented, forSale, and forRent.
+ *
  * @extends Factory<Property>
  */
 class PropertyFactory extends Factory
 {
+    /**
+     * Pool of available amenity slugs for random assignment.
+     *
+     * Each generated property receives 2-8 randomly selected amenities
+     * from this list, stored as a JSON array on the property model.
+     *
+     * @var list<string>
+     */
     private const AMENITIES = [
         'pool', 'gym', 'doorman', 'elevator', 'balcony', 'fireplace',
         'garage', 'garden', 'security', 'laundry', 'storage', 'rooftop',
         'concierge', 'sauna', 'tennis', 'playground', 'bbq', 'wine_cellar',
     ];
 
+    /**
+     * Define the model's default state.
+     *
+     * Generates a full property listing with a composed title (e.g., "Luxury
+     * Penthouse in Downtown"), a unique slug, 3-paragraph description, and
+     * randomly assigned listing type (sale vs. rental). Sale properties get
+     * prices in the $300K-$10M range with lot sizes; rental properties get
+     * $1,500-$10,000/mo pricing with deposit, lease length, and availability
+     * date. Includes 1-6 bedrooms, 1-4 bathrooms, 500-6,000 sqft, random
+     * amenities, interior features (flooring, heating, cooling, view), and
+     * Canadian postal codes. Defaults to active status, published, non-featured.
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         $title = fake()->randomElement([
@@ -85,6 +117,12 @@ class PropertyFactory extends Factory
         ];
     }
 
+    /**
+     * Set the property to active status.
+     *
+     * Assigns the 'active' property status, marks as published, and sets
+     * published_at to now. This is the default public-facing state.
+     */
     public function active(): static
     {
         return $this->state(fn () => [
@@ -94,6 +132,12 @@ class PropertyFactory extends Factory
         ]);
     }
 
+    /**
+     * Set the property as featured and active.
+     *
+     * Marks is_featured=true and ensures the property is active and published.
+     * Featured properties appear prominently on the landing page hero section.
+     */
     public function featured(): static
     {
         return $this->state(fn () => [
@@ -104,6 +148,12 @@ class PropertyFactory extends Factory
         ]);
     }
 
+    /**
+     * Set the property to draft status.
+     *
+     * Assigns the 'draft' property status, marks as unpublished, and clears
+     * published_at. Draft properties are not visible to the public.
+     */
     public function draft(): static
     {
         return $this->state(fn () => [
@@ -113,6 +163,12 @@ class PropertyFactory extends Factory
         ]);
     }
 
+    /**
+     * Set the property to sold status.
+     *
+     * Assigns the 'sold' property status and ensures the listing type is 'sale'.
+     * Used for properties that have completed a sale transaction.
+     */
     public function sold(): static
     {
         return $this->state(fn () => [
@@ -121,6 +177,12 @@ class PropertyFactory extends Factory
         ]);
     }
 
+    /**
+     * Set the property to rented status.
+     *
+     * Assigns the 'rented' property status and ensures the listing type is 'rental'.
+     * Used for rental properties that have been leased to a tenant.
+     */
     public function rented(): static
     {
         return $this->state(fn () => [
@@ -129,6 +191,12 @@ class PropertyFactory extends Factory
         ]);
     }
 
+    /**
+     * Set the property as a sale listing.
+     *
+     * Assigns the 'sale' listing type with a price range of CAD $300K-$10M.
+     * Clears rental-specific fields (deposit, lease_length_months, available_from).
+     */
     public function forSale(): static
     {
         return $this->state(fn () => [
@@ -140,6 +208,13 @@ class PropertyFactory extends Factory
         ]);
     }
 
+    /**
+     * Set the property as a rental listing.
+     *
+     * Assigns the 'rental' listing type with a monthly price of CAD $1,500-$10,000,
+     * a deposit of CAD $1,000-$5,000, a random lease length (6, 12, or 24 months),
+     * and an availability date within the next 3 months.
+     */
     public function forRent(): static
     {
         return $this->state(fn () => [

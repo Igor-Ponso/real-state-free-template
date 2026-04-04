@@ -13,8 +13,32 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Seeds the full property ecosystem: users, agents, properties, and interactions.
+ *
+ * Creates a complete demo dataset with an admin user, 8 agents with featured
+ * profiles, 10 client users, 30 properties in various states (featured, active,
+ * sold, draft), plus inquiries, favorites, and view analytics for published
+ * properties. This is the main seeder that brings the application to life.
+ */
 class PropertySeeder extends Seeder
 {
+    /**
+     * Seed users, properties, and all related interaction data.
+     *
+     * Hierarchy created:
+     * 1. Admin user (admin@luxuryestate.com) with 'admin' role
+     * 2. 8 agent users (agent1-8@luxuryestate.com) with 'agent' role and featured profiles
+     * 3. 10 anonymous client users with 'client' role
+     * 4. 30 properties distributed across agents, types, and cities:
+     *    - Properties 0-3: featured (highlighted on landing page)
+     *    - Properties 4-19: active (standard published listings)
+     *    - Properties 20-24: sold (completed transactions)
+     *    - Properties 25-29: draft (unpublished)
+     * 5. 1-5 inquiries on up to 15 random published properties (70% from clients, 30% guest)
+     * 6. 1-5 favorite properties per client
+     * 7. 5-50 view records per published property (40% authenticated, 60% anonymous)
+     */
     public function run(): void
     {
         $propertyTypes = PropertyType::all();

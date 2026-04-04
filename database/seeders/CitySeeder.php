@@ -6,8 +6,23 @@ use App\Models\City;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
+/**
+ * Seeds 8 Canadian cities with real geographic coordinates.
+ *
+ * Creates major Canadian cities across 4 provinces (BC, ON, QC, AB, NS).
+ * The first 5 cities (Vancouver, Toronto, Montreal, Calgary, Whistler) are
+ * marked as featured with hero images for the landing page city showcase.
+ * The remaining 3 (Ottawa, Edmonton, Halifax) are non-featured with no images.
+ */
 class CitySeeder extends Seeder
 {
+    /**
+     * Create city records using firstOrCreate for idempotency.
+     *
+     * Each city includes real latitude/longitude coordinates for Leaflet map
+     * rendering, province codes, country 'CA', optional image paths, featured
+     * flags, and sequential sort_order. Slugs are generated from city names.
+     */
     public function run(): void
     {
         $cities = [
