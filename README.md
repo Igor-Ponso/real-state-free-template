@@ -10,31 +10,32 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Laravel 13 (PHP 8.4) |
-| Frontend | Vue 3 (Composition API + `<script setup>`) |
-| Language | TypeScript (strict mode) |
-| UI Components | shadcn-vue |
-| Bridge | Inertia.js v3 (with SSR) |
-| Styling | Tailwind CSS 4 |
-| Database | PostgreSQL 16 (SQLite for dev/testing) |
-| Cache | Redis |
-| Auth | Laravel Fortify (login, register, 2FA, email verification) |
-| Routes | Laravel Wayfinder (typed route generation) |
-| Testing | Pest PHP 4 + Vitest |
-| Code Style | Laravel Pint + ESLint + Prettier |
-| AI Dev | Laravel Boost (MCP server + guidelines) |
+| Layer         | Technology                                                 |
+| ------------- | ---------------------------------------------------------- |
+| Backend       | Laravel 13 (PHP 8.4)                                       |
+| Frontend      | Vue 3 (Composition API + `<script setup>`)                 |
+| Language      | TypeScript (strict mode)                                   |
+| UI Components | shadcn-vue                                                 |
+| Bridge        | Inertia.js v3 (with SSR)                                   |
+| Styling       | Tailwind CSS 4                                             |
+| Database      | PostgreSQL 16 (SQLite for dev/testing)                     |
+| Cache         | Redis                                                      |
+| Auth          | Laravel Fortify (login, register, 2FA, email verification) |
+| Routes        | Laravel Wayfinder (typed route generation)                 |
+| Testing       | Pest PHP 4 + Vitest                                        |
+| Code Style    | Laravel Pint + ESLint + Prettier                           |
+| AI Dev        | Laravel Boost (MCP server + guidelines)                    |
 
 ## Features
 
 ### Current
+
 - **Authentication** — Split layout auth pages (image + form) with Fortify
-  - Login and registration
-  - Password reset and email verification
-  - Two-factor authentication (2FA)
-  - Rate limiting on auth endpoints
-  - Strong password policy enforced in all environments (min 12 chars, mixed case, numbers, symbols, [`uncompromised`](https://laravel.com/docs/13.x/validation#validating-passwords) — checks against known data breaches via Have I Been Pwned)
+    - Login and registration
+    - Password reset and email verification
+    - Two-factor authentication (2FA)
+    - Rate limiting on auth endpoints
+    - Strong password policy enforced in all environments (min 12 chars, mixed case, numbers, symbols, [`uncompromised`](https://laravel.com/docs/13.x/validation#validating-passwords) — checks against known data breaches via Have I Been Pwned)
 - **User Settings** — Profile, password, appearance, and security management
 - **SSR** — Server-side rendering for SEO via Inertia
 - **shadcn-vue Components** — Button, Card, Dialog, Input, Dropdown, Sidebar, Skeleton, Tooltip, and more
@@ -44,6 +45,7 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
 
 ### Planned
+
 - Luxury landing page with full-screen hero video
 - Minimalist, transparent header (sticky on scroll)
 - Property listings with advanced filters (price, location, type, bedrooms, area)
@@ -61,6 +63,8 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 - Node.js >= 22.x
 - PostgreSQL 16.x (or SQLite for quick setup)
 - Redis (optional, recommended for production)
+
+> **Why PHP 8.4 and not 8.5?** PHP 8.5 introduces features like the pipe operator (`|>`), `clone with`, and `array_first()` / `array_last()`. However, Laravel 13 already provides equivalent functionality through its own abstractions — `Collection::pipe()`, `Pipeline`, `Arr::first()`, `replicate()`, and fluent APIs. Since this project focuses on teaching the Laravel way, I chose PHP 8.4 as the minimum to maximize accessibility while losing nothing in practice.
 
 ## Installation
 
@@ -175,6 +179,7 @@ tests/
 ## Key Architectural Decisions
 
 ### Backend (Laravel)
+
 - **Actions Pattern**: Business logic lives in Action classes (e.g., `Actions/Fortify/CreateNewUser`), keeping controllers thin.
 - **Form Requests**: Validation is handled by dedicated Form Request classes.
 - **Fortify Authentication**: Full auth backend with login, registration, 2FA, email verification, and password reset.
@@ -182,6 +187,7 @@ tests/
 - **SSR**: Server-side rendering enabled via Inertia for SEO.
 
 ### Frontend (Vue 3 + TypeScript)
+
 - **Composition API**: All components use `<script setup lang="ts">`.
 - **TypeScript**: Full type safety across the frontend.
 - **shadcn-vue**: High-quality, accessible UI components (button, card, dialog, input, dropdown, sidebar, etc.).
@@ -190,6 +196,7 @@ tests/
 - **Inertia Forms**: Form handling with automatic validation error binding.
 
 ### Planned (as the project evolves)
+
 - Repository pattern for data access with Redis caching
 - Eloquent scopes, enums, and API Resources
 - Property models, migrations, and seeders
