@@ -10,6 +10,7 @@ A complete, production-ready real estate website built with **Laravel 12**, **Vu
 |-------|-----------|
 | Backend | Laravel 13 (PHP 8.4) |
 | Frontend | Vue 3 (Composition API + `<script setup>`) |
+| Language | TypeScript (strict mode) |
 | UI Components | shadcn-vue |
 | Bridge | Inertia.js v3 |
 | Styling | Tailwind CSS 4 |
