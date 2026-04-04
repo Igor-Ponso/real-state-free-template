@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useMediaQuery } from '@vueuse/core';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 defineProps<{
     posterSrc: string;
@@ -8,10 +7,16 @@ defineProps<{
     videoMp4Src?: string;
 }>();
 
-const isMobile = useMediaQuery('(max-width: 1023px)');
+const isMounted = ref(false);
+const isMobile = ref(false);
 const videoError = ref(false);
 const failedSources = ref(0);
 const totalSources = ref(0);
+
+onMounted(() => {
+    isMobile.value = window.matchMedia('(max-width: 1023px)').matches;
+    isMounted.value = true;
+});
 
 function onSourceError() {
     failedSources.value++;
@@ -26,11 +31,11 @@ function onSourceError() {
         <img
             :src="posterSrc"
             alt=""
-            class="h-full w-full object-cover"
+            class="absolute inset-0 h-full w-full object-cover"
         />
 
         <video
-            v-if="!isMobile && !videoError && (videoWebmSrc || videoMp4Src)"
+            v-if="isMounted && !isMobile && !videoError && (videoWebmSrc || videoMp4Src)"
             autoplay
             muted
             loop

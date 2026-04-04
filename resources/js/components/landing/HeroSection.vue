@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ChevronDown } from 'lucide-vue-next';
-import { motion } from 'motion-v';
+import { onMounted, ref } from 'vue';
 import AuthVideoBackground from '@/components/AuthVideoBackground.vue';
 import { Button } from '@/components/ui/button';
+
+const isMounted = ref(false);
+
+onMounted(() => {
+    isMounted.value = true;
+});
 
 function scrollToProperties() {
     document.querySelector('#properties')?.scrollIntoView({ behavior: 'smooth' });
@@ -17,32 +23,26 @@ function scrollToProperties() {
             video-mp4-src="/videos/auth/luxury-real-estate.mp4"
         />
 
-        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/60" />
+        <div class="absolute inset-0 bg-linear-to-b from-black/50 via-black/20 to-black/60" />
 
         <div class="relative z-10 mx-auto max-w-4xl px-6 text-center">
-            <motion.h1
-                :initial="{ opacity: 0, y: 30 }"
-                :animate="{ opacity: 1, y: 0 }"
-                :transition="{ duration: 0.8, delay: 0.2 }"
-                class="font-serif text-5xl font-bold tracking-tight text-white md:text-7xl"
+            <h1
+                class="font-serif text-5xl font-bold tracking-tight text-white transition-all duration-700 md:text-7xl"
+                :class="isMounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
             >
                 Where Luxury Meets Home
-            </motion.h1>
+            </h1>
 
-            <motion.p
-                :initial="{ opacity: 0, y: 20 }"
-                :animate="{ opacity: 1, y: 0 }"
-                :transition="{ duration: 0.8, delay: 0.5 }"
-                class="mx-auto mt-6 max-w-2xl font-body text-lg font-light text-white/80 md:text-xl"
+            <p
+                class="mx-auto mt-6 max-w-2xl font-body text-lg font-light text-white/80 transition-all delay-300 duration-700 md:text-xl"
+                :class="isMounted ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
             >
                 Discover exceptional properties curated for discerning buyers
-            </motion.p>
+            </p>
 
-            <motion.div
-                :initial="{ opacity: 0, y: 20 }"
-                :animate="{ opacity: 1, y: 0 }"
-                :transition="{ duration: 0.8, delay: 0.8 }"
-                class="mt-10"
+            <div
+                class="mt-10 transition-all delay-500 duration-700"
+                :class="isMounted ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
             >
                 <Button
                     size="lg"
@@ -51,20 +51,17 @@ function scrollToProperties() {
                 >
                     Explore Properties
                 </Button>
-            </motion.div>
+            </div>
         </div>
 
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2">
-            <motion.div
-                :initial="{ opacity: 0 }"
-                :animate="{ opacity: 1 }"
-                :transition="{ duration: 1, delay: 1.2 }"
-            >
-                <ChevronDown
-                    class="size-8 animate-bounce text-white/60"
-                    aria-hidden="true"
-                />
-            </motion.div>
+        <div
+            class="absolute bottom-8 left-1/2 -translate-x-1/2 transition-opacity delay-1000 duration-700"
+            :class="isMounted ? 'opacity-100' : 'opacity-0'"
+        >
+            <ChevronDown
+                class="size-8 animate-bounce text-white/60"
+                aria-hidden="true"
+            />
         </div>
     </section>
 </template>

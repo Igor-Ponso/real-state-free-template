@@ -5,7 +5,9 @@ import FeaturedProperties from '@/components/landing/FeaturedProperties.vue';
 import HeroSection from '@/components/landing/HeroSection.vue';
 import LandingFooter from '@/components/landing/LandingFooter.vue';
 import LandingHeader from '@/components/landing/LandingHeader.vue';
+import NeighborhoodCarousel from '@/components/landing/NeighborhoodCarousel.vue';
 import PropertySearch from '@/components/landing/PropertySearch.vue';
+import TeamSection from '@/components/landing/TeamSection.vue';
 import ValueProposition from '@/components/landing/ValueProposition.vue';
 
 const props = withDefaults(
@@ -23,7 +25,9 @@ const props = withDefaults(
         <HeroSection />
         <ValueProposition />
         <FeaturedProperties />
+        <NeighborhoodCarousel />
         <PropertySearch />
+        <TeamSection />
         <AboutSection />
         <LandingFooter />
     </div>
