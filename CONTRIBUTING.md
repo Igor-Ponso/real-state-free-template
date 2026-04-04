@@ -35,46 +35,67 @@ Feature suggestions are welcome! Open an issue with:
    ```
 4. **Make your changes** following the coding standards below
 5. **Write tests** for any new functionality
-6. **Run the test suite** to make sure nothing is broken:
+6. **Format your code**:
    ```bash
-   php artisan test && npm run test
+   ./vendor/bin/pint
+   npx eslint . --fix
+   npx prettier --write .
    ```
-7. **Commit** with a clear message
-8. **Push** and open a PR
+7. **Run the test suite** to make sure nothing is broken:
+   ```bash
+   php artisan test --compact
+   ```
+8. **Commit** with a clear message (see Git conventions below)
+9. **Push** and open a PR
 
 ## Coding Standards
 
 ### PHP / Laravel
 
 - Follow [PSR-12](https://www.php-fig.org/psr/psr-12/) coding style
-- Use Laravel Pint for code formatting: `./vendor/bin/pint`
-- Write Form Requests for validation (no inline validation in controllers)
-- Use Eloquent scopes for reusable query logic
-- Eager load relationships — no N+1 queries
-- Add return types to all methods
-- Use PHP enums instead of constants or magic strings
+- Use **Laravel Pint** for code formatting: `./vendor/bin/pint`
+- Write **Form Requests** for validation (no inline validation in controllers)
+- Use **Eloquent scopes** for reusable query logic
+- **Eager load relationships** — no N+1 queries
+- Add **return types** and **type hints** to all methods
+- Use **PHP 8.4 enums** instead of constants or magic strings
+- Use **constructor property promotion** where applicable
+- Use `php artisan make:` commands to create new files
 
-### Vue / JavaScript
+### Vue / TypeScript
 
-- Use `<script setup>` with Composition API
-- Use TypeScript for type safety
+- Use `<script setup lang="ts">` with Composition API — no Options API
+- **TypeScript strict** — no `any` types
 - Extract shared logic into composables (`use*.ts`)
-- Keep components small and focused
-- Use `defineProps` and `defineEmits` with type declarations
+- Keep components small and focused (under 100 lines)
+- Use `defineProps` and `defineEmits` with TypeScript type declarations
+- Use **shadcn-vue** components as the UI foundation
+- Use **Wayfinder** route functions instead of hardcoded URLs
 
 ### Testing
 
-- Write Feature tests for HTTP endpoints and user flows
-- Write Unit tests for Actions, Services, and complex logic
-- Use Pest PHP syntax
-- Factories should produce realistic data
+- Write **Feature tests** for HTTP endpoints and user flows
+- Write **Unit tests** for Actions, Services, and complex logic
+- Use **Pest PHP** syntax (`it()`, `expect()`)
+- Use **factories** with realistic data
+- Run tests: `php artisan test --compact`
 
 ### Git Commit Messages
 
-- Use present tense ("Add feature" not "Added feature")
-- Use imperative mood ("Move cursor to..." not "Moves cursor to...")
+- Use present tense, imperative mood
+- Format: `type: description`
+- Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 - Keep the first line under 72 characters
 - Reference issues when applicable (`fixes #123`)
+
+**Examples:**
+```
+feat: add property search filters
+fix: resolve N+1 query on property listing
+refactor: extract caching logic to repository
+test: add feature tests for contact form
+docs: update installation instructions
+```
 
 ## Project Architecture
 

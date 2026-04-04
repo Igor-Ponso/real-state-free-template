@@ -1,8 +1,12 @@
 # Real State - Free Template
 
-A complete, production-ready real estate website built with **Laravel 12**, **Vue 3**, and **Inertia.js v3**. Designed as a learning resource and starter template for the developer community.
+A complete, production-ready real estate website built with **Laravel 13**, **Vue 3**, **Inertia.js v3**, and **shadcn-vue**. Designed as a learning resource and starter template for the developer community.
 
-> Built with best practices: SOLID principles, DRY code, Eloquent query optimization, caching strategies, and modern frontend patterns.
+> Built with best practices: SOLID principles, DRY code, Eloquent query optimization, caching strategies, TypeScript strict mode, and modern frontend patterns.
+
+## Foundation
+
+This project was bootstrapped using the official **Laravel Installer** with the **Vue Starter Kit** (Split auth layout, Header navigation, SSR enabled, Pest testing, PostgreSQL). It also includes **Laravel Boost** for AI-assisted development with MCP server integration, guidelines, and skills.
 
 ## Tech Stack
 
@@ -12,35 +16,45 @@ A complete, production-ready real estate website built with **Laravel 12**, **Vu
 | Frontend | Vue 3 (Composition API + `<script setup>`) |
 | Language | TypeScript (strict mode) |
 | UI Components | shadcn-vue |
-| Bridge | Inertia.js v3 |
+| Bridge | Inertia.js v3 (with SSR) |
 | Styling | Tailwind CSS 4 |
-| Database | MySQL 8 / PostgreSQL 16 |
+| Database | PostgreSQL 16 (SQLite for dev/testing) |
 | Cache | Redis |
-| Search | Laravel Scout (Meilisearch) |
-| Auth | Laravel Breeze |
-| Testing | Pest PHP + Vitest |
+| Auth | Laravel Fortify (login, register, 2FA, email verification) |
+| Routes | Laravel Wayfinder (typed route generation) |
+| Testing | Pest PHP 4 + Vitest |
+| Code Style | Laravel Pint + ESLint + Prettier |
+| AI Dev | Laravel Boost (MCP server + guidelines) |
 
 ## Features
 
 ### Public Website
+- Luxury landing page with full-screen hero video
+- Minimalist, transparent header (sticky on scroll)
 - Property listings with advanced filters (price, location, type, bedrooms, area)
-- Interactive map integration
 - Property detail pages with image gallery
 - Contact form with email notifications
-- SEO-friendly URLs and meta tags
-- Responsive design (mobile-first)
-- Favorites / Wishlist (session-based for guests, persisted for users)
+- SEO-friendly with Inertia SSR
+- Mobile-first responsive design (vertical content ready)
 
-### Admin Panel
+### Authentication
+- Split layout auth pages (image + form)
+- Login and registration
+- Password reset and email verification
+- Two-factor authentication (2FA)
+- Rate limiting on auth endpoints
+
+### Admin Panel (planned)
 - Dashboard with analytics (listings, views, inquiries)
 - Full CRUD for properties
-- Image upload with optimization and thumbnails
+- Image upload with optimization
 - Manage property types, amenities, and locations
 - Inquiry management
 - User management with roles (admin, agent)
 
 ### Developer Experience
 - Clean architecture following SOLID principles
+- TypeScript strict mode across the entire frontend
 - Repository pattern for data access
 - Form Request validation
 - API Resources for consistent responses
@@ -48,15 +62,16 @@ A complete, production-ready real estate website built with **Laravel 12**, **Vu
 - Redis caching with smart invalidation
 - Comprehensive test suite (Feature + Unit)
 - Database seeders with realistic fake data
-- IDE helper annotations
+- Laravel Wayfinder for type-safe route functions
+- Laravel Boost for AI-assisted development
 
 ## Requirements
 
 - PHP >= 8.4
 - Composer >= 2.x
 - Node.js >= 22.x
-- MySQL 8.x or PostgreSQL 16.x
-- Redis
+- PostgreSQL 16.x (or SQLite for quick setup)
+- Redis (optional, recommended for production)
 
 ## Installation
 
@@ -78,11 +93,11 @@ php artisan key:generate
 # Database
 php artisan migrate --seed
 
-# Build assets
-npm run dev
+# Build frontend assets
+npm run build
 
-# Start the server
-php artisan serve
+# Start the development server
+composer run dev
 ```
 
 Visit `http://localhost:8000` to see the application.
@@ -95,18 +110,19 @@ app/
 ├── Enums/              # PHP enums (PropertyType, PropertyStatus...)
 ├── Http/
 │   ├── Controllers/    # Thin controllers
-│   ├── Requests/       # Form Request validation
-│   └── Resources/      # API Resources (Inertia data)
+│   ├── Middleware/      # Custom middleware
+│   └── Requests/       # Form Request validation
 ├── Models/             # Eloquent models with scopes & relationships
 ├── Policies/           # Authorization policies
 ├── Repositories/       # Data access layer
 └── Services/           # Business logic
 resources/
 ├── js/
-│   ├── Components/     # Reusable Vue components
-│   ├── Composables/    # Vue composables (shared logic)
-│   ├── Layouts/        # Page layouts
-│   ├── Pages/          # Inertia pages
+│   ├── components/     # Reusable Vue components (shadcn-vue based)
+│   ├── composables/    # Vue composables (shared logic)
+│   ├── layouts/        # Page layouts
+│   ├── lib/            # Utilities and configuration
+│   ├── pages/          # Inertia pages
 │   └── types/          # TypeScript interfaces
 └── css/
 database/
@@ -114,43 +130,57 @@ database/
 ├── migrations/         # Database migrations
 └── seeders/            # Realistic data seeders
 tests/
-├── Feature/            # Feature tests
-└── Unit/               # Unit tests
+├── Feature/            # Feature tests (Pest)
+└── Unit/               # Unit tests (Pest)
 ```
 
 ## Key Architectural Decisions
 
 ### Backend (Laravel)
 - **Thin Controllers**: Controllers only handle HTTP concerns. Business logic lives in Actions/Services.
-- **Repository Pattern**: Database queries are encapsulated in repositories with caching support.
 - **Eager Loading**: All relationships are eager-loaded to prevent N+1 queries.
 - **Query Scopes**: Reusable query filters via Eloquent local scopes.
 - **Enums**: PHP 8.4 enums for type-safe constants (property types, statuses).
 - **Form Requests**: All validation is handled by dedicated Form Request classes.
 - **API Resources**: Consistent data transformation between backend and frontend.
 - **Cache Strategy**: Redis caching with tag-based invalidation on model events.
+- **Wayfinder**: Auto-generated TypeScript functions for routes — no hardcoded URLs.
 
-### Frontend (Vue 3)
-- **Composition API**: All components use `<script setup>` syntax.
+### Frontend (Vue 3 + TypeScript)
+- **Composition API**: All components use `<script setup lang="ts">`.
+- **TypeScript Strict**: No `any` types, full type safety.
 - **Composables**: Shared logic extracted into reusable composables.
-- **TypeScript**: Full type safety across the frontend.
-- **Component Design**: Small, focused, reusable components.
+- **shadcn-vue**: High-quality, accessible UI components as the design foundation.
+- **Inertia SSR**: Server-side rendering for SEO.
 - **Inertia Forms**: Form handling with automatic validation error binding.
 
 ## Testing
 
 ```bash
 # Run PHP tests
-php artisan test
+php artisan test --compact
 
 # Run with coverage
 php artisan test --coverage
 
+# Run specific test
+php artisan test --compact --filter=testName
+
 # Run JS tests
 npm run test
+```
 
-# Run all
-composer test && npm run test
+## Code Style
+
+```bash
+# PHP formatting (Laravel Pint)
+./vendor/bin/pint
+
+# JS/TS linting (ESLint)
+npx eslint .
+
+# JS/TS formatting (Prettier)
+npx prettier --write .
 ```
 
 ## Contributing
@@ -159,7 +189,7 @@ Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md)
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
