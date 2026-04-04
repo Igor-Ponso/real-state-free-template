@@ -20,11 +20,13 @@ type Props = {
     canManageTwoFactor?: boolean;
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
+    hasPassword?: boolean;
 };
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     canManageTwoFactor: false,
     requiresConfirmation: false,
+    hasPassword: true,
     twoFactorEnabled: false,
 });
 
@@ -56,8 +58,8 @@ onUnmounted(() => clearTwoFactorAuthData());
     <div class="space-y-6">
         <Heading
             variant="small"
-            title="Update password"
-            description="Ensure your account is using a long, random password to stay secure"
+            :title="props.hasPassword ? 'Update password' : 'Set a password'"
+            :description="props.hasPassword ? 'Ensure your account is using a long, random password to stay secure' : 'Set a password to enable email-based login alongside your social account'"
         />
 
         <Form
@@ -74,7 +76,7 @@ onUnmounted(() => clearTwoFactorAuthData());
             class="space-y-6"
             v-slot="{ errors, processing, recentlySuccessful }"
         >
-            <div class="grid gap-2">
+            <div v-if="props.hasPassword" class="grid gap-2">
                 <Label for="current_password">Current password</Label>
                 <PasswordInput
                     id="current_password"

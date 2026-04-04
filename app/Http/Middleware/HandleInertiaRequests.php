@@ -42,6 +42,10 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'socialProviders' => array_values(array_filter(
+                ['google', 'github', 'facebook', 'apple'],
+                fn (string $provider): bool => ! empty(config("services.{$provider}.client_id")),
+            )),
         ];
     }
 }

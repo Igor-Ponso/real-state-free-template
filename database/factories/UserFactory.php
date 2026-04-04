@@ -49,6 +49,19 @@ class UserFactory extends Factory
     /**
      * Indicate that the model has two-factor authentication configured.
      */
+    /**
+     * Indicate that the user was created via social login (no password).
+     */
+    public function socialOnly(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'password' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the model has two-factor authentication configured.
+     */
     public function withTwoFactor(): static
     {
         return $this->state(fn (array $attributes) => [

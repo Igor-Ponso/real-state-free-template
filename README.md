@@ -36,12 +36,15 @@ This project was bootstrapped using the official **Laravel Installer** with the 
     - Two-factor authentication (2FA)
     - Rate limiting on auth endpoints
     - Strong password policy enforced in all environments (min 12 chars, mixed case, numbers, symbols, [`uncompromised`](https://laravel.com/docs/13.x/validation#validating-passwords) — checks against known data breaches via Have I Been Pwned)
+    - Social login with Google, GitHub, Facebook, and Apple (via [Laravel Socialite](https://laravel.com/docs/13.x/socialite)) — buttons only appear when credentials are configured
+    - Real-time password strength indicator and confirmation match
 - **User Settings** — Profile, password, appearance, and security management
 - **SSR** — Server-side rendering for SEO via Inertia
 - **shadcn-vue Components** — Button, Card, Dialog, Input, Dropdown, Sidebar, Skeleton, Tooltip, and more
 - **TypeScript** — Strict mode across the entire frontend
 - **Wayfinder** — Type-safe route functions (no hardcoded URLs)
-- **Test Suite** — 40 passing Pest tests covering auth and settings
+- **PII Encryption** — Email and name encrypted at rest via CipherSweet with blind index for searchable lookups
+- **Test Suite** — 54 passing Pest tests covering auth, social login, and settings
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
 
 ### Planned
@@ -86,6 +89,7 @@ npm install
 # Environment setup
 cp .env.example .env
 php artisan key:generate
+php artisan ciphersweet:generate-key
 
 # Database (use Herd's built-in PostgreSQL or SQLite)
 php artisan migrate --seed
@@ -118,6 +122,7 @@ npm install
 # Environment setup
 cp .env.example .env
 php artisan key:generate
+php artisan ciphersweet:generate-key
 
 # Database
 php artisan migrate --seed
@@ -141,6 +146,81 @@ php artisan boost:install
 ```
 
 Boost provides your AI agent with project-specific tools, skills, and guidelines.
+
+### Social Login Setup (optional)
+
+Social login buttons (Google, GitHub, Apple) only appear when credentials are configured. Without credentials, the login/register pages work normally with email + password only.
+
+#### Google
+
+1. Go to [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials)
+2. Create a project (or select existing)
+3. Click **Create Credentials → OAuth Client ID**
+4. Application type: **Web application**
+5. Add Authorized redirect URI: `https://your-domain.test/auth/google/callback`
+6. Copy the Client ID and Client Secret to your `.env`:
+
+```env
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
+```
+
+#### GitHub
+
+1. Go to [GitHub → Settings → Developer Settings → OAuth Apps](https://github.com/settings/developers)
+2. Click **New OAuth App**
+3. Homepage URL: `https://your-domain.test`
+4. Authorization callback URL: `https://your-domain.test/auth/github/callback`
+5. Register, then copy Client ID and generate a Client Secret to your `.env`:
+
+```env
+GITHUB_CLIENT_ID=your-client-id
+GITHUB_CLIENT_SECRET=your-client-secret
+```
+
+#### Facebook
+
+1. Go to [Facebook Developers](https://developers.facebook.com/apps/)
+2. Click **Create App → Consumer**
+3. Add **Facebook Login** product
+4. In Settings → Basic: copy App ID and App Secret
+5. In Facebook Login → Settings: add Valid OAuth Redirect URI: `http://localhost:8000/auth/facebook/callback`
+6. Add to your `.env`:
+
+```env
+FACEBOOK_CLIENT_ID=your-app-id
+FACEBOOK_CLIENT_SECRET=your-app-secret
+```
+
+#### Apple
+
+1. Requires an [Apple Developer Program](https://developer.apple.com/programs/) membership ($99/year)
+2. Go to [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources)
+3. Create a **Services ID** and configure a **Sign in with Apple** key
+4. Add the credentials to your `.env`:
+
+```env
+APPLE_CLIENT_ID=your-service-id
+APPLE_CLIENT_SECRET=your-generated-secret
+```
+
+> For detailed Apple Sign In setup, see the [socialiteproviders/apple documentation](https://socialiteproviders.com/Apple/).
+
+## PII Encryption at Rest
+
+This project encrypts personally identifiable information (PII) in the database using [spatie/laravel-ciphersweet](https://github.com/spatie/laravel-ciphersweet), which implements searchable field-level encryption via [CipherSweet](https://ciphersweet.paragonie.com/) by Paragon Initiative Enterprises.
+
+**What's encrypted:**
+- `users.name` — encrypted at rest, decrypted automatically when loaded
+- `users.email` — encrypted at rest, searchable via blind index
+
+**How search works:** A blind index (deterministic hash) is generated for the email field, allowing exact-match lookups (`WHERE email_index = hash(input)`) without exposing the actual value. The real email is only decrypted in PHP when the model is loaded.
+
+**What this protects against:** If someone gains access to your database (SQL injection, leaked backup, compromised server), they see encrypted blobs instead of plain text emails and names.
+
+**Setup:** The encryption key is generated during installation (`php artisan ciphersweet:generate-key`) and stored in `CIPHERSWEET_KEY` in your `.env`. Keep this key safe — without it, encrypted data cannot be recovered.
+
+> **A note on this approach:** I implemented PII encryption because it makes sense for a project handling user data, and it showcases a powerful but underused Laravel ecosystem feature. That said, I'm not a security expert, and this may not be the optimal approach for every use case. If you have expertise in data protection and see room for improvement, I'd love a PR — please follow the [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Project Structure
 

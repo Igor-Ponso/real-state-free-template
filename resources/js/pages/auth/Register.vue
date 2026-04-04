@@ -5,6 +5,7 @@ import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import PasswordMatch from '@/components/PasswordMatch.vue';
 import PasswordRequirements from '@/components/PasswordRequirements.vue';
+import SocialAuthButtons from '@/components/SocialAuthButtons.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -113,6 +114,8 @@ const passwordFocused = ref(false);
                 Create account
             </Button>
         </div>
+
+        <SocialAuthButtons />
 
         <div class="text-center text-sm text-muted-foreground">
             Already have an account?
