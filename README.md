@@ -21,6 +21,11 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 | Database      | PostgreSQL 16 (SQLite for dev/testing)                     |
 | Cache         | Redis                                                      |
 | Auth          | Laravel Fortify (login, register, 2FA, email verification) |
+| Social Login  | Laravel Socialite (Google, GitHub, Facebook, Apple)         |
+| Roles         | spatie/laravel-permission (admin, agent, client)            |
+| Media         | spatie/laravel-medialibrary (property images, conversions)  |
+| Money         | elegantly/laravel-money + brick/money (integer cents)       |
+| Encryption    | spatie/laravel-ciphersweet (PII encrypted at rest)          |
 | Routes        | Laravel Wayfinder (typed route generation)                 |
 | Testing       | Pest PHP 4 + Vitest                                        |
 | Code Style    | Laravel Pint + ESLint + Prettier                           |
@@ -43,20 +48,25 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 - **shadcn-vue Components** — Button, Card, Dialog, Input, Dropdown, Sidebar, Skeleton, Tooltip, and more
 - **TypeScript** — Strict mode across the entire frontend
 - **Wayfinder** — Type-safe route functions (no hardcoded URLs)
-- **PII Encryption** — Email and name encrypted at rest via CipherSweet with blind index for searchable lookups
+- **PII Encryption** — Email, name, and phone encrypted at rest via CipherSweet with blind indexes for searchable lookups
+- **Roles & Permissions** — Admin, Agent, Client roles via spatie/laravel-permission
+- **Property Models** — Complete schema: Property, PropertyType, City, AgentProfile, Inquiry, Favorite, PropertyView
+- **Lookup Tables** — PropertyStatus, ListingType, InquiryStatus — admin-manageable, no deploy needed for new values
+- **Money Handling** — Integer cents via elegantly/laravel-money + brick/money (no float precision issues)
+- **Database Seeders** — 30 properties, 8 Canadian cities, 9 property types, 5 agents, 10 clients, inquiries, favorites, views
+- **Landing Page** — Hero video, value propositions, featured properties carousel, neighborhood carousel, search section, team, about with counters, footer
 - **Test Suite** — 54 passing Pest tests covering auth, social login, and settings
 - **Dev Tools** — Vue DevTools (Vite plugin) + [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) (queries, N+1 detection, cache, request time — dev only, disable via `DEBUGBAR_ENABLED=false`)
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
 
 ### Planned
 
-- Luxury landing page with full-screen hero video
-- Minimalist, transparent header (sticky on scroll)
-- Property listings with advanced filters (price, location, type, bedrooms, area)
+- Connect landing page sections to database (Featured Properties, Neighborhoods, Team, Stats)
 - Property detail pages with image gallery
+- Property listings with advanced filters
 - Contact form with email notifications
-- Mobile-first responsive design (vertical content ready)
 - Admin panel with dashboard, CRUD, image upload, and user management
+- Input masks for currency, phone, and ZIP code fields
 - Repository pattern with Redis caching
 - Database seeders with realistic fake data
 
@@ -214,6 +224,8 @@ This project encrypts personally identifiable information (PII) in the database 
 **What's encrypted:**
 - `users.name` — encrypted at rest, decrypted automatically when loaded
 - `users.email` — encrypted at rest, searchable via blind index
+- `agent_profiles.phone` — encrypted at rest
+- `inquiries.name`, `inquiries.email`, `inquiries.phone` — encrypted at rest, email searchable via blind index
 
 **How search works:** A blind index (deterministic hash) is generated for the email field, allowing exact-match lookups (`WHERE email_index = hash(input)`) without exposing the actual value. The real email is only decrypted in PHP when the model is loaded.
 
@@ -228,23 +240,40 @@ This project encrypts personally identifiable information (PII) in the database 
 ```
 app/
 ├── Actions/
+│   ├── Auth/           # Social login action (HandleSocialLoginAction)
 │   └── Fortify/        # Auth actions (CreateNewUser, ResetUserPassword...)
-├── Concerns/           # Shared traits
+├── Auth/               # Custom auth provider (CipherSweet)
+├── Concerns/           # Shared validation traits
 ├── Http/
 │   ├── Controllers/    # Thin controllers
+│   │   ├── Auth/       # Social auth controller
 │   │   └── Settings/   # User settings controllers
-│   ├── Middleware/      # Custom middleware (HandleAppearance...)
+│   ├── Middleware/      # Custom middleware
 │   └── Requests/       # Form Request validation
-├── Models/             # Eloquent models with scopes & relationships
-└── Providers/          # Service providers (Fortify)
+├── Models/             # Eloquent models
+│   ├── Property.php    # Core: belongs to agent, type, city, status
+│   ├── PropertyType.php    # Lookup: House, Apartment, Villa...
+│   ├── PropertyStatus.php  # Lookup: Draft, Active, Sold...
+│   ├── ListingType.php     # Lookup: For Sale, For Rent
+│   ├── City.php            # Canadian cities with coordinates
+│   ├── AgentProfile.php    # Agent bio, phone (encrypted), license
+│   ├── Inquiry.php         # Contact form (PII encrypted)
+│   ├── InquiryStatus.php   # Lookup: New, Read, Replied...
+│   ├── Favorite.php        # User favorites a property
+│   ├── PropertyView.php    # View analytics
+│   ├── User.php            # Auth + roles + encrypted PII
+│   └── SocialAccount.php   # OAuth provider links
+├── Providers/          # Service providers
+└── Rules/              # Custom validation (UniqueEncryptedEmail)
 resources/
 ├── js/
 │   ├── components/     # Reusable Vue components
-│   │   └── ui/         # shadcn-vue components (button, card, dialog...)
-│   ├── composables/    # Vue composables (shared logic)
+│   │   ├── landing/    # Landing page sections (Hero, Team, Search...)
+│   │   └── ui/         # shadcn-vue components (button, card, carousel...)
+│   ├── composables/    # Vue composables (scroll, fade, password validation)
 │   ├── layouts/        # Page layouts (app, auth, settings)
 │   ├── lib/            # Utilities and configuration
-│   ├── pages/          # Inertia pages (auth, settings...)
+│   ├── pages/          # Inertia pages
 │   └── types/          # TypeScript interfaces
 ├── css/                # Tailwind CSS entry point
 └── views/              # Blade template (app.blade.php)
@@ -263,26 +292,31 @@ tests/
 
 ### Backend (Laravel)
 
-- **Actions Pattern**: Business logic lives in Action classes (e.g., `Actions/Fortify/CreateNewUser`), keeping controllers thin.
-- **Form Requests**: Validation is handled by dedicated Form Request classes.
-- **Fortify Authentication**: Full auth backend with login, registration, 2FA, email verification, and password reset.
-- **Wayfinder**: Auto-generated TypeScript functions for routes — no hardcoded URLs in the frontend.
-- **SSR**: Server-side rendering enabled via Inertia for SEO.
+- **Actions Pattern**: Business logic lives in Action classes (e.g., `HandleSocialLoginAction`), keeping controllers thin.
+- **Lookup Tables over Enums**: PropertyStatus, ListingType, InquiryStatus are database tables — admin can add new values without deploy. PHP enums only for truly immutable code-level constants.
+- **Money as Integer Cents**: All monetary values stored as `bigInteger` (cents) with `MoneyCast` from elegantly/laravel-money. No floats, no precision issues.
+- **PII Encryption**: All personal data (email, name, phone) encrypted at rest via CipherSweet. Custom auth provider for encrypted email lookups.
+- **Roles & Permissions**: spatie/laravel-permission with admin, agent, client roles.
+- **Eloquent Scopes**: Reusable query scopes on all models (published, featured, forSale, forRent, byCity, priceRange, etc.).
+- **Fortify + Socialite**: Email auth with 2FA + social login (Google, GitHub, Facebook, Apple).
+- **Wayfinder**: Auto-generated TypeScript functions for routes.
+- **SSR**: Server-side rendering via Inertia for SEO.
 
 ### Frontend (Vue 3 + TypeScript)
 
 - **Composition API**: All components use `<script setup lang="ts">`.
-- **TypeScript**: Full type safety across the frontend.
-- **shadcn-vue**: High-quality, accessible UI components (button, card, dialog, input, dropdown, sidebar, etc.).
-- **Composables**: Shared logic extracted into reusable composables.
-- **Layouts**: Separate layouts for app, auth (split), and settings pages.
-- **Inertia Forms**: Form handling with automatic validation error binding.
+- **TypeScript Strict**: No `any` types, full type safety.
+- **shadcn-vue**: UI foundation (Button, Card, Carousel, Select, Input, Sheet, Dialog, etc.).
+- **Composables**: Shared logic (useScrollHeader, useFadeInOnScroll, usePasswordValidation).
+- **Separation of Concerns**: All dynamic data comes from backend via Inertia props. Frontend only handles presentation.
+- **Scroll Animations**: CSS transitions + `useIntersectionObserver` from VueUse. No heavy animation libs.
 
 ### Planned (as the project evolves)
 
+- Connect landing page to database (Featured Properties, Neighborhoods, Team, Stats via Inertia props)
 - Repository pattern for data access with Redis caching
-- Eloquent scopes, enums, and API Resources
-- Property models, migrations, and seeders
+- API Resources for consistent data transformation
+- Admin panel with CRUD
 
 ## Testing
 
