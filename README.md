@@ -34,6 +34,7 @@ This project was bootstrapped using the official **Laravel Installer** with the 
   - Password reset and email verification
   - Two-factor authentication (2FA)
   - Rate limiting on auth endpoints
+  - Strong password policy enforced in all environments (min 12 chars, mixed case, numbers, symbols, [`uncompromised`](https://laravel.com/docs/13.x/validation#validating-passwords) — checks against known data breaches via Have I Been Pwned)
 - **User Settings** — Profile, password, appearance, and security management
 - **SSR** — Server-side rendering for SEO via Inertia
 - **shadcn-vue Components** — Button, Card, Dialog, Input, Dropdown, Sidebar, Skeleton, Tooltip, and more
