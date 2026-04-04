@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import Autoplay from 'embla-carousel-autoplay';
 import { watchOnce } from '@vueuse/core';
+import Autoplay from 'embla-carousel-autoplay';
 import { ref } from 'vue';
 import {
     Carousel,
-    type CarouselApi,
+    
     CarouselContent,
-    CarouselItem,
+    CarouselItem
 } from '@/components/ui/carousel';
+import type {CarouselApi} from '@/components/ui/carousel';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
 import type { Neighborhood } from '@/types/landing';
 
@@ -32,7 +33,9 @@ function setApi(api: CarouselApi) {
 }
 
 watchOnce(emblaApi, (api) => {
-    if (!api) return;
+    if (!api) {
+return;
+}
 
     totalSlides.value = api.scrollSnapList().length;
     currentSlide.value = api.selectedScrollSnap();

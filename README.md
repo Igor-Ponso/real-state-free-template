@@ -27,6 +27,7 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 | Money         | elegantly/laravel-money + brick/money (integer cents)       |
 | Encryption    | spatie/laravel-ciphersweet (PII encrypted at rest)          |
 | Routes        | Laravel Wayfinder (typed route generation)                 |
+| Maps          | Leaflet + vue-leaflet (CartoDB Positron tiles, no API key)  |
 | Testing       | Pest PHP 4 + Vitest                                        |
 | Code Style    | Laravel Pint + ESLint + Prettier                           |
 | AI Dev        | Laravel Boost (MCP server + guidelines)                    |
@@ -53,22 +54,32 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 - **Property Models** — Complete schema: Property, PropertyType, City, AgentProfile, Inquiry, Favorite, PropertyView
 - **Lookup Tables** — PropertyStatus, ListingType, InquiryStatus — admin-manageable, no deploy needed for new values
 - **Money Handling** — Integer cents via elegantly/laravel-money + brick/money (no float precision issues)
-- **Database Seeders** — 30 properties, 8 Canadian cities, 9 property types, 5 agents, 10 clients, inquiries, favorites, views
-- **Landing Page** — Hero video, value propositions, featured properties carousel, neighborhood carousel, search section, team, about with counters, footer
+- **Database Seeders** — 30 properties, 8 Canadian cities, 9 property types, 8 agents with realistic bios, 10 clients, inquiries, favorites, views
+- **Landing Page** — Fully database-driven via Inertia props and API Resources:
+    - Hero: full-screen video loop with serif headline and CTA
+    - Value Proposition: glassmorphism cards with scroll-triggered animations
+    - Property Search: video background with glass filter container
+    - Featured Properties: dynamic blur background on hover, listing/type badges, deep teal palette
+    - Neighborhoods: full-screen carousel with property counts per city from DB
+    - Meet Our Team: carousel with dialog (split photo + bio layout), all data from DB
+    - About: video side + animated counters with real stats from DB
+    - Office Location: interactive Leaflet map (CartoDB Positron tiles, Downtown Vancouver)
+    - Footer: company branding, Psalm 127:1 dedication, open-source template credit
+- **Interactive Map** — Leaflet + vue-leaflet, lazy-loaded via `defineAsyncComponent` + `<Suspense>` for SSR safety
+- **API Resources** — `FeaturedPropertyResource`, `CityResource`, `TeamMemberResource` with `whenLoaded()` and `whenCounted()`
 - **Test Suite** — 54 passing Pest tests covering auth, social login, and settings
 - **Dev Tools** — Vue DevTools (Vite plugin) + [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) (queries, N+1 detection, cache, request time — dev only, disable via `DEBUGBAR_ENABLED=false`)
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
 
 ### Planned
 
-- Connect landing page sections to database (Featured Properties, Neighborhoods, Team, Stats)
 - Property detail pages with image gallery
-- Property listings with advanced filters
+- Property listings with advanced filters and pagination
 - Contact form with email notifications
 - Admin panel with dashboard, CRUD, image upload, and user management
-- Input masks for currency, phone, and ZIP code fields
-- Repository pattern with Redis caching
-- Database seeders with realistic fake data
+- Input masks for currency, phone, and ZIP code fields (`maska` already installed)
+- Repository pattern with Redis caching (`Cache::tags`, `Cache::flexible`)
+- Spatie MediaLibrary image uploads (installed, not yet wired to UI)
 
 ## Requirements
 
@@ -294,8 +305,10 @@ tests/
 
 - **Actions Pattern**: Business logic lives in Action classes (e.g., `HandleSocialLoginAction`), keeping controllers thin.
 - **Lookup Tables over Enums**: PropertyStatus, ListingType, InquiryStatus are database tables — admin can add new values without deploy. PHP enums only for truly immutable code-level constants.
-- **Money as Integer Cents**: All monetary values stored as `bigInteger` (cents) with `MoneyCast` from elegantly/laravel-money. No floats, no precision issues.
+- **Money as Integer Cents**: All monetary values stored as `bigInteger` (cents) with `MoneyCast` from elegantly/laravel-money. No floats, no precision issues. Formatted in API Resources via `intdiv(minorAmount, 100)` + `number_format()`.
 - **PII Encryption**: All personal data (email, name, phone) encrypted at rest via CipherSweet. Custom auth provider for encrypted email lookups.
+- **API Resources with `.resolve()`**: `JsonResource::collection()` wraps data in `{ "data": [...] }` by default. When passing to Inertia, always call `.resolve()` to get a flat array — otherwise Vue components receive an object instead of an array.
+- **Lazy Inertia Props**: All WelcomeController props use closures (`fn () =>`) for Inertia's lazy evaluation — queries only execute when the prop is needed by the frontend.
 - **Roles & Permissions**: spatie/laravel-permission with admin, agent, client roles.
 - **Eloquent Scopes**: Reusable query scopes on all models (published, featured, forSale, forRent, byCity, priceRange, etc.).
 - **Fortify + Socialite**: Email auth with 2FA + social login (Google, GitHub, Facebook, Apple).
@@ -305,18 +318,49 @@ tests/
 ### Frontend (Vue 3 + TypeScript)
 
 - **Composition API**: All components use `<script setup lang="ts">`.
-- **TypeScript Strict**: No `any` types, full type safety.
+- **TypeScript Strict**: No `any` types, full type safety. Shared interfaces in `types/landing.ts`.
 - **shadcn-vue**: UI foundation (Button, Card, Carousel, Select, Input, Sheet, Dialog, etc.).
 - **Composables**: Shared logic (useScrollHeader, useFadeInOnScroll, usePasswordValidation).
 - **Separation of Concerns**: All dynamic data comes from backend via Inertia props. Frontend only handles presentation.
 - **Scroll Animations**: CSS transitions + `useIntersectionObserver` from VueUse. No heavy animation libs.
+- **`defineAsyncComponent`**: Heavy components (Leaflet map) are lazy-loaded for SSR safety and smaller initial bundles.
+- **`<Suspense>`**: Used with async components to show loading states (spinner) while the component loads.
+
+### Maps — Why Leaflet, Not Google Maps
+
+We chose [Leaflet](https://leafletjs.com/) + [vue-leaflet](https://github.com/vue-leaflet/vue-leaflet) over Google Maps for these reasons:
+
+| | Leaflet | Google Maps |
+|---|---|---|
+| **Cost** | Free, open-source | Requires billing account |
+| **API Key** | None required (with CartoDB/OSM tiles) | Required |
+| **Bundle size** | ~148KB (lazy-loaded) | ~200KB+ |
+| **SSR** | Works with `defineAsyncComponent` | Same challenge |
+| **Customization** | Full control over tiles and styling | Limited free tier styling |
+
+For a **free community template**, zero-config dependencies are critical. Developers should be able to clone, install, and run without signing up for external services. CartoDB Positron tiles provide clean, minimal maps at no cost.
+
+> **Important**: Leaflet requires browser APIs (`window`, `document`) and **will crash during SSR**. Always load via `defineAsyncComponent()` — never import Leaflet components at the top level of a page.
+
+### Color Palette
+
+Three-color luxury palette inspired by high-end real estate brands:
+
+| Color | Variable | Hex | Usage |
+|---|---|---|---|
+| **Gold** | `--landing-gold` | `hsl(38 60% 58%)` | Accents, CTAs, badges, hover states |
+| **Charcoal** | `--landing-charcoal` | `hsl(220 10% 12%)` | Primary dark backgrounds |
+| **Deep Teal** | `--landing-deep-teal` | `#1c4051` | Secondary depth, gradients, card hovers |
+| **Warm Beige** | `--landing-warm-beige` | `hsl(30 25% 96%)` | Light mode backgrounds |
+
+All colors have light + dark mode variants defined in `resources/css/app.css`.
 
 ### Planned (as the project evolves)
 
-- Connect landing page to database (Featured Properties, Neighborhoods, Team, Stats via Inertia props)
 - Repository pattern for data access with Redis caching
-- API Resources for consistent data transformation
-- Admin panel with CRUD
+- Admin panel with CRUD, image upload, user management
+- Property detail and listing pages with filters
+- Spatie MediaLibrary for actual image uploads
 
 ## Testing
 
@@ -372,5 +416,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 **Igor Ponso** - [GitHub](https://github.com/Igor-Ponso)
 
 ---
+
+> *"Unless the Lord builds the house, the builders labor in vain."* — Psalm 127:1
 
 Made with dedication for the Laravel & Vue community.

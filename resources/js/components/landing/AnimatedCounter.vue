@@ -21,7 +21,10 @@ function easeOutQuad(t: number): number {
 }
 
 function animate() {
-    if (hasAnimated.value) return;
+    if (hasAnimated.value) {
+return;
+}
+
     hasAnimated.value = true;
 
     const start = performance.now();

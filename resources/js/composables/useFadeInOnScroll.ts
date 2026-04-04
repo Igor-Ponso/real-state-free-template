@@ -1,5 +1,6 @@
 import { useIntersectionObserver } from '@vueuse/core';
-import { ref, type Ref } from 'vue';
+import { ref  } from 'vue';
+import type {Ref} from 'vue';
 
 export function useFadeInOnScroll(threshold = 0.15): {
     target: Ref<HTMLElement | null>;

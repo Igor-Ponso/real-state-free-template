@@ -20,6 +20,7 @@ onMounted(() => {
 
 function onSourceError() {
     failedSources.value++;
+
     if (failedSources.value >= totalSources.value) {
         videoError.value = true;
     }
