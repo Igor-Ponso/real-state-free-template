@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use ParagonIE\CipherSweet\BlindIndex;
 use ParagonIE\CipherSweet\EncryptedRow;
@@ -40,7 +41,7 @@ use Spatie\LaravelCipherSweet\Contracts\CipherSweetEncrypted;
 class Inquiry extends Model implements CipherSweetEncrypted
 {
     /** @use HasFactory<InquiryFactory> */
-    use HasFactory, UsesCipherSweet;
+    use HasFactory, SoftDeletes, UsesCipherSweet;
 
     /**
      * Get the attributes that should be cast.

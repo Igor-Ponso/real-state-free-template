@@ -37,3 +37,51 @@ export interface LandingStats {
     agents: number;
     cities: number;
 }
+
+export interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+export interface PaginatedResponse<T> {
+    data: T[];
+    links: {
+        first: string;
+        last: string;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        current_page: number;
+        from: number | null;
+        last_page: number;
+        links: PaginationLink[];
+        path: string;
+        per_page: number;
+        to: number | null;
+        total: number;
+    };
+}
+
+export interface FilterOption {
+    name: string;
+    slug: string;
+}
+
+export interface PropertyFilters {
+    propertyTypes: FilterOption[];
+    cities: FilterOption[];
+    listingTypes: FilterOption[];
+}
+
+export interface AppliedFilters {
+    type?: string;
+    city?: string;
+    listing?: string;
+    min_price?: string;
+    max_price?: string;
+    bedrooms?: string;
+    search?: string;
+    sort?: string;
+}

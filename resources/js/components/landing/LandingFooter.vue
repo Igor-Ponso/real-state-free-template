@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -11,10 +11,10 @@ const page = usePage();
 const name = computed(() => page.props.name as string);
 
 const navLinks = [
-    { label: 'Home', href: '#hero' },
-    { label: 'Properties', href: '#properties' },
-    { label: 'About', href: '#about' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Home', href: '/' },
+    { label: 'Properties', href: '/properties' },
+    { label: 'About', href: '/#about' },
+    { label: 'Contact', href: '/#contact' },
 ];
 
 const socialLinks = [
@@ -49,14 +49,14 @@ function scrollTo(href: string) {
                         Quick Links
                     </h4>
                     <nav class="mt-4 flex flex-col gap-3">
-                        <button
+                        <Link
                             v-for="link in navLinks"
                             :key="link.href"
-                            @click="scrollTo(link.href)"
+                            :href="link.href"
                             class="text-left font-body text-sm text-white/60 transition-colors hover:text-white"
                         >
                             {{ link.label }}
-                        </button>
+                        </Link>
                     </nav>
                 </div>
 

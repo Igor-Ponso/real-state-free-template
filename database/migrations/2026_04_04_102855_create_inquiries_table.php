@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('inquiry_status_id')->constrained('inquiry_statuses');
             $table->timestamp('replied_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

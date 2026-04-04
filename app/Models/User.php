@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -49,7 +50,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements CipherSweetEncrypted
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable, UsesCipherSweet;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable, UsesCipherSweet;
 
     /**
      * Get the attributes that should be cast.

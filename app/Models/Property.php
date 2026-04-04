@@ -94,6 +94,17 @@ class Property extends Model implements HasMedia
     use HasFactory, InteractsWithMedia, SoftDeletes;
 
     /**
+     * Resolve route model binding by slug instead of ID.
+     *
+     * Produces SEO-friendly URLs like /properties/luxury-villa-in-waterfront
+     * and prevents exposing sequential integer IDs.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

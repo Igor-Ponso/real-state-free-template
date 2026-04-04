@@ -38,6 +38,14 @@ class City extends Model
     use HasFactory;
 
     /**
+     * Resolve route model binding by slug instead of ID.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

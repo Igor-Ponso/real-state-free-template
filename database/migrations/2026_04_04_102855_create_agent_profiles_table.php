@@ -21,6 +21,7 @@ return new class extends Migration
             $table->jsonb('social_links')->default('{}');
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

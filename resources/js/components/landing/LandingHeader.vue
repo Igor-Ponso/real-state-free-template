@@ -26,8 +26,8 @@ const auth = computed(() => page.props.auth as { user: unknown });
 const { isScrolled } = useScrollHeader();
 
 const navItems = [
-    { label: 'Home', href: '#hero' },
-    { label: 'Properties', href: '#properties' },
+    { label: 'Home', href: '/', isRoute: true },
+    { label: 'Properties', href: '/properties', isRoute: true },
     { label: 'About', href: '#about' },
     { label: 'Contact', href: '#contact' },
 ];
@@ -60,15 +60,24 @@ function scrollTo(href: string) {
             </Link>
 
             <nav class="hidden items-center gap-8 lg:flex">
-                <button
-                    v-for="item in navItems"
-                    :key="item.href"
-                    @click="scrollTo(item.href)"
-                    class="font-body text-sm font-medium tracking-wide transition-colors hover:opacity-80"
-                    :class="isScrolled ? 'text-foreground' : 'text-white/90'"
-                >
-                    {{ item.label }}
-                </button>
+                <template v-for="item in navItems" :key="item.href">
+                    <Link
+                        v-if="item.isRoute"
+                        :href="item.href"
+                        class="font-body text-sm font-medium tracking-wide transition-colors hover:opacity-80"
+                        :class="isScrolled ? 'text-foreground' : 'text-white/90'"
+                    >
+                        {{ item.label }}
+                    </Link>
+                    <button
+                        v-else
+                        @click="scrollTo(item.href)"
+                        class="font-body text-sm font-medium tracking-wide transition-colors hover:opacity-80"
+                        :class="isScrolled ? 'text-foreground' : 'text-white/90'"
+                    >
+                        {{ item.label }}
+                    </button>
+                </template>
             </nav>
 
             <div class="flex items-center gap-2">
@@ -120,14 +129,22 @@ function scrollTo(href: string) {
                                 <AppLogoIcon class="size-6 fill-current" />
                             </SheetHeader>
                             <nav class="mt-8 flex flex-col gap-4">
-                                <button
-                                    v-for="item in navItems"
-                                    :key="item.href"
-                                    @click="scrollTo(item.href)"
-                                    class="font-body text-left text-sm font-medium"
-                                >
-                                    {{ item.label }}
-                                </button>
+                                <template v-for="item in navItems" :key="item.href">
+                                    <Link
+                                        v-if="item.isRoute"
+                                        :href="item.href"
+                                        class="font-body text-left text-sm font-medium"
+                                    >
+                                        {{ item.label }}
+                                    </Link>
+                                    <button
+                                        v-else
+                                        @click="scrollTo(item.href)"
+                                        class="font-body text-left text-sm font-medium"
+                                    >
+                                        {{ item.label }}
+                                    </button>
+                                </template>
                             </nav>
                         </SheetContent>
                     </Sheet>

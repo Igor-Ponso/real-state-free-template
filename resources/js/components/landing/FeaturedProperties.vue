@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import { Bath, BedDouble, Maximize } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
@@ -163,10 +164,11 @@ const hoveredImage = ref<string | null>(null);
                 :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
             >
                 <Button
+                    as-child
                     size="lg"
                     class="bg-landing-gold font-body text-landing-gold-foreground transition-all duration-300 hover:bg-landing-gold/90"
                 >
-                    View All Properties
+                    <Link href="/properties">View All Properties</Link>
                 </Button>
             </div>
         </div>

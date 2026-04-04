@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -72,8 +73,17 @@ return new class extends Migration
             $table->index(['property_status_id', 'is_published']);
             $table->index('listing_type_id');
             $table->index('city_id');
+            $table->index('property_type_id');
             $table->index('price');
+            $table->index('is_featured');
+            $table->index('is_published');
         });
+
+        // PostgreSQL-specific: GIN index for JSONB amenities containment queries
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('CREATE INDEX properties_amenities_gin ON properties USING GIN (amenities)');
+            DB::statement('CREATE INDEX properties_published_partial ON properties (id) WHERE is_published = true');
+        }
     }
 
     /**

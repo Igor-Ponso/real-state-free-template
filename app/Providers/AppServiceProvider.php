@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Inertia\ExceptionResponse;
+use Inertia\Inertia;
 use SocialiteProviders\Apple\AppleExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
@@ -35,6 +37,14 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Event::listen(SocialiteWasCalled::class, AppleExtendSocialite::class.'@handle');
+
+        Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
+            if (in_array($response->statusCode(), [403, 404, 500, 503])) {
+                return $response->render('Error', [
+                    'status' => $response->statusCode(),
+                ])->withSharedData();
+            }
+        });
     }
 
     /**
