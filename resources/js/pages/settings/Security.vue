@@ -6,6 +6,8 @@ import SecurityController from '@/actions/App/Http/Controllers/Settings/Security
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
+import PasswordMatch from '@/components/PasswordMatch.vue';
+import PasswordRequirements from '@/components/PasswordRequirements.vue';
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
 import { Button } from '@/components/ui/button';
@@ -39,6 +41,9 @@ defineOptions({
 
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
 const showSetupModal = ref<boolean>(false);
+const passwordValue = ref('');
+const confirmationValue = ref('');
+const passwordFocused = ref(false);
 
 onUnmounted(() => clearTwoFactorAuthData());
 </script>
@@ -85,10 +90,17 @@ onUnmounted(() => clearTwoFactorAuthData());
                 <Label for="password">New password</Label>
                 <PasswordInput
                     id="password"
+                    v-model="passwordValue"
                     name="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="New password"
+                    @focus="passwordFocused = true"
+                    @blur="passwordFocused = false"
+                />
+                <PasswordRequirements
+                    :password="passwordValue"
+                    :show="passwordFocused || passwordValue.length > 0"
                 />
                 <InputError :message="errors.password" />
             </div>
@@ -97,10 +109,15 @@ onUnmounted(() => clearTwoFactorAuthData());
                 <Label for="password_confirmation">Confirm password</Label>
                 <PasswordInput
                     id="password_confirmation"
+                    v-model="confirmationValue"
                     name="password_confirmation"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     placeholder="Confirm password"
+                />
+                <PasswordMatch
+                    :password="passwordValue"
+                    :confirmation="confirmationValue"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>

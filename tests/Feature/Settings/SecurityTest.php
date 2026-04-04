@@ -112,3 +112,20 @@ test('correct password must be provided to update password', function () {
         ->assertSessionHasErrors('current_password')
         ->assertRedirect(route('security.edit'));
 });
+
+test('weak new password is rejected on update', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->from(route('security.edit'))
+        ->put(route('user-password.update'), [
+            'current_password' => 'password',
+            'password' => 'weak',
+            'password_confirmation' => 'weak',
+        ]);
+
+    $response
+        ->assertSessionHasErrors('password')
+        ->assertRedirect(route('security.edit'));
+});

@@ -23,3 +23,27 @@ test('new users can register', function () {
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
 });
+
+test('registration fails with weak password', function () {
+    $response = $this->post(route('register.store'), [
+        'name' => 'Test User',
+        'email' => 'weak@example.com',
+        'password' => 'short',
+        'password_confirmation' => 'short',
+    ]);
+
+    $this->assertGuest();
+    $response->assertSessionHasErrors('password');
+});
+
+test('registration fails with password missing symbols', function () {
+    $response = $this->post(route('register.store'), [
+        'name' => 'Test User',
+        'email' => 'nosymbol@example.com',
+        'password' => 'NoSymbolPass123',
+        'password_confirmation' => 'NoSymbolPass123',
+    ]);
+
+    $this->assertGuest();
+    $response->assertSessionHasErrors('password');
+});

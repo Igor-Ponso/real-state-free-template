@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AuthVideoBackground from '@/components/AuthVideoBackground.vue';
 import { home } from '@/routes';
 
 const page = usePage();
@@ -17,9 +18,13 @@ defineProps<{
         class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0"
     >
         <div
-            class="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r"
+            class="relative hidden h-full flex-col p-10 text-white lg:flex"
         >
-            <div class="absolute inset-0 bg-zinc-900" />
+            <AuthVideoBackground
+                poster-src="/images/auth/luxury-real-estate-poster.jpg"
+                video-webm-src="/videos/auth/luxury-real-estate.webm"
+                video-mp4-src="/videos/auth/luxury-real-estate.mp4"
+            />
             <Link
                 :href="home()"
                 class="relative z-20 flex items-center text-lg font-medium"
