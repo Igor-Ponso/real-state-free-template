@@ -8,8 +8,9 @@ A complete, production-ready real estate website built with **Laravel 12**, **Vu
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Laravel 12 (PHP 8.4) |
+| Backend | Laravel 13 (PHP 8.4) |
 | Frontend | Vue 3 (Composition API + `<script setup>`) |
+| UI Components | shadcn-vue |
 | Bridge | Inertia.js v3 |
 | Styling | Tailwind CSS 4 |
 | Database | MySQL 8 / PostgreSQL 16 |
