@@ -66,6 +66,8 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 
 > **Why PHP 8.4 and not 8.5?** PHP 8.5 introduces features like the pipe operator (`|>`), `clone with`, and `array_first()` / `array_last()`. However, Laravel 13 already provides equivalent functionality through its own abstractions — `Collection::pipe()`, `Pipeline`, `Arr::first()`, `replicate()`, and fluent APIs. Since this project focuses on teaching the Laravel way, I chose PHP 8.4 as the minimum to maximize accessibility while losing nothing in practice.
 
+> **Why PostgreSQL and not MySQL?** A real estate website benefits directly from PostgreSQL-specific features: **PostGIS** for geospatial queries ("properties within 5km"), **native full-text search** with ranking for property search, **JSONB columns** for flexible property amenities without extra tables, **partial indexes** for faster queries on active listings, and **materialized views** for dashboard analytics. SQLite is still supported for quick local setup and CI testing.
+
 ## Installation
 
 ### Option 1: With Laravel Herd (recommended)

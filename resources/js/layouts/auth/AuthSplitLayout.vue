@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import AuthVideoBackground from '@/components/AuthVideoBackground.vue';
+import ModeToggle from '@/components/ModeToggle.vue';
 import { home } from '@/routes';
 
 const page = usePage();
@@ -46,6 +47,9 @@ defineProps<{
                     </p>
                 </div>
                 <slot />
+                <div class="flex justify-center">
+                    <ModeToggle />
+                </div>
             </div>
         </div>
     </div>
