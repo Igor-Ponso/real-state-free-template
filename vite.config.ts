@@ -3,6 +3,7 @@ import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
+import vueDevTools from 'vite-plugin-vue-devtools';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -23,6 +24,9 @@ export default defineConfig({
         }),
         wayfinder({
             formVariants: true,
+        }),
+        vueDevTools({
+            appendTo: 'resources/js/app.ts',
         }),
     ],
 });

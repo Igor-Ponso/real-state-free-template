@@ -45,6 +45,7 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 - **Wayfinder** — Type-safe route functions (no hardcoded URLs)
 - **PII Encryption** — Email and name encrypted at rest via CipherSweet with blind index for searchable lookups
 - **Test Suite** — 54 passing Pest tests covering auth, social login, and settings
+- **Dev Tools** — Vue DevTools (Vite plugin) + [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) (queries, N+1 detection, cache, request time — dev only, disable via `DEBUGBAR_ENABLED=false`)
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
 
 ### Planned
