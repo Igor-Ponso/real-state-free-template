@@ -25,7 +25,7 @@ const mapReady = ref(false);
 </script>
 
 <template>
-    <section ref="sectionRef" class="bg-landing-charcoal px-6 py-28 text-white">
+    <section ref="sectionRef" class="bg-linear-to-b from-landing-charcoal to-landing-deep-teal px-6 py-28 text-white">
         <div class="mx-auto max-w-6xl">
             <div
                 class="mb-16 text-center transition-all duration-700"

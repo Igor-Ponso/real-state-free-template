@@ -30,7 +30,7 @@ function scrollTo(href: string) {
 </script>
 
 <template>
-    <footer id="contact" class="bg-landing-charcoal px-6 pb-8 pt-16 text-white">
+    <footer id="contact" class="bg-linear-to-b from-landing-deep-teal to-landing-charcoal px-6 pb-8 pt-16 text-white">
         <div class="mx-auto max-w-6xl">
             <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
@@ -124,18 +124,19 @@ function scrollTo(href: string) {
                 </p>
             </div>
 
-            <div class="rounded-lg border border-white/5 bg-white/[0.02] px-6 py-4 text-center">
+            <!-- Remove this block when using this template for your own project -->
+            <div class="rounded-lg border border-landing-gold/20 bg-landing-deep-teal/60 px-6 py-4 text-center">
                 <p class="font-body text-sm text-white/50">
                     A free, open-source template crafted with care for the Laravel & Vue community.
                     <br class="hidden sm:inline" />
                     Use it freely, build something amazing.
                 </p>
-                <div class="mt-2 flex items-center justify-center gap-4">
+                <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
                     <a
                         href="https://github.com/Igor-Ponso/real-state-free-template"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="inline-flex items-center gap-1.5 font-body text-xs text-white/40 transition-colors hover:text-landing-gold"
+                        class="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-4 py-2 font-body text-xs text-white/50 transition-colors hover:border-white/20 hover:text-white"
                     >
                         <Github class="size-3.5" />
                         View on GitHub
@@ -144,7 +145,7 @@ function scrollTo(href: string) {
                         href="https://buymeacoffee.com/igorponso"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="font-body text-xs text-white/40 transition-colors hover:text-landing-gold"
+                        class="inline-flex items-center gap-2 rounded-md bg-landing-gold px-4 py-2 font-body text-xs font-semibold text-landing-gold-foreground transition-colors hover:bg-landing-gold/90"
                     >
                         Buy Me A Coffee
                     </a>

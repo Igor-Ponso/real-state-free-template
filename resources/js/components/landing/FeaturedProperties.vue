@@ -46,8 +46,8 @@ const hoveredImage = ref<string | null>(null);
             class="absolute inset-0 transition-opacity duration-700"
             :class="hoveredImage ? 'opacity-0' : 'opacity-100'"
         >
-            <div class="absolute inset-0 bg-linear-to-b from-landing-warm-beige/50 via-background to-landing-warm-beige/30" />
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0); background-size: 24px 24px;" />
+            <div class="absolute inset-0 bg-linear-to-b from-landing-deep-teal via-landing-charcoal to-landing-deep-teal" />
+            <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 24px 24px;" />
         </div>
 
         <div class="relative mx-auto max-w-6xl px-6">
@@ -73,15 +73,12 @@ const hoveredImage = ref<string | null>(null);
                     v-for="(property, index) in properties"
                     :key="property.id"
                     class="transition-all duration-500"
-                    :class="[
-                        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0',
-                        hoveredImage && hoveredImage !== property.images[0] ? 'opacity-60 scale-[0.97]' : '',
-                    ]"
+                    :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'"
                     :style="{ transitionDelay: isVisible ? `${300 + index * 150}ms` : '0ms' }"
                     @mouseenter="hoveredImage = property.images[0]"
                     @mouseleave="hoveredImage = null"
                 >
-                    <Card class="group overflow-hidden border border-white/10 bg-card/80 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-card hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40 hover:backdrop-blur-none dark:bg-white/[0.04] dark:hover:bg-neutral-900">
+                    <Card class="group overflow-hidden border border-white/10 bg-white/[0.04] shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40">
                         <!-- Image carousel with overlays -->
                         <div class="relative">
                             <Carousel class="w-full">
@@ -166,9 +163,8 @@ const hoveredImage = ref<string | null>(null);
                 :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
             >
                 <Button
-                    variant="outline"
                     size="lg"
-                    class="border-landing-gold/30 font-body transition-all duration-300 hover:border-landing-gold hover:bg-landing-gold hover:text-white"
+                    class="bg-landing-gold font-body text-landing-gold-foreground transition-all duration-300 hover:bg-landing-gold/90"
                 >
                     View All Properties
                 </Button>

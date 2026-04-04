@@ -36,9 +36,9 @@ const props = withDefaults(
         <LandingHeader :can-register="props.canRegister" />
         <HeroSection />
         <ValueProposition />
+        <PropertySearch />
         <FeaturedProperties :properties="props.featuredProperties" />
         <NeighborhoodCarousel :neighborhoods="props.neighborhoods" />
-        <PropertySearch />
         <TeamSection :members="props.teamMembers" />
         <AboutSection :stats="props.stats" />
         <OfficeLocation />

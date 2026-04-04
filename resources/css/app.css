@@ -22,6 +22,7 @@
     --color-landing-gold-foreground: var(--landing-gold-foreground);
     --color-landing-warm-beige: var(--landing-warm-beige);
     --color-landing-charcoal: var(--landing-charcoal);
+    --color-landing-deep-teal: var(--landing-deep-teal);
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -129,6 +130,7 @@
     --landing-gold-foreground: hsl(38 10% 15%);
     --landing-warm-beige: hsl(30 25% 96%);
     --landing-charcoal: hsl(220 10% 12%);
+    --landing-deep-teal: hsl(199 49% 21%);
     --sidebar-background: hsl(0 0% 98%);
     --sidebar-foreground: hsl(240 5.3% 26.1%);
     --sidebar-primary: hsl(0 0% 10%);
@@ -178,6 +180,7 @@
     --landing-gold-foreground: hsl(38 10% 95%);
     --landing-warm-beige: hsl(220 10% 10%);
     --landing-charcoal: hsl(220 10% 8%);
+    --landing-deep-teal: hsl(199 45% 16%);
 }
 
 @layer base {

@@ -110,55 +110,68 @@ function openBio(member: TeamMember) {
             </div>
         </div>
 
-        <!-- Bio Dialog -->
+        <!-- Bio Dialog — split layout: photo left, info right -->
         <Dialog v-model:open="dialogOpen">
             <DialogContent
                 v-if="selectedMember"
-                class="sm:max-w-lg"
+                class="overflow-hidden p-0 sm:max-w-2xl"
             >
-                <DialogHeader>
-                    <div class="flex items-center gap-5">
-                        <div class="size-20 shrink-0 overflow-hidden rounded-full ring-2 ring-landing-gold/30">
-                            <img
-                                :src="selectedMember.image"
-                                :alt="selectedMember.name"
-                                class="h-full w-full object-cover"
-                            />
-                        </div>
-                        <div>
-                            <DialogTitle class="font-serif text-xl">
+                <div class="grid grid-cols-1 sm:grid-cols-5">
+                    <!-- Full photo -->
+                    <div class="relative sm:col-span-2">
+                        <img
+                            :src="selectedMember.image"
+                            :alt="selectedMember.name"
+                            class="h-64 w-full object-cover sm:h-full sm:min-h-[400px]"
+                        />
+                        <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent p-4 sm:hidden">
+                            <p class="font-serif text-lg font-semibold text-white">
                                 {{ selectedMember.name }}
-                            </DialogTitle>
-                            <DialogDescription class="mt-1 font-body text-sm text-landing-gold">
+                            </p>
+                            <p class="font-body text-sm text-landing-gold">
                                 {{ selectedMember.role }}
-                            </DialogDescription>
+                            </p>
                         </div>
                     </div>
-                </DialogHeader>
 
-                <div class="mt-4 space-y-4">
-                    <p class="font-body text-sm leading-relaxed text-muted-foreground">
-                        {{ selectedMember.bio }}
-                    </p>
+                    <!-- Bio content -->
+                    <div class="flex flex-col justify-between p-6 sm:col-span-3">
+                        <div>
+                            <DialogHeader class="hidden sm:block">
+                                <DialogTitle class="font-serif text-2xl">
+                                    {{ selectedMember.name }}
+                                </DialogTitle>
+                                <DialogDescription class="mt-1 font-body text-sm text-landing-gold">
+                                    {{ selectedMember.role }}
+                                </DialogDescription>
+                            </DialogHeader>
 
-                    <div class="flex gap-3 border-t pt-4">
-                        <a
-                            :href="`mailto:${selectedMember.email}`"
-                            class="flex items-center gap-2 rounded-md border px-3 py-1.5 font-body text-xs text-muted-foreground transition-colors hover:border-landing-gold hover:text-landing-gold"
-                        >
-                            <Mail class="size-3.5" />
-                            Email
-                        </a>
-                        <a
-                            v-if="selectedMember.social_links?.linkedin"
-                            :href="selectedMember.social_links.linkedin"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="flex items-center gap-2 rounded-md border px-3 py-1.5 font-body text-xs text-muted-foreground transition-colors hover:border-landing-gold hover:text-landing-gold"
-                        >
-                            <Linkedin class="size-3.5" />
-                            LinkedIn
-                        </a>
+                            <div class="mt-5 h-px bg-border" />
+
+                            <p class="mt-5 font-body text-sm leading-relaxed text-muted-foreground">
+                                {{ selectedMember.bio }}
+                            </p>
+                        </div>
+
+                        <div class="mt-6 flex gap-3">
+                            <a
+                                :href="`mailto:${selectedMember.email}`"
+                                class="flex items-center gap-2 rounded-md border px-4 py-2 font-body text-xs font-medium transition-colors hover:border-landing-gold hover:text-landing-gold"
+                            >
+                                <Mail class="size-3.5" />
+                                Email
+                            </a>
+                            <a
+                                v-if="selectedMember.social_links?.linkedin"
+                                :href="selectedMember.social_links.linkedin"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex items-center gap-2 rounded-md border px-4 py-2 font-body text-xs font-medium transition-colors hover:border-landing-gold hover:text-landing-gold"
+                            >
+                                <Linkedin class="size-3.5" />
+                                LinkedIn
+                            </a>
+                        </div>
                     </div>
                 </div>
             </DialogContent>
