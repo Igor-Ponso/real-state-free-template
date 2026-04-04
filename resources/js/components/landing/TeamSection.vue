@@ -1,43 +1,36 @@
 <script setup lang="ts">
 import { Linkedin, Mail } from 'lucide-vue-next';
-import { Card, CardContent } from '@/components/ui/card';
+import { ref } from 'vue';
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from '@/components/ui/carousel';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
+import type { TeamMember } from '@/types/landing';
 
 const { target: sectionRef, isVisible } = useFadeInOnScroll();
 
-interface TeamMember {
-    name: string;
-    role: string;
-    image: string;
-    email: string;
-}
+defineProps<{
+    members: TeamMember[];
+}>();
 
-const team: TeamMember[] = [
-    {
-        name: 'James Anderson',
-        role: 'Founder & CEO',
-        image: '/images/team/agent-1.jpg',
-        email: 'james@luxuryestate.com',
-    },
-    {
-        name: 'Sofia Martinez',
-        role: 'Head of Sales',
-        image: '/images/team/agent-2.jpg',
-        email: 'sofia@luxuryestate.com',
-    },
-    {
-        name: 'Emily Chen',
-        role: 'Senior Agent',
-        image: '/images/team/agent-3.jpg',
-        email: 'emily@luxuryestate.com',
-    },
-    {
-        name: 'Michael Brooks',
-        role: 'Property Consultant',
-        image: '/images/team/agent-4.jpg',
-        email: 'michael@luxuryestate.com',
-    },
-];
+const selectedMember = ref<TeamMember | null>(null);
+const dialogOpen = ref(false);
+
+function openBio(member: TeamMember) {
+    selectedMember.value = member;
+    dialogOpen.value = true;
+}
 </script>
 
 <template>
@@ -58,48 +51,117 @@ const team: TeamMember[] = [
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                <div
-                    v-for="(member, index) in team"
-                    :key="member.name"
-                    class="transition-all duration-700"
-                    :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'"
-                    :style="{ transitionDelay: `${300 + index * 100}ms` }"
+            <div
+                class="transition-all duration-700"
+                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'"
+                :style="{ transitionDelay: '300ms' }"
+            >
+                <Carousel
+                    :opts="{ align: 'start', loop: true }"
+                    class="w-full"
                 >
-                    <div class="group text-center">
-                        <div class="mx-auto mb-5 size-40 overflow-hidden rounded-full shadow-lg ring-4 ring-white dark:ring-neutral-800">
-                            <img
-                                :src="member.image"
-                                :alt="member.name"
-                                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy"
-                            />
-                        </div>
-                        <h3 class="font-serif text-lg font-semibold">
-                            {{ member.name }}
-                        </h3>
-                        <p class="mt-1 font-body text-sm text-landing-gold">
-                            {{ member.role }}
-                        </p>
-                        <div class="mt-3 flex justify-center gap-3">
-                            <a
-                                :href="`mailto:${member.email}`"
-                                class="text-muted-foreground transition-colors hover:text-landing-gold"
-                                :aria-label="`Email ${member.name}`"
+                    <CarouselContent class="-ml-6">
+                        <CarouselItem
+                            v-for="member in members"
+                            :key="member.id"
+                            class="basis-full pl-6 sm:basis-1/2 lg:basis-1/4"
+                        >
+                            <button
+                                class="group w-full cursor-pointer text-center"
+                                @click="openBio(member)"
                             >
-                                <Mail class="size-4" />
-                            </a>
-                            <a
-                                href="#"
-                                class="text-muted-foreground transition-colors hover:text-landing-gold"
-                                :aria-label="`${member.name}'s LinkedIn`"
-                            >
-                                <Linkedin class="size-4" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                                <div class="relative mx-auto mb-5 size-44 overflow-hidden rounded-full shadow-lg ring-4 ring-white dark:ring-neutral-800">
+                                    <img
+                                        :src="member.image"
+                                        :alt="member.name"
+                                        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        loading="lazy"
+                                    />
+                                    <!-- Hover overlay -->
+                                    <div class="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 transition-all duration-500 group-hover:bg-black/40">
+                                        <span class="font-body text-xs font-medium uppercase tracking-widest text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                                            View Bio
+                                        </span>
+                                    </div>
+                                </div>
+                                <h3 class="font-serif text-lg font-semibold transition-colors group-hover:text-landing-gold">
+                                    {{ member.name }}
+                                </h3>
+                                <p class="mt-1 font-body text-sm text-landing-gold">
+                                    {{ member.role }}
+                                </p>
+                                <div class="mt-3 flex justify-center gap-3">
+                                    <span class="text-muted-foreground transition-colors group-hover:text-landing-gold">
+                                        <Mail class="size-4" />
+                                    </span>
+                                    <span
+                                        v-if="member.social_links?.linkedin"
+                                        class="text-muted-foreground transition-colors group-hover:text-landing-gold"
+                                    >
+                                        <Linkedin class="size-4" />
+                                    </span>
+                                </div>
+                            </button>
+                        </CarouselItem>
+                    </CarouselContent>
+                    <CarouselPrevious class="-left-4 border-landing-gold/20 bg-white shadow-lg hover:bg-landing-gold hover:text-white dark:bg-neutral-900" />
+                    <CarouselNext class="-right-4 border-landing-gold/20 bg-white shadow-lg hover:bg-landing-gold hover:text-white dark:bg-neutral-900" />
+                </Carousel>
             </div>
         </div>
+
+        <!-- Bio Dialog -->
+        <Dialog v-model:open="dialogOpen">
+            <DialogContent
+                v-if="selectedMember"
+                class="sm:max-w-lg"
+            >
+                <DialogHeader>
+                    <div class="flex items-center gap-5">
+                        <div class="size-20 shrink-0 overflow-hidden rounded-full ring-2 ring-landing-gold/30">
+                            <img
+                                :src="selectedMember.image"
+                                :alt="selectedMember.name"
+                                class="h-full w-full object-cover"
+                            />
+                        </div>
+                        <div>
+                            <DialogTitle class="font-serif text-xl">
+                                {{ selectedMember.name }}
+                            </DialogTitle>
+                            <DialogDescription class="mt-1 font-body text-sm text-landing-gold">
+                                {{ selectedMember.role }}
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <div class="mt-4 space-y-4">
+                    <p class="font-body text-sm leading-relaxed text-muted-foreground">
+                        {{ selectedMember.bio }}
+                    </p>
+
+                    <div class="flex gap-3 border-t pt-4">
+                        <a
+                            :href="`mailto:${selectedMember.email}`"
+                            class="flex items-center gap-2 rounded-md border px-3 py-1.5 font-body text-xs text-muted-foreground transition-colors hover:border-landing-gold hover:text-landing-gold"
+                        >
+                            <Mail class="size-3.5" />
+                            Email
+                        </a>
+                        <a
+                            v-if="selectedMember.social_links?.linkedin"
+                            :href="selectedMember.social_links.linkedin"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex items-center gap-2 rounded-md border px-3 py-1.5 font-body text-xs text-muted-foreground transition-colors hover:border-landing-gold hover:text-landing-gold"
+                        >
+                            <Linkedin class="size-3.5" />
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     </section>
 </template>

@@ -9,48 +9,13 @@ import {
     CarouselItem,
 } from '@/components/ui/carousel';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
+import type { Neighborhood } from '@/types/landing';
 
 const { target: sectionRef, isVisible } = useFadeInOnScroll();
 
-interface Neighborhood {
-    city: string;
-    province: string;
-    image: string;
-    properties: number;
-}
-
-const neighborhoods: Neighborhood[] = [
-    {
-        city: 'Vancouver',
-        province: 'British Columbia',
-        image: '/images/cities/vancouver.jpg',
-        properties: 84,
-    },
-    {
-        city: 'Toronto',
-        province: 'Ontario',
-        image: '/images/cities/toronto.jpg',
-        properties: 126,
-    },
-    {
-        city: 'Montreal',
-        province: 'Quebec',
-        image: '/images/cities/montreal.jpg',
-        properties: 67,
-    },
-    {
-        city: 'Calgary',
-        province: 'Alberta',
-        image: '/images/cities/calgary.jpg',
-        properties: 43,
-    },
-    {
-        city: 'Whistler',
-        province: 'British Columbia',
-        image: '/images/cities/whistler.jpg',
-        properties: 31,
-    },
-];
+defineProps<{
+    neighborhoods: Neighborhood[];
+}>();
 
 const autoplayPlugin = Autoplay({
     delay: 4000,
@@ -97,12 +62,12 @@ function goToSlide(index: number) {
                 <CarouselContent>
                     <CarouselItem
                         v-for="neighborhood in neighborhoods"
-                        :key="neighborhood.city"
+                        :key="neighborhood.id"
                     >
                         <div class="relative h-[70vh] min-h-96">
                             <img
                                 :src="neighborhood.image"
-                                :alt="neighborhood.city"
+                                :alt="neighborhood.name"
                                 class="absolute inset-0 h-full w-full object-cover"
                                 loading="lazy"
                             />
@@ -113,13 +78,13 @@ function goToSlide(index: number) {
                                     Explore Our Locations
                                 </p>
                                 <h2 class="mt-4 font-serif text-4xl font-bold text-white md:text-6xl">
-                                    {{ neighborhood.city }}
+                                    {{ neighborhood.name }}
                                 </h2>
                                 <p class="mt-2 font-body text-lg text-white/70">
-                                    {{ neighborhood.province }}
+                                    {{ neighborhood.state }}
                                 </p>
                                 <p class="mt-4 font-body text-sm font-medium text-landing-gold">
-                                    {{ neighborhood.properties }} exclusive properties
+                                    {{ neighborhood.properties_count }} exclusive properties
                                 </p>
                             </div>
                         </div>

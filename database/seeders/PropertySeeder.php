@@ -30,15 +30,14 @@ class PropertySeeder extends Seeder
 
         // Create agents with profiles
         $agents = collect();
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 8; $i++) {
             $agent = User::factory()->create([
                 'email' => "agent{$i}@luxuryestate.com",
                 'password' => Hash::make('T3st@Secure!99'),
             ]);
             $agent->assignRole('agent');
-            AgentProfile::factory()->create([
+            AgentProfile::factory()->featured()->create([
                 'user_id' => $agent->id,
-                'is_featured' => $i <= 4,
             ]);
             $agents->push($agent);
         }

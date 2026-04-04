@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import AnimatedCounter from '@/components/landing/AnimatedCounter.vue';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
+import type { LandingStats } from '@/types/landing';
 
 const { target: sectionRef, isVisible } = useFadeInOnScroll();
 
@@ -11,12 +12,16 @@ onMounted(() => {
     isMounted.value = true;
 });
 
-const stats = [
-    { target: 500, suffix: '+', label: 'Properties Sold' },
-    { target: 150, suffix: '+', label: 'Happy Clients' },
-    { target: 15, suffix: '+', label: 'Years of Experience' },
-    { target: 25, suffix: '+', label: 'Expert Agents' },
-];
+const props = defineProps<{
+    stats: LandingStats;
+}>();
+
+const statsDisplay = computed(() => [
+    { target: props.stats.properties_sold, suffix: '+', label: 'Properties Sold' },
+    { target: props.stats.clients, suffix: '+', label: 'Happy Clients' },
+    { target: props.stats.agents, suffix: '+', label: 'Expert Agents' },
+    { target: props.stats.cities, suffix: '', label: 'Cities Served' },
+]);
 </script>
 
 <template>
@@ -76,7 +81,7 @@ const stats = [
                     class="mt-10 grid grid-cols-2 gap-6 transition-all delay-500 duration-700"
                     :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
                 >
-                    <div v-for="stat in stats" :key="stat.label">
+                    <div v-for="stat in statsDisplay" :key="stat.label">
                         <div class="font-serif text-3xl font-bold text-landing-gold">
                             <AnimatedCounter
                                 :target="stat.target"

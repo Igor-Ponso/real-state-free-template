@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-vue-next';
+import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Button } from '@/components/ui/button';
@@ -35,12 +35,12 @@ function scrollTo(href: string) {
             <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                     <div class="flex items-center gap-2">
-                        <AppLogoIcon class="size-6 fill-current text-white" />
+                        <AppLogoIcon class="size-6 fill-current text-landing-gold" />
                         <span class="font-serif text-lg font-semibold">{{ name }}</span>
                     </div>
                     <p class="mt-4 font-body text-sm leading-relaxed text-white/60">
                         Luxury real estate redefined. We connect discerning buyers
-                        with extraordinary properties.
+                        with extraordinary properties across Canada.
                     </p>
                 </div>
 
@@ -67,15 +67,15 @@ function scrollTo(href: string) {
                     <div class="mt-4 flex flex-col gap-3 font-body text-sm text-white/60">
                         <div class="flex items-center gap-2">
                             <MapPin class="size-4 shrink-0" />
-                            <span>123 Luxury Ave, New York, NY</span>
+                            <span>1055 W Georgia St, Vancouver, BC</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <Phone class="size-4 shrink-0" />
-                            <span>+1 (555) 123-4567</span>
+                            <span>+1 (604) 555-0192</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <Mail class="size-4 shrink-0" />
-                            <span>hello@luxuryestate.com</span>
+                            <span>info@sovereignestates.com</span>
                         </div>
                     </div>
                 </div>
@@ -116,16 +116,43 @@ function scrollTo(href: string) {
 
             <Separator class="my-8 bg-white/10" />
 
-            <div class="flex flex-col items-center justify-between gap-4 font-body text-sm text-white/40 sm:flex-row">
+            <!-- Template credit + dedication -->
+            <div class="mb-6 text-center">
+                <p class="font-body text-sm italic leading-relaxed text-white/30">
+                    "Unless the Lord builds the house, the builders labor in vain."
+                    <span class="not-italic">— Psalm 127:1</span>
+                </p>
+            </div>
+
+            <div class="rounded-lg border border-white/5 bg-white/[0.02] px-6 py-4 text-center">
+                <p class="font-body text-sm text-white/50">
+                    A free, open-source template crafted with care for the Laravel & Vue community.
+                    <br class="hidden sm:inline" />
+                    Use it freely, build something amazing.
+                </p>
+                <div class="mt-2 flex items-center justify-center gap-4">
+                    <a
+                        href="https://github.com/Igor-Ponso/real-state-free-template"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 font-body text-xs text-white/40 transition-colors hover:text-landing-gold"
+                    >
+                        <Github class="size-3.5" />
+                        View on GitHub
+                    </a>
+                    <a
+                        href="https://buymeacoffee.com/igorponso"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-body text-xs text-white/40 transition-colors hover:text-landing-gold"
+                    >
+                        Buy Me A Coffee
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center font-body text-xs text-white/30">
                 <p>&copy; {{ new Date().getFullYear() }} {{ name }}. All rights reserved.</p>
-                <a
-                    href="https://buymeacoffee.com/igorponso"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="transition-colors hover:text-landing-gold"
-                >
-                    ☕ Buy Me A Coffee
-                </a>
             </div>
         </div>
     </footer>

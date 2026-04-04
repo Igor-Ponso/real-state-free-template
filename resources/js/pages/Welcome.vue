@@ -6,15 +6,27 @@ import HeroSection from '@/components/landing/HeroSection.vue';
 import LandingFooter from '@/components/landing/LandingFooter.vue';
 import LandingHeader from '@/components/landing/LandingHeader.vue';
 import NeighborhoodCarousel from '@/components/landing/NeighborhoodCarousel.vue';
+import OfficeLocation from '@/components/landing/OfficeLocation.vue';
 import PropertySearch from '@/components/landing/PropertySearch.vue';
 import TeamSection from '@/components/landing/TeamSection.vue';
 import ValueProposition from '@/components/landing/ValueProposition.vue';
+import type { FeaturedProperty, Neighborhood, TeamMember, LandingStats } from '@/types/landing';
 
 const props = withDefaults(
     defineProps<{
         canRegister?: boolean;
+        featuredProperties?: FeaturedProperty[];
+        neighborhoods?: Neighborhood[];
+        teamMembers?: TeamMember[];
+        stats?: LandingStats;
     }>(),
-    { canRegister: true },
+    {
+        canRegister: true,
+        featuredProperties: () => [],
+        neighborhoods: () => [],
+        teamMembers: () => [],
+        stats: () => ({ properties_sold: 0, clients: 0, agents: 0, cities: 0 }),
+    },
 );
 </script>
 
@@ -24,11 +36,12 @@ const props = withDefaults(
         <LandingHeader :can-register="props.canRegister" />
         <HeroSection />
         <ValueProposition />
-        <FeaturedProperties />
-        <NeighborhoodCarousel />
+        <FeaturedProperties :properties="props.featuredProperties" />
+        <NeighborhoodCarousel :neighborhoods="props.neighborhoods" />
         <PropertySearch />
-        <TeamSection />
-        <AboutSection />
+        <TeamSection :members="props.teamMembers" />
+        <AboutSection :stats="props.stats" />
+        <OfficeLocation />
         <LandingFooter />
     </div>
 </template>
