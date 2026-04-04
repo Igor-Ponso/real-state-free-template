@@ -28,42 +28,30 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 
 ## Features
 
-### Public Website
+### Current
+- **Authentication** — Split layout auth pages (image + form) with Fortify
+  - Login and registration
+  - Password reset and email verification
+  - Two-factor authentication (2FA)
+  - Rate limiting on auth endpoints
+- **User Settings** — Profile, password, appearance, and security management
+- **SSR** — Server-side rendering for SEO via Inertia
+- **shadcn-vue Components** — Button, Card, Dialog, Input, Dropdown, Sidebar, Skeleton, Tooltip, and more
+- **TypeScript** — Strict mode across the entire frontend
+- **Wayfinder** — Type-safe route functions (no hardcoded URLs)
+- **Test Suite** — 40 passing Pest tests covering auth and settings
+- **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
+
+### Planned
 - Luxury landing page with full-screen hero video
 - Minimalist, transparent header (sticky on scroll)
 - Property listings with advanced filters (price, location, type, bedrooms, area)
 - Property detail pages with image gallery
 - Contact form with email notifications
-- SEO-friendly with Inertia SSR
 - Mobile-first responsive design (vertical content ready)
-
-### Authentication
-- Split layout auth pages (image + form)
-- Login and registration
-- Password reset and email verification
-- Two-factor authentication (2FA)
-- Rate limiting on auth endpoints
-
-### Admin Panel (planned)
-- Dashboard with analytics (listings, views, inquiries)
-- Full CRUD for properties
-- Image upload with optimization
-- Manage property types, amenities, and locations
-- Inquiry management
-- User management with roles (admin, agent)
-
-### Developer Experience
-- Clean architecture following SOLID principles
-- TypeScript strict mode across the entire frontend
-- Repository pattern for data access
-- Form Request validation
-- API Resources for consistent responses
-- Eloquent best practices (eager loading, scopes, accessors)
-- Redis caching with smart invalidation
-- Comprehensive test suite (Feature + Unit)
+- Admin panel with dashboard, CRUD, image upload, and user management
+- Repository pattern with Redis caching
 - Database seeders with realistic fake data
-- Laravel Wayfinder for type-safe route functions
-- Laravel Boost for AI-assisted development
 
 ## Requirements
 
@@ -75,15 +63,49 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 
 ## Installation
 
+### Option 1: With Laravel Herd (recommended)
+
+[Laravel Herd](https://herd.laravel.com/) is a native macOS/Windows development environment for Laravel. It provides PHP, Nginx, and database services with zero configuration.
+
 ```bash
 # Clone the repository
 git clone git@github.com:Igor-Ponso/real-state-free-template.git
 cd real-state-free-template
 
-# Install PHP dependencies
+# Install dependencies
 composer install
+npm install
 
-# Install Node dependencies
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Database (use Herd's built-in PostgreSQL or SQLite)
+php artisan migrate --seed
+
+# Build frontend assets
+npm run build
+```
+
+Herd automatically serves the site at `http://real-state-free-template.test`. No need to run `php artisan serve`.
+
+To start the frontend dev server with hot reload:
+
+```bash
+npm run dev
+```
+
+> **Tip:** Use Herd Pro to manage PostgreSQL and Redis services directly from the menu bar. Run `herd services` to see available services.
+
+### Option 2: Without Herd
+
+```bash
+# Clone the repository
+git clone git@github.com:Igor-Ponso/real-state-free-template.git
+cd real-state-free-template
+
+# Install dependencies
+composer install
 npm install
 
 # Environment setup
@@ -102,57 +124,74 @@ composer run dev
 
 Visit `http://localhost:8000` to see the application.
 
+### AI-Assisted Development (optional)
+
+This project supports [Laravel Boost](https://laravel.com/docs/boost) for AI-assisted development with Claude Code, Cursor, or GitHub Copilot:
+
+```bash
+composer require laravel/boost --dev
+php artisan boost:install
+```
+
+Boost provides your AI agent with project-specific tools, skills, and guidelines.
+
 ## Project Structure
 
 ```
 app/
-├── Actions/            # Single-purpose action classes
-├── Enums/              # PHP enums (PropertyType, PropertyStatus...)
+├── Actions/
+│   └── Fortify/        # Auth actions (CreateNewUser, ResetUserPassword...)
+├── Concerns/           # Shared traits
 ├── Http/
 │   ├── Controllers/    # Thin controllers
-│   ├── Middleware/      # Custom middleware
+│   │   └── Settings/   # User settings controllers
+│   ├── Middleware/      # Custom middleware (HandleAppearance...)
 │   └── Requests/       # Form Request validation
 ├── Models/             # Eloquent models with scopes & relationships
-├── Policies/           # Authorization policies
-├── Repositories/       # Data access layer
-└── Services/           # Business logic
+└── Providers/          # Service providers (Fortify)
 resources/
 ├── js/
-│   ├── components/     # Reusable Vue components (shadcn-vue based)
+│   ├── components/     # Reusable Vue components
+│   │   └── ui/         # shadcn-vue components (button, card, dialog...)
 │   ├── composables/    # Vue composables (shared logic)
-│   ├── layouts/        # Page layouts
+│   ├── layouts/        # Page layouts (app, auth, settings)
 │   ├── lib/            # Utilities and configuration
-│   ├── pages/          # Inertia pages
+│   ├── pages/          # Inertia pages (auth, settings...)
 │   └── types/          # TypeScript interfaces
-└── css/
+├── css/                # Tailwind CSS entry point
+└── views/              # Blade template (app.blade.php)
 database/
 ├── factories/          # Model factories
 ├── migrations/         # Database migrations
-└── seeders/            # Realistic data seeders
+└── seeders/            # Data seeders
 tests/
 ├── Feature/            # Feature tests (Pest)
+│   ├── Auth/           # Authentication tests
+│   └── Settings/       # Settings tests
 └── Unit/               # Unit tests (Pest)
 ```
 
 ## Key Architectural Decisions
 
 ### Backend (Laravel)
-- **Thin Controllers**: Controllers only handle HTTP concerns. Business logic lives in Actions/Services.
-- **Eager Loading**: All relationships are eager-loaded to prevent N+1 queries.
-- **Query Scopes**: Reusable query filters via Eloquent local scopes.
-- **Enums**: PHP 8.4 enums for type-safe constants (property types, statuses).
-- **Form Requests**: All validation is handled by dedicated Form Request classes.
-- **API Resources**: Consistent data transformation between backend and frontend.
-- **Cache Strategy**: Redis caching with tag-based invalidation on model events.
-- **Wayfinder**: Auto-generated TypeScript functions for routes — no hardcoded URLs.
+- **Actions Pattern**: Business logic lives in Action classes (e.g., `Actions/Fortify/CreateNewUser`), keeping controllers thin.
+- **Form Requests**: Validation is handled by dedicated Form Request classes.
+- **Fortify Authentication**: Full auth backend with login, registration, 2FA, email verification, and password reset.
+- **Wayfinder**: Auto-generated TypeScript functions for routes — no hardcoded URLs in the frontend.
+- **SSR**: Server-side rendering enabled via Inertia for SEO.
 
 ### Frontend (Vue 3 + TypeScript)
 - **Composition API**: All components use `<script setup lang="ts">`.
-- **TypeScript Strict**: No `any` types, full type safety.
+- **TypeScript**: Full type safety across the frontend.
+- **shadcn-vue**: High-quality, accessible UI components (button, card, dialog, input, dropdown, sidebar, etc.).
 - **Composables**: Shared logic extracted into reusable composables.
-- **shadcn-vue**: High-quality, accessible UI components as the design foundation.
-- **Inertia SSR**: Server-side rendering for SEO.
+- **Layouts**: Separate layouts for app, auth (split), and settings pages.
 - **Inertia Forms**: Form handling with automatic validation error binding.
+
+### Planned (as the project evolves)
+- Repository pattern for data access with Redis caching
+- Eloquent scopes, enums, and API Resources
+- Property models, migrations, and seeders
 
 ## Testing
 
