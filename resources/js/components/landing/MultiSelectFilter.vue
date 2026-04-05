@@ -64,8 +64,6 @@ const hiddenCount = computed(() =>
 
 watch(searchTerm, (val) => {
     if (val) {
-
-
         open.value = true;
     }
 });
@@ -84,7 +82,7 @@ watch(searchTerm, (val) => {
                     <TagsInput
                         v-slot="{ modelValue: tags }"
                         v-model="model"
-                        class="h-9 w-full gap-1 overflow-hidden border-white/10 bg-white/5 px-2 text-sm text-white"
+                        class="h-auto min-h-9 w-full gap-1 border-white/10 bg-white/5 px-2 text-sm text-white"
                     >
                         <!-- Visible tags (limited) -->
                         <TagsInputItem
@@ -145,9 +143,20 @@ watch(searchTerm, (val) => {
                     @open-auto-focus.prevent
                 >
                     <ListboxContent
-                        class="max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto"
+                        class="max-h-75 scroll-py-1 overflow-x-hidden overflow-y-auto"
                         tabindex="0"
                     >
+                        <!-- Any (select all / clear) -->
+                        <button
+                            class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium outline-hidden select-none"
+                            :class="!model.length ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'"
+                            @click="model = []; searchTerm = ''; open = false;"
+                        >
+                            <CheckIcon v-if="!model.length" class="size-4" />
+                            <span :class="!model.length ? '' : 'pl-6'">Any</span>
+                        </button>
+                        <div class="my-1 h-px bg-border" />
+
                         <ListboxItem
                             v-for="opt in filteredOptions"
                             :key="opt.slug"

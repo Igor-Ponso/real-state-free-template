@@ -18,7 +18,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PropertyDetailResource extends JsonResource
 {
-    /** Reuse the same curated Unsplash IDs from FeaturedPropertyResource. */
+    /** Reuse local placeholder images from FeaturedPropertyResource. */
 
     /**
      * Unique avatar seeds per agent — each produces a distinct face via pravatar.cc.
@@ -146,11 +146,18 @@ class PropertyDetailResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        $ids = FeaturedPropertyResource::placeholderPhotoIds();
-        $count = count($ids);
+        $images = [
+            '/images/properties/penthouse.jpg',
+            '/images/properties/penthouse-2.jpg',
+            '/images/properties/villa.jpg',
+            '/images/properties/villa-2.jpg',
+            '/images/properties/loft.jpg',
+            '/images/properties/loft-2.jpg',
+        ];
+        $count = count($images);
 
         return collect(range(0, 4))
-            ->map(fn ($i) => 'https://images.unsplash.com/photo-'.$ids[($this->id * 5 + $i) % $count].'?w=1200&h=800&fit=crop&auto=format')
+            ->map(fn ($i) => $images[($this->id * 5 + $i) % $count])
             ->all();
     }
 

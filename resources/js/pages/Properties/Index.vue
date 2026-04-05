@@ -41,7 +41,6 @@ const {
     hoveredPropertyId,
     isLoading,
     perPage,
-    search,
     selectedTypes,
     selectedCities,
     selectedListings,
@@ -97,7 +96,6 @@ const {
                     </template>
 
                     <PropertyFilters
-                        v-model:search="search"
                         v-model:selected-types="selectedTypes"
                         v-model:selected-cities="selectedCities"
                         v-model:selected-listings="selectedListings"

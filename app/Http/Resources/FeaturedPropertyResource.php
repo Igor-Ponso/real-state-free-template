@@ -18,33 +18,19 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class FeaturedPropertyResource extends JsonResource
 {
     /**
-     * Curated Unsplash photo IDs of real estate properties.
-     * Each property picks images deterministically based on its ID.
+     * Local placeholder images for development.
      * In production, Spatie MediaLibrary handles real uploads.
-     *
-     * @see https://unsplash.com — Free, no API key required for hotlinking
+     * Each property picks 3 images deterministically from local files.
      *
      * @var string[]
      */
-    private const PLACEHOLDER_PHOTO_IDS = [
-        'KqrbNYj7QJQ', // modern house greenery
-        'r6J0hko5sQE', // luxury interior design
-        'FYnqaaBOI8k', // kitchen island
-        'qe0Tu9mVs7U', // luxury living room
-        '8WG4EXvdM4M', // modern bathroom
-        'n1OuA3zNUpA', // luxury kitchen
-        'ouK1sAbIHvk', // modern living
-        'r0IRSS5QujY', // villa exterior
-        '_vYG0J4oL0w', // house palm trees
-        '4iEuIV8_84k', // pool night
-        'vbSRUrNm3Ik', // residential exterior
-        'fhD2TTSWfG0', // modern building
-        'prBWpfgpyjA', // modernist villa
-        'ZAUHqu8Z1uU', // tall white building
-        'fk3JUWP0RNA', // building sunlight
-        'b08Pe9MV_eU', // modern lobby
-        'Ypv0MH4izf8', // lobby seating
-        'OcvPfruiEyY', // apartment buildings
+    private const PLACEHOLDER_IMAGES = [
+        '/images/properties/penthouse.jpg',
+        '/images/properties/penthouse-2.jpg',
+        '/images/properties/villa.jpg',
+        '/images/properties/villa-2.jpg',
+        '/images/properties/loft.jpg',
+        '/images/properties/loft-2.jpg',
     ];
 
     /**
@@ -99,16 +85,6 @@ class FeaturedPropertyResource extends JsonResource
     }
 
     /**
-     * Expose photo IDs for reuse in PropertyDetailResource.
-     *
-     * @return string[]
-     */
-    public static function placeholderPhotoIds(): array
-    {
-        return self::PLACEHOLDER_PHOTO_IDS;
-    }
-
-    /**
      * @return string[]
      */
     private function getPropertyImages(): array
@@ -119,11 +95,13 @@ class FeaturedPropertyResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        $ids = self::PLACEHOLDER_PHOTO_IDS;
-        $count = count($ids);
+        $images = self::PLACEHOLDER_IMAGES;
+        $count = count($images);
 
-        return collect(range(0, 2))
-            ->map(fn ($i) => 'https://images.unsplash.com/photo-'.$ids[($this->id * 3 + $i) % $count].'?w=800&h=500&fit=crop&auto=format')
-            ->all();
+        return [
+            $images[($this->id * 3) % $count],
+            $images[($this->id * 3 + 1) % $count],
+            $images[($this->id * 3 + 2) % $count],
+        ];
     }
 }
