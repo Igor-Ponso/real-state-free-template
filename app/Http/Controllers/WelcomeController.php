@@ -59,7 +59,7 @@ class WelcomeController extends Controller
                     ->featured()
                     ->get(),
             )->resolve(),
-            'stats' => fn () => Cache::remember('home_stats', 3600, fn () => [
+            'stats' => fn () => Cache::flexible('home_stats', [1800, 3600], fn () => [
                 'properties_sold' => Property::whereHas('propertyStatus', fn ($q) => $q->where('slug', 'sold'))->count(),
                 'clients' => User::whereHas('roles', fn ($q) => $q->where('name', 'client'))->count(),
                 'agents' => AgentProfile::count(),

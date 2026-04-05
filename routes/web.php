@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\PropertyController;
@@ -23,6 +24,14 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+});
+
+Route::middleware(['auth', 'verified', 'role:admin|agent'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('properties', Admin\PropertyController::class);
+    Route::post('properties/{property}/media', [Admin\MediaController::class, 'store'])->name('properties.media.store');
+    Route::delete('media/{media}', [Admin\MediaController::class, 'destroy'])->name('media.destroy');
+    Route::resource('inquiries', Admin\InquiryController::class)->only(['index', 'show', 'update']);
 });
 
 require __DIR__.'/settings.php';

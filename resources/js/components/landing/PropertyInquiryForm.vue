@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useHttp } from '@inertiajs/vue3';
 import { CheckCircle, Loader2, Send } from 'lucide-vue-next';
+import { vMaska } from 'maska/vue';
 import { ref } from 'vue';
 
 import { store } from '@/actions/App/Http/Controllers/InquiryController';
@@ -135,6 +136,7 @@ const submit = () => {
                 <Input
                     id="inquiry-phone"
                     v-model="form.phone"
+                    v-maska="'+1 (###) ###-####'"
                     type="tel"
                     placeholder="+1 (555) 000-0000"
                     class="mt-1 border-white/10 bg-white/5 text-white placeholder:text-white/30"

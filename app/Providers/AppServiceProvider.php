@@ -3,7 +3,11 @@
 namespace App\Providers;
 
 use App\Auth\CipherSweetEloquentUserProvider;
+use App\Models\City;
+use App\Models\ListingType;
 use App\Models\Property;
+use App\Models\PropertyType;
+use App\Observers\FilterOptionObserver;
 use App\Observers\PropertyObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
@@ -42,6 +46,9 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(SocialiteWasCalled::class, AppleExtendSocialite::class.'@handle');
 
         Property::observe(PropertyObserver::class);
+        City::observe(FilterOptionObserver::class);
+        PropertyType::observe(FilterOptionObserver::class);
+        ListingType::observe(FilterOptionObserver::class);
 
         Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
             if (in_array($response->statusCode(), [401, 403, 404, 429, 500, 503])) {

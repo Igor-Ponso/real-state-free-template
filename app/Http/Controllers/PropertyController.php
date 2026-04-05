@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\ListingType;
 use App\Models\Property;
 use App\Models\PropertyType;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -80,13 +81,17 @@ class PropertyController extends Controller
                     ->paginate(max(1, min((int) $request->query('per_page', 12), 48)))
                     ->withQueryString(),
             ),
-            'filters' => Inertia::defer(fn () => [
-                'propertyTypes' => PropertyType::active()->ordered()->get(['name', 'slug']),
-                'cities' => City::ordered()->get(['name', 'slug', 'latitude', 'longitude']),
-                'listingTypes' => ListingType::active()->ordered()->get(['name', 'slug']),
-                'unitAmenities' => collect(Property::UNIT_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a]),
-                'buildingAmenities' => collect(Property::BUILDING_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a]),
-            ]),
+            'filters' => Inertia::defer(fn () => Cache::tags(['filter-options'])->remember(
+                'property_filter_options',
+                3600,
+                fn () => [
+                    'propertyTypes' => PropertyType::active()->ordered()->get(['name', 'slug'])->toArray(),
+                    'cities' => City::ordered()->get(['name', 'slug', 'latitude', 'longitude'])->toArray(),
+                    'listingTypes' => ListingType::active()->ordered()->get(['name', 'slug'])->toArray(),
+                    'unitAmenities' => collect(Property::UNIT_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a])->toArray(),
+                    'buildingAmenities' => collect(Property::BUILDING_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a])->toArray(),
+                ],
+            )),
             'appliedFilters' => (object) $request->only(['type', 'city', 'listing', 'min_price', 'max_price', 'bedrooms', 'search', 'sort', 'unit_amenities', 'building_amenities']),
             'mapCenter' => $mapCenter,
         ]);
@@ -104,18 +109,31 @@ class PropertyController extends Controller
             404,
         );
 
+        $cacheKey = "property_detail:{$property->slug}";
+
+        // Extend TTL on frequently accessed properties (Cache::touch — hidden feature)
+        Cache::touch($cacheKey, 1800);
+
         return Inertia::render('Properties/Show', [
-            'property' => fn () => (new PropertyDetailResource($property))->resolve(),
-            'similarProperties' => Inertia::defer(fn () => FeaturedPropertyResource::collection(
-                Property::query()
-                    ->with(['city', 'listingType', 'propertyType', 'media'])
-                    ->published()
-                    ->where('city_id', $property->city_id)
-                    ->where('id', '!=', $property->id)
-                    ->limit(4)
-                    ->latest('published_at')
-                    ->get(),
-            )->resolve()),
+            'property' => fn () => Cache::tags(['properties', "property:{$property->slug}"])->remember(
+                $cacheKey,
+                1800,
+                fn () => (new PropertyDetailResource($property))->resolve(),
+            ),
+            'similarProperties' => Inertia::defer(fn () => Cache::tags(['properties'])->remember(
+                "similar_properties:{$property->slug}",
+                1800,
+                fn () => FeaturedPropertyResource::collection(
+                    Property::query()
+                        ->with(['city', 'listingType', 'propertyType', 'media'])
+                        ->published()
+                        ->where('city_id', $property->city_id)
+                        ->where('id', '!=', $property->id)
+                        ->limit(4)
+                        ->latest('published_at')
+                        ->get(),
+                )->resolve(),
+            )),
             'canRegister' => Features::enabled(Features::registration()),
         ]);
     }

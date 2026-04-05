@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Grid3x3, Map, Search, X } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 import FilterPopover from '@/components/landing/FilterPopover.vue';
+import MobileFilterSheet from '@/components/landing/MobileFilterSheet.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -16,7 +18,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useAmenityIcons } from '@/composables/useAmenityIcons';
 import type { FilterOption, PropertyFilters } from '@/types/landing';
 
-defineProps<{
+const props = defineProps<{
     filters?: PropertyFilters;
     selectedTypes: string[];
     selectedCities: string[];
@@ -54,10 +56,27 @@ const multiLabel = (selected: string[], options: FilterOption[] | undefined, fal
 
     return `${selected.length} selected`;
 };
+
+const activeFilterCount = computed(() =>
+    [props.selectedTypes, props.selectedCities, props.selectedListings, props.selectedBedrooms, props.selectedUnitAmenities, props.selectedBuildingAmenities]
+        .filter((arr) => arr.length > 0).length
+    + (minPrice.value ? 1 : 0)
+    + (maxPrice.value ? 1 : 0)
+    + (search.value ? 1 : 0),
+);
 </script>
 
 <template>
-    <div class="flex flex-wrap items-end gap-3">
+    <div>
+        <!-- Mobile: filter sheet trigger -->
+        <MobileFilterSheet :active-count="activeFilterCount" @apply="emit('apply')" @clear="emit('clear')">
+            <div class="space-y-4">
+                <slot />
+            </div>
+        </MobileFilterSheet>
+
+        <!-- Desktop: full filter bar -->
+        <div class="hidden flex-wrap items-end gap-3 md:flex">
         <!-- Search -->
         <div>
             <label :class="LABEL">Search</label>
@@ -168,5 +187,6 @@ const multiLabel = (selected: string[], options: FilterOption[] | undefined, fal
                 <Map class="size-4" />
             </ToggleGroupItem>
         </ToggleGroup>
+        </div>
     </div>
 </template>

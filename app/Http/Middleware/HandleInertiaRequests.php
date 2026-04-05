@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Inquiry;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -46,6 +47,11 @@ class HandleInertiaRequests extends Middleware
                 ['google', 'github', 'facebook', 'apple'],
                 fn (string $provider): bool => ! empty(config("services.{$provider}.client_id")),
             )),
+            'unreadInquiriesCount' => fn () => $request->user()?->hasAnyRole(['admin', 'agent'])
+                ? Inquiry::new()
+                    ->when($request->user()->hasRole('agent'), fn ($q) => $q->whereHas('property', fn ($q) => $q->where('user_id', $request->user()->id)))
+                    ->count()
+                : 0,
         ];
     }
 }

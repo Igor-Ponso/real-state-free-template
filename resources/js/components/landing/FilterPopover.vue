@@ -6,7 +6,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 withDefaults(
     defineProps<{
@@ -34,12 +33,9 @@ const TRIGGER = 'flex h-9 items-center justify-between rounded-md border border-
                 </button>
             </PopoverTrigger>
             <PopoverContent :class="[contentWidth, 'p-2']" align="start">
-                <ScrollArea v-if="scrollable" class="max-h-56">
-                    <div class="space-y-1">
-                        <slot />
-                    </div>
-                </ScrollArea>
-                <div v-else class="space-y-1">
+                <div
+                    :class="scrollable ? 'max-h-56 space-y-1 overflow-y-auto' : 'space-y-1'"
+                >
                     <slot />
                 </div>
             </PopoverContent>
