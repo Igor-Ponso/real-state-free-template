@@ -46,6 +46,7 @@ const {
     selectedCities,
     selectedListings,
     selectedBedrooms,
+    selectedBathrooms,
     selectedUnitAmenities,
     selectedBuildingAmenities,
     selectedSort,
@@ -105,6 +106,7 @@ const {
                         :selected-cities="selectedCities"
                         :selected-listings="selectedListings"
                         :selected-bedrooms="selectedBedrooms"
+                        :selected-bathrooms="selectedBathrooms"
                         :selected-unit-amenities="selectedUnitAmenities"
                         :selected-building-amenities="selectedBuildingAmenities"
                         :has-active-filters="hasActiveFilters"

@@ -34,7 +34,7 @@ const TRIGGER = 'flex h-9 items-center justify-between rounded-md border border-
             </PopoverTrigger>
             <PopoverContent :class="[contentWidth, 'p-2']" align="start">
                 <div
-                    :class="scrollable ? 'max-h-56 space-y-1 overflow-y-auto' : 'space-y-1'"
+                    :class="scrollable ? 'max-h-[min(60vh,400px)] space-y-1 overflow-y-auto' : 'space-y-1'"
                 >
                     <slot />
                 </div>

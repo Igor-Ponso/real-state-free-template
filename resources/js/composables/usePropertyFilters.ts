@@ -26,6 +26,7 @@ interface UsePropertyFiltersReturn {
     selectedCities: Ref<string[]>;
     selectedListings: Ref<string[]>;
     selectedBedrooms: Ref<string[]>;
+    selectedBathrooms: Ref<string[]>;
     selectedUnitAmenities: Ref<string[]>;
     selectedBuildingAmenities: Ref<string[]>;
     selectedSort: Ref<string>;
@@ -69,6 +70,7 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
     const selectedCities = ref<string[]>(toArr(applied.city));
     const selectedListings = ref<string[]>(toArr(applied.listing));
     const selectedBedrooms = ref<string[]>(toArr(applied.bedrooms));
+    const selectedBathrooms = ref<string[]>(toArr(applied.bathrooms));
     const selectedUnitAmenities = ref<string[]>(toArr(applied.unit_amenities));
     const selectedBuildingAmenities = ref<string[]>(toArr(applied.building_amenities));
     const selectedSort = ref(applied.sort ?? 'newest');
@@ -106,6 +108,7 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
                 selectedCities.value.length ||
                 selectedListings.value.length ||
                 selectedBedrooms.value.length ||
+                selectedBathrooms.value.length ||
                 selectedUnitAmenities.value.length ||
                 selectedBuildingAmenities.value.length ||
                 minPrice.value ||
@@ -149,6 +152,8 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
 
         if (selectedBedrooms.value.length) {params.bedrooms = selectedBedrooms.value;}
 
+        if (selectedBathrooms.value.length) {params.bathrooms = selectedBathrooms.value;}
+
         if (selectedUnitAmenities.value.length) {params.unit_amenities = selectedUnitAmenities.value;}
 
         if (selectedBuildingAmenities.value.length) {params.building_amenities = selectedBuildingAmenities.value;}
@@ -179,6 +184,7 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         selectedCities.value = [];
         selectedListings.value = [];
         selectedBedrooms.value = [];
+        selectedBathrooms.value = [];
         selectedUnitAmenities.value = [];
         selectedBuildingAmenities.value = [];
         minPrice.value = '';
@@ -235,6 +241,7 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         selectedCities,
         selectedListings,
         selectedBedrooms,
+        selectedBathrooms,
         selectedUnitAmenities,
         selectedBuildingAmenities,
         selectedSort,

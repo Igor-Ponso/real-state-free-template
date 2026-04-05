@@ -19,15 +19,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PropertyDetailResource extends JsonResource
 {
     /**
-     * Fallback image sets cycled by property ID when no media is uploaded.
-     *
-     * @var array<int, string[]>
+     * Number of unique placeholder images per property.
+     * Each property gets deterministic images based on its ID via picsum.photos.
      */
-    private const PLACEHOLDER_IMAGES = [
-        ['/images/properties/penthouse.jpg', '/images/properties/penthouse-2.jpg'],
-        ['/images/properties/villa.jpg', '/images/properties/villa-2.jpg'],
-        ['/images/properties/loft.jpg', '/images/properties/loft-2.jpg'],
-    ];
+    private const PLACEHOLDER_IMAGE_COUNT = 5;
 
     /**
      * Unique avatar seeds per agent — each produces a distinct face via pravatar.cc.
@@ -155,7 +150,9 @@ class PropertyDetailResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        return self::PLACEHOLDER_IMAGES[$this->id % count(self::PLACEHOLDER_IMAGES)];
+        return collect(range(0, self::PLACEHOLDER_IMAGE_COUNT - 1))
+            ->map(fn ($i) => "https://picsum.photos/seed/property-{$this->id}-{$i}/1200/800")
+            ->all();
     }
 
     /**

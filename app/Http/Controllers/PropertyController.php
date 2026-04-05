@@ -30,6 +30,7 @@ class PropertyController extends Controller
         $citySlugs = $this->toArray($request->query('city'));
         $typeSlugs = $this->toArray($request->query('type'));
         $bedroomValues = $this->toArray($request->query('bedrooms'));
+        $bathroomValues = $this->toArray($request->query('bathrooms'));
         $listingSlugs = $this->toArray($request->query('listing'));
         $unitAmenities = $this->toArray($request->query('unit_amenities'));
         $buildingAmenities = $this->toArray($request->query('building_amenities'));
@@ -54,6 +55,7 @@ class PropertyController extends Controller
                     ->when($request->query('min_price'), fn ($q, $min) => $q->where('price', '>=', (int) $min))
                     ->when($request->query('max_price'), fn ($q, $max) => $q->where('price', '<=', (int) $max))
                     ->when($bedroomValues, fn ($q) => $q->where('bedrooms', '>=', (int) min($bedroomValues)))
+                    ->when($bathroomValues, fn ($q) => $q->where('bathrooms', '>=', (float) min($bathroomValues)))
                     ->when($unitAmenities, function ($q) use ($unitAmenities) {
                         foreach ($unitAmenities as $amenity) {
                             $q->whereJsonContains('unit_amenities', $amenity);
@@ -92,7 +94,7 @@ class PropertyController extends Controller
                     'buildingAmenities' => collect(Property::BUILDING_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a])->toArray(),
                 ],
             )),
-            'appliedFilters' => (object) $request->only(['type', 'city', 'listing', 'min_price', 'max_price', 'bedrooms', 'search', 'sort', 'unit_amenities', 'building_amenities']),
+            'appliedFilters' => (object) $request->only(['type', 'city', 'listing', 'min_price', 'max_price', 'bedrooms', 'bathrooms', 'search', 'sort', 'unit_amenities', 'building_amenities']),
             'mapCenter' => $mapCenter,
         ]);
     }

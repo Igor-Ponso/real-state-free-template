@@ -154,6 +154,7 @@ export interface AppliedFilters {
     min_price?: string;
     max_price?: string;
     bedrooms?: string | string[];
+    bathrooms?: string | string[];
     unit_amenities?: string | string[];
     building_amenities?: string | string[];
     search?: string;

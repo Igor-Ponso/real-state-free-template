@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Grid3x3, Map, Search, X } from 'lucide-vue-next';
+import { ChevronDown, Grid3x3, Map, Search, X } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import FilterPopover from '@/components/landing/FilterPopover.vue';
@@ -7,6 +7,11 @@ import MobileFilterSheet from '@/components/landing/MobileFilterSheet.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
 import {
     Select,
     SelectContent,
@@ -24,6 +29,7 @@ const props = defineProps<{
     selectedCities: string[];
     selectedListings: string[];
     selectedBedrooms: string[];
+    selectedBathrooms: string[];
     selectedUnitAmenities: string[];
     selectedBuildingAmenities: string[];
     hasActiveFilters: boolean;
@@ -47,7 +53,11 @@ const emit = defineEmits<{
 const { getIcon } = useAmenityIcons();
 
 const LABEL = 'mb-1 block font-body text-2xs font-medium tracking-wider text-white/40 uppercase';
+const TRIGGER = 'flex h-9 items-center justify-between rounded-md border border-white/10 bg-white/5 px-3 text-sm text-white';
 const CHECK = 'flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted';
+const CHIP = 'flex h-8 items-center justify-center rounded-full border px-3 text-xs font-medium transition-all cursor-pointer';
+const CHIP_ACTIVE = 'border-landing-gold bg-landing-gold text-white';
+const CHIP_INACTIVE = 'border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white';
 
 const multiLabel = (selected: string[], options: FilterOption[] | undefined, fallback: string): string => {
     if (!selected.length) {return fallback;}
@@ -58,7 +68,7 @@ const multiLabel = (selected: string[], options: FilterOption[] | undefined, fal
 };
 
 const activeFilterCount = computed(() =>
-    [props.selectedTypes, props.selectedCities, props.selectedListings, props.selectedBedrooms, props.selectedUnitAmenities, props.selectedBuildingAmenities]
+    [props.selectedTypes, props.selectedCities, props.selectedListings, props.selectedBedrooms, props.selectedBathrooms, props.selectedUnitAmenities, props.selectedBuildingAmenities]
         .filter((arr) => arr.length > 0).length
     + (minPrice.value ? 1 : 0)
     + (maxPrice.value ? 1 : 0)
@@ -114,13 +124,58 @@ const activeFilterCount = computed(() =>
             </label>
         </FilterPopover>
 
-        <!-- Bedrooms -->
-        <FilterPopover label="Bedrooms" :trigger-text="selectedBedrooms.length ? selectedBedrooms.join(', ') + '+' : 'Any'" trigger-width="w-28" content-width="w-32" :scrollable="false">
-            <label v-for="n in 6" :key="n" :class="CHECK">
-                <Checkbox :checked="selectedBedrooms.includes(String(n))" @update:checked="emit('toggle-multi', selectedBedrooms, String(n))" />
-                {{ n }}+
-            </label>
-        </FilterPopover>
+        <!-- Bed / Bath -->
+        <div>
+            <label :class="LABEL">Bed / Bath</label>
+            <Popover>
+                <PopoverTrigger as-child>
+                    <button :class="[TRIGGER, 'w-36']">
+                        <span class="truncate">
+                            {{ selectedBedrooms.length ? selectedBedrooms.join(', ') + '+ bd' : 'Any' }}
+                            {{ selectedBathrooms.length ? ' / ' + selectedBathrooms.join(', ') + '+ ba' : '' }}
+                        </span>
+                        <ChevronDown class="ml-1 size-3.5 shrink-0 text-white/40" />
+                    </button>
+                </PopoverTrigger>
+                <PopoverContent class="w-72 p-4" align="start">
+                    <p class="mb-2 font-body text-xs font-medium text-white/50">Bedrooms</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            :class="[CHIP, !selectedBedrooms.length ? CHIP_ACTIVE : CHIP_INACTIVE]"
+                            @click="selectedBedrooms.length && selectedBedrooms.splice(0)"
+                        >
+                            Any
+                        </button>
+                        <button
+                            v-for="n in 6"
+                            :key="n"
+                            :class="[CHIP, selectedBedrooms.includes(String(n)) ? CHIP_ACTIVE : CHIP_INACTIVE]"
+                            @click="emit('toggle-multi', selectedBedrooms, String(n))"
+                        >
+                            {{ n }}+
+                        </button>
+                    </div>
+
+                    <p class="mt-4 mb-2 font-body text-xs font-medium text-white/50">Bathrooms</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            :class="[CHIP, !selectedBathrooms.length ? CHIP_ACTIVE : CHIP_INACTIVE]"
+                            @click="selectedBathrooms.length && selectedBathrooms.splice(0)"
+                        >
+                            Any
+                        </button>
+                        <button
+                            v-for="n in ['1', '1.5', '2', '2.5', '3', '4']"
+                            :key="n"
+                            :class="[CHIP, selectedBathrooms.includes(n) ? CHIP_ACTIVE : CHIP_INACTIVE]"
+                            @click="emit('toggle-multi', selectedBathrooms, n)"
+                        >
+                            {{ n }}+
+                        </button>
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </div>
 
         <!-- Unit Features -->
         <FilterPopover label="Unit Features" :trigger-text="selectedUnitAmenities.length ? selectedUnitAmenities.length + ' selected' : 'Any'" content-width="w-52">

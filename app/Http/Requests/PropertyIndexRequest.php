@@ -17,7 +17,7 @@ class PropertyIndexRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        foreach (['type', 'city', 'listing', 'bedrooms', 'unit_amenities', 'building_amenities'] as $field) {
+        foreach (['type', 'city', 'listing', 'bedrooms', 'bathrooms', 'unit_amenities', 'building_amenities'] as $field) {
             if ($this->has($field) && is_string($this->input($field))) {
                 $this->merge([$field => [$this->input($field)]]);
             }
@@ -36,6 +36,8 @@ class PropertyIndexRequest extends FormRequest
             'listing.*' => ['string', 'max:50'],
             'bedrooms' => ['sometimes', 'array'],
             'bedrooms.*' => ['integer', 'min:1', 'max:10'],
+            'bathrooms' => ['sometimes', 'array'],
+            'bathrooms.*' => ['numeric', 'min:1', 'max:10'],
             'unit_amenities' => ['sometimes', 'array'],
             'unit_amenities.*' => ['string', 'max:50'],
             'building_amenities' => ['sometimes', 'array'],
