@@ -48,7 +48,8 @@ return new class extends Migration
             $table->smallInteger('total_floors')->nullable();
 
             // JSONB
-            $table->jsonb('amenities')->default('[]');
+            $table->jsonb('unit_amenities')->default('[]');
+            $table->jsonb('building_amenities')->default('[]');
             $table->jsonb('features')->default('{}');
 
             // Rental-specific
@@ -81,7 +82,8 @@ return new class extends Migration
 
         // PostgreSQL-specific: GIN index for JSONB amenities containment queries
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('CREATE INDEX properties_amenities_gin ON properties USING GIN (amenities)');
+            DB::statement('CREATE INDEX properties_unit_amenities_gin ON properties USING GIN (unit_amenities)');
+            DB::statement('CREATE INDEX properties_building_amenities_gin ON properties USING GIN (building_amenities)');
             DB::statement('CREATE INDEX properties_published_partial ON properties (id) WHERE is_published = true');
         }
     }

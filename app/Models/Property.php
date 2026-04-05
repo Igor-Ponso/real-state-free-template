@@ -53,7 +53,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property int $parking_spaces
  * @property int|null $floor
  * @property int|null $total_floors
- * @property array<int, string> $amenities JSONB array of amenity strings
+ * @property array<int, string> $unit_amenities JSONB array — unit-level amenities (balcony, den, in-suite laundry, etc.)
+ * @property array<int, string> $building_amenities JSONB array — building-level amenities (pool, gym, concierge, etc.)
  * @property array<string, mixed> $features JSONB object of feature key-value pairs
  * @property Money|null $deposit Rental deposit, stored as bigint cents
  * @property int|null $lease_length_months
@@ -83,7 +84,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
     'address', 'city_id', 'neighborhood', 'state', 'zip_code', 'latitude', 'longitude',
     'bedrooms', 'bathrooms', 'area_sqft', 'lot_size_sqft', 'year_built',
     'parking_spaces', 'floor', 'total_floors',
-    'amenities', 'features',
+    'unit_amenities', 'building_amenities', 'features',
     'deposit', 'lease_length_months', 'available_from', 'pets_allowed',
     'meta_title', 'meta_description',
     'is_featured', 'is_published', 'published_at',
@@ -119,7 +120,8 @@ class Property extends Model implements HasMedia
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
             'bathrooms' => 'decimal:1',
-            'amenities' => 'array',
+            'unit_amenities' => 'array',
+            'building_amenities' => 'array',
             'features' => 'array',
             'pets_allowed' => 'boolean',
             'is_featured' => 'boolean',
@@ -317,8 +319,18 @@ class Property extends Model implements HasMedia
      * @param  string  $amenity  The amenity string to search for
      * @return Builder<Property>
      */
-    public function scopeWithAmenity($query, string $amenity)
+    public function scopeWithUnitAmenity($query, string $amenity)
     {
-        return $query->whereJsonContains('amenities', $amenity);
+        return $query->whereJsonContains('unit_amenities', $amenity);
+    }
+
+    /**
+     * Scope: properties whose building has a specific amenity.
+     *
+     * @param  Builder<Property>  $query
+     */
+    public function scopeWithBuildingAmenity($query, string $amenity)
+    {
+        return $query->whereJsonContains('building_amenities', $amenity);
     }
 }

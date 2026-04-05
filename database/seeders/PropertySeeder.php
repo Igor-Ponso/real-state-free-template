@@ -74,7 +74,7 @@ class PropertySeeder extends Seeder
             $clients->push($client);
         }
 
-        // Create properties
+        // Create properties (general, across all cities)
         $properties = collect();
         for ($i = 0; $i < 30; $i++) {
             $property = Property::factory()
@@ -87,6 +87,60 @@ class PropertySeeder extends Seeder
                     'city_id' => $cities->random()->id,
                 ]);
             $properties->push($property);
+        }
+
+        // Vancouver map test data — 30 properties spread across real neighborhoods
+        $vancouver = City::where('slug', 'vancouver')->first();
+        if ($vancouver) {
+            $vancouverCoords = [
+                ['lat' => 49.2827, 'lng' => -123.1207, 'hood' => 'Downtown'],
+                ['lat' => 49.2868, 'lng' => -123.1323, 'hood' => 'Coal Harbour'],
+                ['lat' => 49.2744, 'lng' => -123.1215, 'hood' => 'Yaletown'],
+                ['lat' => 49.2725, 'lng' => -123.1002, 'hood' => 'Mount Pleasant'],
+                ['lat' => 49.2685, 'lng' => -123.1537, 'hood' => 'Kitsilano'],
+                ['lat' => 49.2632, 'lng' => -123.1363, 'hood' => 'Fairview'],
+                ['lat' => 49.2591, 'lng' => -123.1656, 'hood' => 'Point Grey'],
+                ['lat' => 49.2488, 'lng' => -123.2297, 'hood' => 'UBC'],
+                ['lat' => 49.2838, 'lng' => -123.1088, 'hood' => 'Gastown'],
+                ['lat' => 49.2811, 'lng' => -123.0986, 'hood' => 'Strathcona'],
+                ['lat' => 49.2940, 'lng' => -123.0796, 'hood' => 'Hastings-Sunrise'],
+                ['lat' => 49.2632, 'lng' => -123.0784, 'hood' => 'Main Street'],
+                ['lat' => 49.2536, 'lng' => -123.0647, 'hood' => 'South Vancouver'],
+                ['lat' => 49.2478, 'lng' => -123.1196, 'hood' => 'Oakridge'],
+                ['lat' => 49.2386, 'lng' => -123.0651, 'hood' => 'Killarney'],
+                ['lat' => 49.2511, 'lng' => -123.0445, 'hood' => 'Champlain Heights'],
+                ['lat' => 49.2266, 'lng' => -123.0057, 'hood' => 'River District'],
+                ['lat' => 49.2660, 'lng' => -123.1839, 'hood' => 'West Point Grey'],
+                ['lat' => 49.2540, 'lng' => -123.1448, 'hood' => 'Shaughnessy'],
+                ['lat' => 49.2481, 'lng' => -123.1623, 'hood' => 'Kerrisdale'],
+                ['lat' => 49.2399, 'lng' => -123.1516, 'hood' => 'Marpole'],
+                ['lat' => 49.2762, 'lng' => -123.0691, 'hood' => 'Grandview-Woodland'],
+                ['lat' => 49.2558, 'lng' => -123.1001, 'hood' => 'Riley Park'],
+                ['lat' => 49.2438, 'lng' => -123.0848, 'hood' => 'Sunset'],
+                ['lat' => 49.2690, 'lng' => -123.0415, 'hood' => 'Renfrew-Collingwood'],
+                ['lat' => 49.2305, 'lng' => -123.0264, 'hood' => 'Victoria-Fraserview'],
+                ['lat' => 49.2885, 'lng' => -123.0452, 'hood' => 'Hastings Park'],
+                ['lat' => 49.2763, 'lng' => -123.1392, 'hood' => 'West End'],
+                ['lat' => 49.2710, 'lng' => -123.1423, 'hood' => 'South Granville'],
+                ['lat' => 49.2577, 'lng' => -123.1223, 'hood' => 'Cambie Village'],
+            ];
+
+            foreach ($vancouverCoords as $i => $coord) {
+                $property = Property::factory()
+                    ->when($i < 2, fn ($f) => $f->featured())
+                    ->when($i >= 27, fn ($f) => $f->forRent())
+                    ->when($i < 27, fn ($f) => $f->forSale())
+                    ->create([
+                        'user_id' => $agents->random()->id,
+                        'property_type_id' => $propertyTypes->random()->id,
+                        'city_id' => $vancouver->id,
+                        'neighborhood' => $coord['hood'],
+                        'latitude' => $coord['lat'],
+                        'longitude' => $coord['lng'],
+                        'state' => 'BC',
+                    ]);
+                $properties->push($property);
+            }
         }
 
         // Create inquiries

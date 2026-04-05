@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Auth\CipherSweetEloquentUserProvider;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,9 @@ class AppServiceProvider extends ServiceProvider
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
+
+        // Prevent N+1 queries — throws exception on lazy loading in dev
+        Model::preventLazyLoading(! app()->isProduction());
 
         DB::prohibitDestructiveCommands(
             app()->isProduction(),

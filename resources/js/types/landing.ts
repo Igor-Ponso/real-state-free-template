@@ -9,6 +9,8 @@ export interface FeaturedProperty {
     area_sqft: string;
     listing_type?: string;
     property_type?: string;
+    latitude?: string | null;
+    longitude?: string | null;
     images: string[];
 }
 
@@ -67,21 +69,27 @@ export interface PaginatedResponse<T> {
 export interface FilterOption {
     name: string;
     slug: string;
+    latitude?: string;
+    longitude?: string;
 }
 
 export interface PropertyFilters {
     propertyTypes: FilterOption[];
     cities: FilterOption[];
     listingTypes: FilterOption[];
+    unitAmenities: FilterOption[];
+    buildingAmenities: FilterOption[];
 }
 
 export interface AppliedFilters {
-    type?: string;
-    city?: string;
-    listing?: string;
+    type?: string | string[];
+    city?: string | string[];
+    listing?: string | string[];
     min_price?: string;
     max_price?: string;
-    bedrooms?: string;
+    bedrooms?: string | string[];
+    unit_amenities?: string | string[];
+    building_amenities?: string | string[];
     search?: string;
     sort?: string;
 }

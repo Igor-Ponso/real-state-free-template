@@ -43,6 +43,8 @@ class FeaturedPropertyResource extends JsonResource
      *     area_sqft: string,
      *     listing_type: string|null,
      *     property_type: string|null,
+     *     latitude: string|null,
+     *     longitude: string|null,
      *     images: string[],
      * }
      */
@@ -59,6 +61,8 @@ class FeaturedPropertyResource extends JsonResource
             'area_sqft' => number_format($this->area_sqft),
             'listing_type' => $this->whenLoaded('listingType', fn () => $this->listingType->name),
             'property_type' => $this->whenLoaded('propertyType', fn () => $this->propertyType->name),
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'images' => $this->getPropertyImages(),
         ];
     }
