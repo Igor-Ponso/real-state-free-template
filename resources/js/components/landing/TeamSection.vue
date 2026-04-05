@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Linkedin, Mail } from 'lucide-vue-next';
 import { ref } from 'vue';
+
 import {
     Carousel,
     CarouselContent,
@@ -27,10 +28,10 @@ defineProps<{
 const selectedMember = ref<TeamMember | null>(null);
 const dialogOpen = ref(false);
 
-function openBio(member: TeamMember) {
+const openBio = (member: TeamMember) => {
     selectedMember.value = member;
     dialogOpen.value = true;
-}
+};
 </script>
 
 <template>

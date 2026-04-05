@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+
 import AnimatedCounter from '@/components/landing/AnimatedCounter.vue';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
 import type { LandingStats } from '@/types/landing';

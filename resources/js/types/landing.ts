@@ -81,6 +81,72 @@ export interface PropertyFilters {
     buildingAmenities: FilterOption[];
 }
 
+export interface PropertyAgent {
+    id: number;
+    name: string;
+    bio: string | null;
+    specializations: string[];
+    avatar: string;
+    social_links: Record<string, string> | null;
+}
+
+export interface PropertyCity {
+    name: string;
+    state: string;
+    slug: string;
+}
+
+export interface PropertyDetail {
+    id: number;
+    title: string;
+    slug: string;
+    description: string;
+    price: string;
+    currency: string;
+    listing_type: string | null;
+    listing_type_slug: string | null;
+    property_type: string | null;
+    property_status: string | null;
+    address: string;
+    city: PropertyCity | null;
+    neighborhood: string | null;
+    state: string;
+    zip_code: string;
+    latitude: string | null;
+    longitude: string | null;
+    bedrooms: number;
+    bathrooms: number;
+    area_sqft: string;
+    lot_size_sqft: string | null;
+    year_built: number | null;
+    parking_spaces: number;
+    floor: number | null;
+    total_floors: number | null;
+    unit_amenities: string[];
+    building_amenities: string[];
+    features: Record<string, string>;
+    deposit: string | null;
+    lease_length_months: number | null;
+    available_from: string | null;
+    pets_allowed: boolean;
+    is_rental: boolean;
+    meta_title: string | null;
+    meta_description: string | null;
+    images: string[];
+    floor_plans: string[];
+    agent: PropertyAgent | null;
+    published_at: string | null;
+}
+
+export interface InquiryFormData {
+    property_id: number;
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+    honeypot: string;
+}
+
 export interface AppliedFilters {
     type?: string | string[];
     city?: string | string[];

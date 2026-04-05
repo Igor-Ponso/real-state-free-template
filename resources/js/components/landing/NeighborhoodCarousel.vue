@@ -2,6 +2,7 @@
 import { watchOnce } from '@vueuse/core';
 import Autoplay from 'embla-carousel-autoplay';
 import { ref } from 'vue';
+
 import {
     Carousel,
     
@@ -28,9 +29,9 @@ const emblaApi = ref<CarouselApi>();
 const currentSlide = ref(0);
 const totalSlides = ref(0);
 
-function setApi(api: CarouselApi) {
+const setApi = (api: CarouselApi) => {
     emblaApi.value = api;
-}
+};
 
 watchOnce(emblaApi, (api) => {
     if (!api) {
@@ -45,9 +46,9 @@ return;
     });
 });
 
-function goToSlide(index: number) {
+const goToSlide = (index: number) => {
     emblaApi.value?.scrollTo(index);
-}
+};
 </script>
 
 <template>

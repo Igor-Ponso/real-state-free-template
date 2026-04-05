@@ -18,13 +18,13 @@ onMounted(() => {
     isMounted.value = true;
 });
 
-function onSourceError() {
+const onSourceError = () => {
     failedSources.value++;
 
     if (failedSources.value >= totalSources.value) {
         videoError.value = true;
     }
-}
+};
 </script>
 
 <template>

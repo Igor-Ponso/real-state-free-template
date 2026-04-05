@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ChevronDown } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
+
 import AuthVideoBackground from '@/components/AuthVideoBackground.vue';
 import { Button } from '@/components/ui/button';
 
@@ -10,9 +11,9 @@ onMounted(() => {
     isMounted.value = true;
 });
 
-function scrollToProperties() {
+const scrollToProperties = () => {
     document.querySelector('#properties')?.scrollIntoView({ behavior: 'smooth' });
-}
+};
 </script>
 
 <template>

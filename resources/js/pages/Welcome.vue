@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+
 import AboutSection from '@/components/landing/AboutSection.vue';
 import FeaturedProperties from '@/components/landing/FeaturedProperties.vue';
 import HeroSection from '@/components/landing/HeroSection.vue';

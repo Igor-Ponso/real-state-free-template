@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
+
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import ModeToggle from '@/components/ModeToggle.vue';
 import { Button } from '@/components/ui/button';
@@ -32,9 +33,9 @@ const navItems = [
     { label: 'Contact', href: '#contact' },
 ];
 
-function scrollTo(href: string) {
+const scrollTo = (href: string) => {
     document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
-}
+};
 </script>
 
 <template>

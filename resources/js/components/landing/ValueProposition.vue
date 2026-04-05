@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Crown, Gem, Shield } from 'lucide-vue-next';
+
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
 

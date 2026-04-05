@@ -16,20 +16,18 @@ const current = ref(0);
 const hasAnimated = ref(false);
 const counterRef = useTemplateRef('counterRef');
 
-function easeOutQuad(t: number): number {
-    return t * (2 - t);
-}
+const easeOutQuad = (t: number): number => t * (2 - t);
 
-function animate() {
+const animate = () => {
     if (hasAnimated.value) {
-return;
-}
+        return;
+    }
 
     hasAnimated.value = true;
 
     const start = performance.now();
 
-    function step(now: number) {
+    const step = (now: number) => {
         const elapsed = now - start;
         const progress = Math.min(elapsed / props.duration, 1);
         current.value = Math.round(easeOutQuad(progress) * props.target);
@@ -37,10 +35,10 @@ return;
         if (progress < 1) {
             requestAnimationFrame(step);
         }
-    }
+    };
 
     requestAnimationFrame(step);
-}
+};
 
 useIntersectionObserver(counterRef, ([entry]) => {
     if (entry?.isIntersecting) {

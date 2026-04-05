@@ -67,6 +67,16 @@ This project was bootstrapped using the official **Laravel Installer** with the 
     - Footer: company branding, Psalm 127:1 dedication, open-source template credit
 - **Interactive Map** — Leaflet + vue-leaflet, lazy-loaded via `defineAsyncComponent` + `<Suspense>` for SSR safety
 - **API Resources** — `FeaturedPropertyResource`, `CityResource`, `TeamMemberResource` with `whenLoaded()` and `whenCounted()`
+- **Property Listings** — `/properties` page with:
+    - Grid view and map view (split layout: scrollable cards sidebar + interactive Leaflet map)
+    - Multi-select filters: city, type, bedrooms, amenities (Popover + Checkbox pattern from shadcn-vue)
+    - Unit amenities vs building amenities split (JSONB columns with GIN indexes for fast containment queries)
+    - `pg_trgm` extension for fast `ILIKE` search on property titles/descriptions
+    - Pagination with Inertia
+    - Form Request validation with `prepareForValidation` for query param normalization
+    - Rate limiting on public routes (`throttle:120,1`)
+- **PropertyObserver** — Cache invalidation (`home_stats`) on property create/update/delete
+- **Strict Mode** — `Model::shouldBeStrict()` in dev (catches N+1, lazy loading, missing attributes, silently discarded attributes)
 - **Test Suite** — 54 passing Pest tests covering auth, social login, and settings
 - **Dev Tools** — Vue DevTools (Vite plugin) + [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) (queries, N+1 detection, cache, request time — dev only, disable via `DEBUGBAR_ENABLED=false`)
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
@@ -74,7 +84,6 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 ### Planned
 
 - Property detail pages with image gallery
-- Property listings with advanced filters and pagination
 - Contact form with email notifications
 - Admin panel with dashboard, CRUD, image upload, and user management
 - Input masks for currency, phone, and ZIP code fields (`maska` already installed)
@@ -314,6 +323,12 @@ tests/
 - **Fortify + Socialite**: Email auth with 2FA + social login (Google, GitHub, Facebook, Apple).
 - **Wayfinder**: Auto-generated TypeScript functions for routes.
 - **SSR**: Server-side rendering via Inertia for SEO.
+- **Model::shouldBeStrict()**: Enabled in dev — catches N+1 (lazy loading), access to missing attributes, and silently discarded mass-assignment. Replaces standalone `preventLazyLoading()`.
+- **PropertyObserver**: Flushes `home_stats` cache on property create/update/delete.
+- **pg_trgm Extension**: PostgreSQL trigram indexes for fast `ILIKE` search on property text fields.
+- **Rate Limiting**: Public listing routes use `throttle:120,1` middleware.
+- **Unit vs Building Amenities**: Two JSONB columns (`unit_amenities`, `building_amenities`) with GIN indexes. Constants defined on `Property` model, used by controller and factory.
+- **Form Request Normalization**: `ListPropertyRequest` uses `prepareForValidation()` to normalize multi-value query string params (string to array) before validation.
 
 ### Frontend (Vue 3 + TypeScript)
 
@@ -325,6 +340,8 @@ tests/
 - **Scroll Animations**: CSS transitions + `useIntersectionObserver` from VueUse. No heavy animation libs.
 - **`defineAsyncComponent`**: Heavy components (Leaflet map) are lazy-loaded for SSR safety and smaller initial bundles.
 - **`<Suspense>`**: Used with async components to show loading states (spinner) while the component loads.
+- **Multi-select Filters**: Popover + Checkbox pattern from shadcn-vue for city, type, bedrooms, and amenities filters.
+- **Map View**: Split layout with scrollable property cards sidebar + interactive Leaflet map (reuses lazy-loading pattern from landing page).
 
 ### Maps — Why Leaflet, Not Google Maps
 
@@ -359,7 +376,7 @@ All colors have light + dark mode variants defined in `resources/css/app.css`.
 
 - Repository pattern for data access with Redis caching
 - Admin panel with CRUD, image upload, user management
-- Property detail and listing pages with filters
+- Property detail pages with image gallery
 - Spatie MediaLibrary for actual image uploads
 
 ## Testing

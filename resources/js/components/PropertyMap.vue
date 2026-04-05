@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
-import type { LatLngBoundsExpression } from 'leaflet';
 import { LMap, LMarker, LPopup, LTileLayer } from '@vue-leaflet/vue-leaflet';
+import type { LatLngBoundsExpression } from 'leaflet';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+
 import type { FeaturedProperty } from '@/types/landing';
 
 const props = defineProps<{
@@ -24,6 +25,64 @@ let fitBoundsTimer: ReturnType<typeof setTimeout>;
 const geoProperties = computed(() =>
     props.properties.filter(p => p.latitude && p.longitude)
 );
+
+const hasPropertyCoords = (): boolean =>
+    props.properties.some(p => p.latitude && p.longitude);
+
+const fitToProperties = () => {
+    // If a city center is provided (from backend), use it
+    if (props.center) {
+        mapCenter.value = props.center;
+        mapZoom.value = 12;
+
+        const leafletMap = mapRef.value?.leafletObject;
+
+        if (leafletMap) {
+            leafletMap.setView(props.center, 12);
+        }
+
+        return;
+    }
+
+    const coords = geoProperties.value
+        .map(p => [Number(p.latitude), Number(p.longitude)] as [number, number]);
+
+    if (coords.length === 0) {return;}
+
+    if (coords.length === 1) {
+        mapCenter.value = coords[0];
+        mapZoom.value = 14;
+
+        return;
+    }
+
+    const lats = coords.map(c => c[0]);
+    const lngs = coords.map(c => c[1]);
+    const bounds: LatLngBoundsExpression = [
+        [Math.min(...lats), Math.min(...lngs)],
+        [Math.max(...lats), Math.max(...lngs)],
+    ];
+
+    const leafletMap = mapRef.value?.leafletObject;
+
+    if (leafletMap) {
+        leafletMap.fitBounds(bounds, { padding: [40, 40] });
+    } else {
+        mapCenter.value = [
+            (Math.min(...lats) + Math.max(...lats)) / 2,
+            (Math.min(...lngs) + Math.max(...lngs)) / 2,
+        ];
+        mapZoom.value = 11;
+    }
+};
+
+const nextTickFitBounds = async () => {
+    // Small delay for map to initialize
+    await new Promise(resolve => {
+        fitBoundsTimer = setTimeout(resolve, 200);
+    });
+    fitToProperties();
+};
 
 onBeforeUnmount(() => {
     clearTimeout(fitBoundsTimer);
@@ -51,61 +110,6 @@ onMounted(async () => {
 });
 
 watch(() => props.properties, nextTickFitBounds);
-
-function hasPropertyCoords(): boolean {
-    return props.properties.some(p => p.latitude && p.longitude);
-}
-
-async function nextTickFitBounds() {
-    // Small delay for map to initialize
-    await new Promise(resolve => {
-        fitBoundsTimer = setTimeout(resolve, 200);
-    });
-    fitToProperties();
-}
-
-function fitToProperties() {
-    // If a city center is provided (from backend), use it
-    if (props.center) {
-        mapCenter.value = props.center;
-        mapZoom.value = 12;
-
-        const leafletMap = mapRef.value?.leafletObject;
-        if (leafletMap) {
-            leafletMap.setView(props.center, 12);
-        }
-        return;
-    }
-
-    const coords = geoProperties.value
-        .map(p => [Number(p.latitude), Number(p.longitude)] as [number, number]);
-
-    if (coords.length === 0) return;
-
-    if (coords.length === 1) {
-        mapCenter.value = coords[0];
-        mapZoom.value = 14;
-        return;
-    }
-
-    const lats = coords.map(c => c[0]);
-    const lngs = coords.map(c => c[1]);
-    const bounds: LatLngBoundsExpression = [
-        [Math.min(...lats), Math.min(...lngs)],
-        [Math.max(...lats), Math.max(...lngs)],
-    ];
-
-    const leafletMap = mapRef.value?.leafletObject;
-    if (leafletMap) {
-        leafletMap.fitBounds(bounds, { padding: [40, 40] });
-    } else {
-        mapCenter.value = [
-            (Math.min(...lats) + Math.max(...lats)) / 2,
-            (Math.min(...lngs) + Math.max(...lngs)) / 2,
-        ];
-        mapZoom.value = 11;
-    }
-}
 </script>
 
 <template>

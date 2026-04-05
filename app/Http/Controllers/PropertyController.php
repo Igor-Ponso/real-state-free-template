@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PropertyIndexRequest;
 use App\Http\Resources\FeaturedPropertyResource;
+use App\Http\Resources\PropertyDetailResource;
 use App\Models\City;
 use App\Models\ListingType;
 use App\Models\Property;
 use App\Models\PropertyType;
 use Inertia\Inertia;
 use Inertia\Response;
+use Laravel\Fortify\Features;
 
 /**
  * Handles property listing and detail pages.
@@ -87,6 +89,34 @@ class PropertyController extends Controller
             ]),
             'appliedFilters' => (object) $request->only(['type', 'city', 'listing', 'min_price', 'max_price', 'bedrooms', 'search', 'sort', 'unit_amenities', 'building_amenities']),
             'mapCenter' => $mapCenter,
+        ]);
+    }
+
+    /**
+     * Display a single property detail page.
+     */
+    public function show(Property $property): Response
+    {
+        $property->load(['city', 'listingType', 'propertyType', 'propertyStatus', 'agent.agentProfile', 'media']);
+
+        abort_unless(
+            $property->is_published && $property->propertyStatus?->slug === 'active',
+            404,
+        );
+
+        return Inertia::render('Properties/Show', [
+            'property' => fn () => (new PropertyDetailResource($property))->resolve(),
+            'similarProperties' => Inertia::defer(fn () => FeaturedPropertyResource::collection(
+                Property::query()
+                    ->with(['city', 'listingType', 'propertyType', 'media'])
+                    ->published()
+                    ->where('city_id', $property->city_id)
+                    ->where('id', '!=', $property->id)
+                    ->limit(4)
+                    ->latest('published_at')
+                    ->get(),
+            )->resolve()),
+            'canRegister' => Features::enabled(Features::registration()),
         ]);
     }
 

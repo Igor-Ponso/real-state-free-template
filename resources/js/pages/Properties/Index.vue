@@ -76,6 +76,19 @@ const props = defineProps<{
     canRegister?: boolean;
 }>();
 
+// --- Helpers ---
+const toArr = (val: unknown): string[] => {
+    if (Array.isArray(val)) {
+        return val;
+    }
+
+    if (typeof val === 'string' && val) {
+        return [val];
+    }
+
+    return [];
+};
+
 // --- State ---
 const viewMode = ref<'grid' | 'map'>('grid');
 const hoveredPropertyId = ref<number | null>(null);
@@ -130,19 +143,7 @@ const hasActiveFilters = computed(
         maxPrice.value,
 );
 
-function toArr(val: unknown): string[] {
-    if (Array.isArray(val)) {
-        return val;
-    }
-
-    if (typeof val === 'string' && val) {
-        return [val];
-    }
-
-    return [];
-}
-
-function toggleMulti(arr: string[], val: string) {
+const toggleMulti = (arr: string[], val: string) => {
     const idx = arr.indexOf(val);
 
     if (idx >= 0) {
@@ -150,13 +151,13 @@ function toggleMulti(arr: string[], val: string) {
     } else {
         arr.push(val);
     }
-}
+};
 
-function multiLabel(
+const multiLabel = (
     selected: string[],
     options: FilterOption[] | undefined,
     fallback: string,
-): string {
+): string => {
     if (!selected.length) {
         return fallback;
     }
@@ -168,12 +169,12 @@ function multiLabel(
     }
 
     return `${selected.length} selected`;
-}
+};
 
 // --- Actions ---
 let searchTimeout: ReturnType<typeof setTimeout>;
 
-function applyFilters() {
+const applyFilters = () => {
     const params: Record<string, string | string[]> = {};
 
     if (search.value) {
@@ -230,9 +231,9 @@ function applyFilters() {
             isLoading.value = false;
         },
     });
-}
+};
 
-function clearFilters() {
+const clearFilters = () => {
     search.value = '';
     selectedTypes.value = [];
     selectedCities.value = [];
@@ -244,9 +245,9 @@ function clearFilters() {
     maxPrice.value = '';
     selectedSort.value = 'newest';
     applyFilters();
-}
+};
 
-function goToPage(page: number) {
+const goToPage = (page: number) => {
     const params: Record<string, unknown> = {
         ...props.appliedFilters,
         page: String(page),
@@ -266,11 +267,11 @@ function goToPage(page: number) {
             isLoading.value = false;
         },
     });
-}
+};
 
-function onMapSelect(property: FeaturedProperty) {
+const onMapSelect = (property: FeaturedProperty) => {
     router.visit(`/properties/${property.slug}`);
-}
+};
 
 watch(search, () => {
     clearTimeout(searchTimeout);
@@ -847,6 +848,7 @@ onBeforeUnmount(() => {
                         v-for="property in properties.data"
                         :key="property.id"
                         :href="`/properties/${property.slug}`"
+                        prefetch
                         class="group"
                     >
                         <Card
@@ -1014,6 +1016,7 @@ onBeforeUnmount(() => {
                             v-for="property in properties.data"
                             :key="property.id"
                             :href="`/properties/${property.slug}`"
+                            prefetch
                             class="group block"
                             @mouseenter="hoveredPropertyId = property.id"
                             @mouseleave="hoveredPropertyId = null"

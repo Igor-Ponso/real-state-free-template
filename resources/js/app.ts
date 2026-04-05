@@ -1,6 +1,7 @@
 import { createInertiaApp } from '@inertiajs/vue3';
-import { initializeTheme } from '@/composables/useAppearance';
 import { defineAsyncComponent } from 'vue';
+
+import { initializeTheme } from '@/composables/useAppearance';
 
 const AppLayout = defineAsyncComponent(() => import('@/layouts/AppLayout.vue'));
 const AuthLayout = defineAsyncComponent(() => import('@/layouts/AuthLayout.vue'));

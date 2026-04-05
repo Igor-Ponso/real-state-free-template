@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+
 import { Button } from '@/components/ui/button';
 
 type SocialProvider = 'google' | 'github' | 'facebook' | 'apple';

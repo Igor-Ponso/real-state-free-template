@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Check, X } from 'lucide-vue-next';
 import { toRef } from 'vue';
+
 import { usePasswordValidation } from '@/composables/usePasswordValidation';
 
 const props = defineProps<{
