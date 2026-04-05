@@ -7,6 +7,7 @@ import CookieConsent from '@/components/CookieConsent.vue';
 import LandingFooter from '@/components/landing/LandingFooter.vue';
 import LandingHeader from '@/components/landing/LandingHeader.vue';
 import PropertyCard from '@/components/landing/PropertyCard.vue';
+import PropertyCardSkeleton from '@/components/landing/PropertyCardSkeleton.vue';
 import PropertyFilters from '@/components/landing/PropertyFilters.vue';
 import PropertyPagination from '@/components/landing/PropertyPagination.vue';
 import { Badge } from '@/components/ui/badge';
@@ -148,16 +149,6 @@ onMounted(() => {
             class="min-h-[70vh] bg-linear-to-b from-landing-charcoal to-landing-deep-teal px-6 py-10"
         >
             <div class="mx-auto max-w-7xl">
-                <!-- Loading overlay -->
-                <Transition name="fade">
-                    <div
-                        v-if="isLoading"
-                        class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-landing-charcoal/60 backdrop-blur-sm"
-                    >
-                        <div class="size-10 animate-spin rounded-full border-2 border-landing-gold border-t-transparent" />
-                    </div>
-                </Transition>
-
                 <!-- Results header -->
                 <div class="mb-6 flex items-center justify-between">
                     <p class="font-body text-sm text-white/40">
@@ -178,9 +169,14 @@ onMounted(() => {
                     </div>
                 </div>
 
+                <!-- Loading skeleton -->
+                <div v-if="isLoading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <PropertyCardSkeleton v-for="n in 12" :key="n" />
+                </div>
+
                 <!-- Grid -->
                 <TransitionGroup
-                    v-if="properties.data.length"
+                    v-else-if="properties.data.length"
                     name="card"
                     tag="div"
                     class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -209,7 +205,7 @@ onMounted(() => {
         </section>
 
         <!-- Map view — v-if mounts fresh, guarded by isMounted for Leaflet SSR safety -->
-        <section v-if="viewMode === 'map' && isMounted" class="min-h-[70vh]">
+        <section v-if="viewMode === 'map' && isMounted" class="relative z-0 min-h-[70vh]">
             <div class="flex h-[calc(100vh-8rem)]">
                 <div class="w-full overflow-y-auto border-r border-white/10 bg-landing-charcoal p-4 sm:w-80 lg:w-96">
                     <!-- Selected property detail -->
@@ -251,6 +247,9 @@ onMounted(() => {
                                 {{ selectedMapProperty.area_sqft }} sqft
                             </span>
                         </div>
+                        <p v-if="selectedMapProperty.description" class="mt-3 line-clamp-3 font-body text-xs leading-relaxed text-white/40">
+                            {{ selectedMapProperty.description }}
+                        </p>
                         <div v-if="selectedMapProperty.listing_type || selectedMapProperty.property_type" class="mt-3 flex gap-2">
                             <Badge v-if="selectedMapProperty.listing_type" class="border-0 bg-landing-gold px-2 py-0.5 font-body text-2xs font-semibold tracking-wider text-white uppercase">
                                 {{ selectedMapProperty.listing_type }}
@@ -334,15 +333,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
 .card-enter-active {
     transition: all 0.4s ease;
 }

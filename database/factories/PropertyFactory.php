@@ -202,6 +202,18 @@ class PropertyFactory extends Factory
      * a deposit of CAD $1,000-$5,000, a random lease length (6, 12, or 24 months),
      * and an availability date within the next 3 months.
      */
+    /**
+     * Mark the property to skip placeholder images (tests the no-image fallback).
+     *
+     * Sets a `_no_images` key in features that the resource checks.
+     */
+    public function withoutImages(): static
+    {
+        return $this->state(fn () => [
+            'features' => ['_no_images' => true],
+        ]);
+    }
+
     public function forRent(): static
     {
         return $this->state(fn () => [

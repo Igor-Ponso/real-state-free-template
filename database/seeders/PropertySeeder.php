@@ -143,6 +143,14 @@ class PropertySeeder extends Seeder
             }
         }
 
+        // One property without images — tests the "No photos" fallback
+        $properties->push(Property::factory()->withoutImages()->create([
+            'user_id' => $agents->random()->id,
+            'title' => 'New Development — Photos Coming Soon',
+            'property_type_id' => $propertyTypes->random()->id,
+            'city_id' => $cities->random()->id,
+        ]));
+
         // Create inquiries
         $publishedProperties = $properties->where('is_published', true);
         foreach ($publishedProperties->random(min(15, $publishedProperties->count())) as $property) {

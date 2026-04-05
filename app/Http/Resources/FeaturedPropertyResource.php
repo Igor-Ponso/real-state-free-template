@@ -65,6 +65,7 @@ class FeaturedPropertyResource extends JsonResource
             'area_sqft' => number_format($this->area_sqft),
             'listing_type' => $this->whenLoaded('listingType', fn () => $this->listingType->name),
             'property_type' => $this->whenLoaded('propertyType', fn () => $this->propertyType->name),
+            'description' => str($this->description ?? '')->limit(200)->toString(),
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'images' => $this->getPropertyImages(),
@@ -93,6 +94,11 @@ class FeaturedPropertyResource extends JsonResource
 
         if ($media->isNotEmpty()) {
             return $media->map(fn ($item) => $item->getUrl())->all();
+        }
+
+        // Skip placeholders in production, or when factory `withoutImages()` state is used
+        if (! app()->environment('local', 'testing') || ($this->features['_no_images'] ?? false)) {
+            return [];
         }
 
         $images = self::PLACEHOLDER_IMAGES;

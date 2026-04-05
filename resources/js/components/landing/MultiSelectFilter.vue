@@ -139,16 +139,16 @@ watch(searchTerm, (val) => {
                 </PopoverAnchor>
 
                 <PopoverContent
-                    class="w-[--reka-popper-anchor-width] p-1"
+                    class="min-w-[--reka-popper-anchor-width] w-72 p-2"
                     @open-auto-focus.prevent
                 >
                     <ListboxContent
-                        class="max-h-75 scroll-py-1 overflow-x-hidden overflow-y-auto"
+                        class="max-h-80 scroll-py-1 overflow-x-hidden overflow-y-auto"
                         tabindex="0"
                     >
                         <!-- Any (select all / clear) -->
                         <button
-                            class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium outline-hidden select-none"
+                            class="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium outline-hidden select-none"
                             :class="
                                 !model.length
                                     ? 'bg-accent text-accent-foreground'
@@ -165,13 +165,13 @@ watch(searchTerm, (val) => {
                                 >Any</span
                             >
                         </button>
-                        <div class="my-1 h-px bg-border" />
+                        <div class="my-1.5 h-px bg-border" />
 
                         <ListboxItem
                             v-for="opt in filteredOptions"
                             :key="opt.slug"
                             :value="opt.slug"
-                            class="relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+                            class="relative flex cursor-default items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground"
                             @select="
                                 () => {
                                     searchTerm = '';
@@ -182,12 +182,12 @@ watch(searchTerm, (val) => {
                             <ListboxItemIndicator
                                 class="ml-auto inline-flex items-center justify-center"
                             >
-                                <CheckIcon class="size-4" />
+                                <CheckIcon class="size-4 text-landing-gold" />
                             </ListboxItemIndicator>
                         </ListboxItem>
                         <p
                             v-if="!filteredOptions.length"
-                            class="px-2 py-4 text-center text-sm text-muted-foreground"
+                            class="px-3 py-6 text-center text-sm text-muted-foreground"
                         >
                             No results found.
                         </p>

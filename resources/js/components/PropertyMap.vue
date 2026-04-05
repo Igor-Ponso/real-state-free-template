@@ -159,6 +159,16 @@ onMounted(async () => {
 
 watch(() => props.properties, nextTickFitBounds);
 
+const animateMarker = (propertyId: number) => {
+    const marker = markerRefs.value[propertyId];
+    const el = marker?.leafletObject?.getElement();
+
+    if (!el) return;
+
+    el.classList.add('pin-bounce');
+    el.addEventListener('animationend', () => el.classList.remove('pin-bounce'), { once: true });
+};
+
 const markerRefs = ref<Record<number, InstanceType<typeof LMarker>>>({});
 
 const onMarkerMouseEnter = (propertyId: number) => {
@@ -216,12 +226,13 @@ const onMarkerMouseLeave = (propertyId: number) => {
                     <p class="font-serif text-sm font-semibold">{{ property.title }}</p>
                     <p class="text-xs text-muted-foreground">{{ property.location }}</p>
                     <p class="mt-1 font-serif font-bold text-landing-gold">{{ property.price }}</p>
+                    <p v-if="property.description" class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{{ property.description }}</p>
                     <!-- Favorite / Dismiss actions -->
                     <div class="mt-2 flex gap-1 border-t pt-2">
                         <button
                             class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
                             :class="isFavorite?.(property.id) ? 'text-red-500' : 'text-muted-foreground'"
-                            @click.stop="emit('toggle-favorite', property.id)"
+                            @click.stop="emit('toggle-favorite', property.id); animateMarker(property.id);"
                         >
                             <Heart class="size-3.5" :fill="isFavorite?.(property.id) ? 'currentColor' : 'none'" />
                             {{ isFavorite?.(property.id) ? 'Saved' : 'Save' }}
@@ -229,7 +240,7 @@ const onMarkerMouseLeave = (propertyId: number) => {
                         <button
                             class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
                             :class="isDismissed?.(property.id) ? 'text-orange-500' : 'text-muted-foreground'"
-                            @click.stop="emit('toggle-dismissed', property.id)"
+                            @click.stop="emit('toggle-dismissed', property.id); animateMarker(property.id);"
                         >
                             <EyeOff class="size-3.5" />
                             {{ isDismissed?.(property.id) ? 'Hidden' : 'Hide' }}
@@ -244,5 +255,16 @@ const onMarkerMouseLeave = (propertyId: number) => {
 <style scoped>
 :deep(.leaflet-container) {
     background-color: hsl(220 10% 92%);
+}
+
+:deep(.pin-bounce) {
+    animation: pin-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pin-bounce {
+    0% { transform: scale(1) translateY(0); }
+    30% { transform: scale(1.3) translateY(-10px); }
+    60% { transform: scale(0.95) translateY(2px); }
+    100% { transform: scale(1) translateY(0); }
 }
 </style>

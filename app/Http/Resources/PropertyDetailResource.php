@@ -146,6 +146,10 @@ class PropertyDetailResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
+        if (! app()->environment('local', 'testing') || ($this->features['_no_images'] ?? false)) {
+            return [];
+        }
+
         $images = [
             '/images/properties/penthouse.jpg',
             '/images/properties/penthouse-2.jpg',

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Bath, BedDouble, Maximize } from 'lucide-vue-next';
+import { Bath, BedDouble, ImageOff, Maximize } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, ArrowRight } from 'lucide-vue-next';
+
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
 } from '@/components/ui/carousel';
 import type { FeaturedProperty } from '@/types/landing';
 
@@ -32,8 +32,8 @@ const styles = computed(() => {
 
     return {
         card: v === 'featured'
-            ? 'overflow-hidden border border-white/10 bg-white/5 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40'
-            : 'overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-landing-deep-teal/80 hover:shadow-xl hover:ring-2 hover:ring-landing-gold/30',
+            ? 'gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40'
+            : 'gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-landing-deep-teal/80 hover:shadow-xl hover:ring-2 hover:ring-landing-gold/30',
         carouselBtn: v === 'featured' ? 'size-8' : 'size-7',
         gradient: v === 'featured' ? 'h-20 from-black/40' : 'h-16 from-black/50',
         badgePos: v === 'featured' ? 'left-3 top-3' : 'top-2.5 left-2.5',
@@ -57,6 +57,7 @@ const styles = computed(() => {
 });
 
 const showLabels = computed(() => props.variant === 'featured');
+const hasImages = computed(() => props.property.images?.length > 0);
 </script>
 
 <template>
@@ -66,11 +67,15 @@ const showLabels = computed(() => props.variant === 'featured');
         class="flex gap-3 rounded-lg border border-white/5 bg-white/5 p-2 transition-all hover:border-landing-gold/30 hover:bg-landing-deep-teal/50"
     >
         <img
+            v-if="hasImages"
             :src="property.images[0]"
             :alt="property.title"
             class="size-20 shrink-0 rounded object-cover"
             loading="lazy"
         />
+        <div v-else class="flex size-20 shrink-0 items-center justify-center rounded bg-landing-charcoal">
+            <ImageOff class="size-6 text-white/20" />
+        </div>
         <div class="min-w-0 flex-1">
             <p class="font-serif text-sm font-bold text-landing-gold">
                 {{ property.price }}
@@ -95,12 +100,21 @@ const showLabels = computed(() => props.variant === 'featured');
         :class="styles.card"
     >
         <div class="relative">
+            <!-- No image fallback -->
+            <div v-if="!hasImages" class="aspect-property flex items-center justify-center bg-landing-charcoal">
+                <div class="flex flex-col items-center gap-2 text-white/20">
+                    <ImageOff class="size-10" />
+                    <span class="font-body text-xs tracking-wide">No photos</span>
+                </div>
+            </div>
+
             <!-- Carousel (featured + grid) -->
-            <Carousel v-if="showCarousel" class="w-full">
-                <CarouselContent>
+            <Carousel v-else-if="showCarousel" v-slot="{ scrollPrev, scrollNext, canScrollPrev, canScrollNext }" class="w-full">
+                <CarouselContent class="ml-0">
                     <CarouselItem
                         v-for="(image, i) in property.images"
                         :key="i"
+                        class="pl-0"
                     >
                         <div class="aspect-property overflow-hidden">
                             <img
@@ -112,16 +126,20 @@ const showLabels = computed(() => props.variant === 'featured');
                         </div>
                     </CarouselItem>
                 </CarouselContent>
-                <div @click.stop>
-                    <CarouselPrevious
-                        :class="['left-2 opacity-0 transition-opacity group-hover:opacity-100', styles.carouselBtn]"
-                    />
-                </div>
-                <div @click.stop>
-                    <CarouselNext
-                        :class="['right-2 opacity-0 transition-opacity group-hover:opacity-100', styles.carouselBtn]"
-                    />
-                </div>
+                <button
+                    :disabled="!canScrollPrev"
+                    :class="['absolute top-1/2 left-2 z-10 -translate-y-1/2 inline-flex items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white backdrop-blur-sm transition-all hover:bg-landing-charcoal opacity-0 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0', styles.carouselBtn]"
+                    @click.stop.prevent="scrollPrev"
+                >
+                    <ArrowLeft class="size-3.5" />
+                </button>
+                <button
+                    :disabled="!canScrollNext"
+                    :class="['absolute top-1/2 right-2 z-10 -translate-y-1/2 inline-flex items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white backdrop-blur-sm transition-all hover:bg-landing-charcoal opacity-0 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0', styles.carouselBtn]"
+                    @click.stop.prevent="scrollNext"
+                >
+                    <ArrowRight class="size-3.5" />
+                </button>
             </Carousel>
 
             <!-- Single image (compact) -->

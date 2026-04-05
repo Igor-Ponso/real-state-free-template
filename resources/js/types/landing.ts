@@ -7,6 +7,7 @@ export interface FeaturedProperty {
     bedrooms: number;
     bathrooms: number;
     area_sqft: string;
+    description?: string;
     listing_type?: string;
     property_type?: string;
     latitude?: string | null;
