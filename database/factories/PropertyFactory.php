@@ -28,49 +28,6 @@ use Illuminate\Support\Str;
 class PropertyFactory extends Factory
 {
     /**
-     * Pool of available amenity slugs for random assignment.
-     *
-     * Each generated property receives 2-8 randomly selected amenities
-     * from this list, stored as a JSON array on the property model.
-     *
-     * @var list<string>
-     */
-    /**
-     * Unit-level amenities — features inside the individual unit.
-     *
-     * @var list<string>
-     */
-    private const UNIT_AMENITIES = [
-        'balcony', 'den', 'solarium', 'fireplace', 'in_suite_laundry',
-        'walk_in_closet', 'hardwood_floors', 'air_conditioning', 'dishwasher',
-        'storage_locker', 'ev_charger', 'smart_home', 'heated_floors',
-    ];
-
-    /**
-     * Building-level amenities — shared facilities in the building/complex.
-     *
-     * @var list<string>
-     */
-    private const BUILDING_AMENITIES = [
-        'pool', 'gym', 'concierge', 'doorman', 'elevator', 'rooftop_deck',
-        'party_room', 'bbq_area', 'sauna', 'steam_room', 'private_theater',
-        'shared_laundry', 'bike_storage', 'guest_suite', 'playground',
-        'tennis_court', 'security', 'underground_parking', 'garden',
-    ];
-
-    /** @return list<string> */
-    public static function unitAmenityOptions(): array
-    {
-        return self::UNIT_AMENITIES;
-    }
-
-    /** @return list<string> */
-    public static function buildingAmenityOptions(): array
-    {
-        return self::BUILDING_AMENITIES;
-    }
-
-    /**
      * Define the model's default state.
      *
      * Generates a full property listing with a composed title (e.g., "Luxury
@@ -127,8 +84,8 @@ class PropertyFactory extends Factory
             'parking_spaces' => fake()->numberBetween(0, 3),
             'floor' => fake()->optional(0.5)->numberBetween(1, 40),
             'total_floors' => fake()->optional(0.5)->numberBetween(1, 50),
-            'unit_amenities' => fake()->randomElements(self::UNIT_AMENITIES, fake()->numberBetween(2, 6)),
-            'building_amenities' => fake()->randomElements(self::BUILDING_AMENITIES, fake()->numberBetween(3, 8)),
+            'unit_amenities' => fake()->randomElements(Property::UNIT_AMENITIES, fake()->numberBetween(2, 6)),
+            'building_amenities' => fake()->randomElements(Property::BUILDING_AMENITIES, fake()->numberBetween(3, 8)),
             'features' => [
                 'flooring' => fake()->randomElement(['hardwood', 'tile', 'carpet', 'marble']),
                 'heating' => fake()->randomElement(['central', 'radiant', 'baseboard']),

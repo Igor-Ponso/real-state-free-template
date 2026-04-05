@@ -2,7 +2,7 @@
 import 'leaflet/dist/leaflet.css';
 import type { LatLngBoundsExpression } from 'leaflet';
 import { LMap, LMarker, LPopup, LTileLayer } from '@vue-leaflet/vue-leaflet';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { FeaturedProperty } from '@/types/landing';
 
 const props = defineProps<{
@@ -19,6 +19,15 @@ const isReady = ref(false);
 const mapRef = ref<InstanceType<typeof LMap> | null>(null);
 const mapCenter = ref<[number, number]>([49.2827, -123.1207]);
 const mapZoom = ref(12);
+let fitBoundsTimer: ReturnType<typeof setTimeout>;
+
+const geoProperties = computed(() =>
+    props.properties.filter(p => p.latitude && p.longitude)
+);
+
+onBeforeUnmount(() => {
+    clearTimeout(fitBoundsTimer);
+});
 
 onMounted(async () => {
     isReady.value = true;
@@ -49,7 +58,9 @@ function hasPropertyCoords(): boolean {
 
 async function nextTickFitBounds() {
     // Small delay for map to initialize
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => {
+        fitBoundsTimer = setTimeout(resolve, 200);
+    });
     fitToProperties();
 }
 
@@ -66,8 +77,7 @@ function fitToProperties() {
         return;
     }
 
-    const coords = props.properties
-        .filter(p => p.latitude && p.longitude)
+    const coords = geoProperties.value
         .map(p => [Number(p.latitude), Number(p.longitude)] as [number, number]);
 
     if (coords.length === 0) return;
@@ -115,7 +125,7 @@ function fitToProperties() {
         />
 
         <LMarker
-            v-for="property in properties.filter(p => p.latitude && p.longitude)"
+            v-for="property in geoProperties"
             :key="property.id"
             :lat-lng="[Number(property.latitude), Number(property.longitude)]"
             :options="{

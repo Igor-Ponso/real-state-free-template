@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Auth\CipherSweetEloquentUserProvider;
+use App\Models\Property;
+use App\Observers\PropertyObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -39,8 +41,10 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(SocialiteWasCalled::class, AppleExtendSocialite::class.'@handle');
 
+        Property::observe(PropertyObserver::class);
+
         Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
-            if (in_array($response->statusCode(), [403, 404, 500, 503])) {
+            if (in_array($response->statusCode(), [401, 403, 404, 429, 500, 503])) {
                 return $response->render('Error', [
                     'status' => $response->statusCode(),
                 ])->withSharedData();
@@ -55,8 +59,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Date::use(CarbonImmutable::class);
 
-        // Prevent N+1 queries — throws exception on lazy loading in dev
-        Model::preventLazyLoading(! app()->isProduction());
+        // Strict mode: prevents lazy loading, silently discarding attributes, and accessing missing attributes in dev
+        Model::shouldBeStrict(! app()->isProduction());
 
         DB::prohibitDestructiveCommands(
             app()->isProduction(),

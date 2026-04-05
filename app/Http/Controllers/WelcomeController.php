@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -40,7 +41,7 @@ class WelcomeController extends Controller
         return Inertia::render('Welcome', [
             'canRegister' => Features::enabled(Features::registration()),
             'featuredProperties' => fn () => FeaturedPropertyResource::collection(
-                Property::with(['city', 'listingType', 'propertyType'])
+                Property::with(['city', 'listingType', 'propertyType', 'media'])
                     ->published()
                     ->featured()
                     ->latest('published_at')
@@ -58,12 +59,12 @@ class WelcomeController extends Controller
                     ->featured()
                     ->get(),
             )->resolve(),
-            'stats' => fn () => [
+            'stats' => fn () => Cache::remember('home_stats', 3600, fn () => [
                 'properties_sold' => Property::whereHas('propertyStatus', fn ($q) => $q->where('slug', 'sold'))->count(),
                 'clients' => User::whereHas('roles', fn ($q) => $q->where('name', 'client'))->count(),
                 'agents' => AgentProfile::count(),
                 'cities' => City::featured()->count(),
-            ],
+            ]),
         ]);
     }
 }

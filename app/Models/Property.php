@@ -79,7 +79,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read MediaCollection<int, Media> $media
  */
 #[Fillable([
-    'user_id', 'property_type_id', 'title', 'slug', 'description',
+    'property_type_id', 'title', 'slug', 'description',
     'listing_type_id', 'property_status_id', 'price', 'currency', 'price_min', 'price_max',
     'address', 'city_id', 'neighborhood', 'state', 'zip_code', 'latitude', 'longitude',
     'bedrooms', 'bathrooms', 'area_sqft', 'lot_size_sqft', 'year_built',
@@ -93,6 +93,21 @@ class Property extends Model implements HasMedia
 {
     /** @use HasFactory<PropertyFactory> */
     use HasFactory, InteractsWithMedia, SoftDeletes;
+
+    /** @var list<string> */
+    public const UNIT_AMENITIES = [
+        'balcony', 'den', 'solarium', 'fireplace', 'in_suite_laundry',
+        'walk_in_closet', 'hardwood_floors', 'air_conditioning', 'dishwasher',
+        'storage_locker', 'ev_charger', 'smart_home', 'heated_floors',
+    ];
+
+    /** @var list<string> */
+    public const BUILDING_AMENITIES = [
+        'pool', 'gym', 'concierge', 'doorman', 'elevator', 'rooftop_deck',
+        'party_room', 'bbq_area', 'sauna', 'steam_room', 'private_theater',
+        'shared_laundry', 'bike_storage', 'guest_suite', 'playground',
+        'tennis_court', 'security', 'underground_parking', 'garden',
+    ];
 
     /**
      * Resolve route model binding by slug instead of ID.
@@ -296,8 +311,8 @@ class Property extends Model implements HasMedia
     public function scopePriceRange($query, ?int $min = null, ?int $max = null)
     {
         return $query
-            ->when($min, fn ($q) => $q->where('price', '>=', $min))
-            ->when($max, fn ($q) => $q->where('price', '<=', $max));
+            ->when($min !== null, fn ($q) => $q->where('price', '>=', $min))
+            ->when($max !== null, fn ($q) => $q->where('price', '<=', $max));
     }
 
     /**

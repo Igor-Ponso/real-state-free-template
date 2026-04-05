@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PropertyIndexRequest;
 use App\Http\Resources\FeaturedPropertyResource;
 use App\Models\City;
 use App\Models\ListingType;
 use App\Models\Property;
 use App\Models\PropertyType;
-use Database\Factories\PropertyFactory;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,7 +22,7 @@ class PropertyController extends Controller
     /**
      * Display the property listing with filters, sorting, and pagination.
      */
-    public function index(Request $request): Response
+    public function index(PropertyIndexRequest $request): Response
     {
         $citySlugs = $this->toArray($request->query('city'));
         $typeSlugs = $this->toArray($request->query('type'));
@@ -44,7 +43,7 @@ class PropertyController extends Controller
         return Inertia::render('Properties/Index', [
             'properties' => FeaturedPropertyResource::collection(
                 Property::query()
-                    ->with(['city', 'listingType', 'propertyType'])
+                    ->with(['city', 'listingType', 'propertyType', 'media'])
                     ->published()
                     ->when($typeSlugs, fn ($q) => $q->whereHas('propertyType', fn ($q) => $q->whereIn('slug', $typeSlugs)))
                     ->when($citySlugs, fn ($q) => $q->whereHas('city', fn ($q) => $q->whereIn('slug', $citySlugs)))
@@ -62,7 +61,10 @@ class PropertyController extends Controller
                             $q->whereJsonContains('building_amenities', $amenity);
                         }
                     })
-                    ->when($request->query('search'), fn ($q, $search) => $q->where('title', 'ilike', "%{$search}%"))
+                    ->when($request->validated('search'), function ($q, $search) {
+                        $escaped = str_replace(['%', '_'], ['\%', '\_'], $search);
+                        $q->where('title', 'ilike', "%{$escaped}%");
+                    })
                     ->when(
                         $request->query('sort'),
                         fn ($q, $sort) => match ($sort) {
@@ -73,17 +75,17 @@ class PropertyController extends Controller
                         },
                         fn ($q) => $q->latest('published_at'),
                     )
-                    ->paginate(min((int) $request->query('per_page', 12), 48))
+                    ->paginate(max(1, min((int) $request->query('per_page', 12), 48)))
                     ->withQueryString(),
             ),
             'filters' => Inertia::defer(fn () => [
                 'propertyTypes' => PropertyType::active()->ordered()->get(['name', 'slug']),
                 'cities' => City::ordered()->get(['name', 'slug', 'latitude', 'longitude']),
                 'listingTypes' => ListingType::active()->ordered()->get(['name', 'slug']),
-                'unitAmenities' => collect(PropertyFactory::unitAmenityOptions())->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a]),
-                'buildingAmenities' => collect(PropertyFactory::buildingAmenityOptions())->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a]),
+                'unitAmenities' => collect(Property::UNIT_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a]),
+                'buildingAmenities' => collect(Property::BUILDING_AMENITIES)->map(fn ($a) => ['name' => str($a)->replace('_', ' ')->title()->toString(), 'slug' => $a]),
             ]),
-            'appliedFilters' => $request->only(['type', 'city', 'listing', 'min_price', 'max_price', 'bedrooms', 'search', 'sort', 'unit_amenities', 'building_amenities']),
+            'appliedFilters' => (object) $request->only(['type', 'city', 'listing', 'min_price', 'max_price', 'bedrooms', 'search', 'sort', 'unit_amenities', 'building_amenities']),
             'mapCenter' => $mapCenter,
         ]);
     }

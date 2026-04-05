@@ -51,6 +51,14 @@ export default defineConfigWithVueTs(
                 'error',
                 {
                     groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+                    pathGroups: [
+                        {
+                            pattern: '@/**',
+                            group: 'internal',
+                        },
+                    ],
+                    pathGroupsExcludedImportTypes: ['builtin'],
+                    'newlines-between': 'always',
                     alphabetize: {
                         order: 'asc',
                         caseInsensitive: true,
@@ -91,12 +99,8 @@ export default defineConfigWithVueTs(
     },
     prettier, // Turn off all rules that might conflict with Prettier
     {
-        plugins: {
-            '@stylistic': stylistic,
-        },
         rules: {
             curly: ['error', 'all'],
-            '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
         },
     },
 );

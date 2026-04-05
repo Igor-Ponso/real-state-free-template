@@ -78,6 +78,8 @@ return new class extends Migration
             $table->index('price');
             $table->index('is_featured');
             $table->index('is_published');
+            $table->index('published_at');
+            $table->index('bedrooms');
         });
 
         // PostgreSQL-specific: GIN index for JSONB amenities containment queries
@@ -85,6 +87,8 @@ return new class extends Migration
             DB::statement('CREATE INDEX properties_unit_amenities_gin ON properties USING GIN (unit_amenities)');
             DB::statement('CREATE INDEX properties_building_amenities_gin ON properties USING GIN (building_amenities)');
             DB::statement('CREATE INDEX properties_published_partial ON properties (id) WHERE is_published = true');
+            DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm');
+            DB::statement('CREATE INDEX properties_title_trgm ON properties USING GIN (title gin_trgm_ops)');
         }
     }
 

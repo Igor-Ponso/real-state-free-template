@@ -5,8 +5,8 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', WelcomeController::class)->name('home');
-Route::get('properties', [PropertyController::class, 'index'])->name('properties.index');
+Route::get('/', WelcomeController::class)->name('home')->middleware('throttle:120,1');
+Route::get('properties', [PropertyController::class, 'index'])->name('properties.index')->middleware('throttle:120,1');
 
 Route::middleware('guest')->group(function () {
     Route::get('auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
