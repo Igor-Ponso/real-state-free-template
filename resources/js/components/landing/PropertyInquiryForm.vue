@@ -31,8 +31,11 @@ const form = useHttp({
 
 const submit = () => {
     form.post(store.url(), {
-        onSuccess: () => {
+        onBefore: () => {
             submitted.value = true;
+        },
+        onError: () => {
+            submitted.value = false;
         },
     });
 };
