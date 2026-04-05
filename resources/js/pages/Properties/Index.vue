@@ -12,13 +12,6 @@ import PropertyFilters from '@/components/landing/PropertyFilters.vue';
 import PropertyPagination from '@/components/landing/PropertyPagination.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePropertyFilters } from '@/composables/usePropertyFilters';
 import { usePropertyInteractions } from '@/composables/usePropertyInteractions';
@@ -149,26 +142,6 @@ onMounted(() => {
             class="min-h-[70vh] bg-linear-to-b from-landing-charcoal to-landing-deep-teal px-6 py-10"
         >
             <div class="mx-auto max-w-7xl">
-                <!-- Results header -->
-                <div class="mb-6 flex items-center justify-between">
-                    <p class="font-body text-sm text-white/40">
-                        {{ properties.meta.total }} {{ properties.meta.total === 1 ? 'property' : 'properties' }} found
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <label class="font-body text-xs text-white/30">Show</label>
-                        <Select v-model="perPage" @update:model-value="applyFilters">
-                            <SelectTrigger class="h-8 w-20 border-white/10 bg-white/5 text-xs text-white">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="12">12</SelectItem>
-                                <SelectItem value="24">24</SelectItem>
-                                <SelectItem value="48">48</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
                 <!-- Loading skeleton -->
                 <div v-if="isLoading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     <PropertyCardSkeleton v-for="n in 12" :key="n" />
@@ -200,7 +173,14 @@ onMounted(() => {
                     </Button>
                 </div>
 
-                <PropertyPagination :meta="properties.meta" variant="full" @page-change="goToPage" />
+                <PropertyPagination
+                    :meta="properties.meta"
+                    variant="full"
+                    :per-page="perPage"
+                    show-results
+                    @page-change="goToPage"
+                    @update:per-page="(v: string) => { perPage = v; applyFilters(); }"
+                />
             </div>
         </section>
 

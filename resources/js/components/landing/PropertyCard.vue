@@ -4,6 +4,7 @@ import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Empty, EmptyMedia } from '@/components/ui/empty';
 import { ArrowLeft, ArrowRight } from 'lucide-vue-next';
 
 import {
@@ -32,8 +33,8 @@ const styles = computed(() => {
 
     return {
         card: v === 'featured'
-            ? 'gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40'
-            : 'gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-landing-deep-teal/80 hover:shadow-xl hover:ring-2 hover:ring-landing-gold/30',
+            ? 'h-full gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40'
+            : 'h-full gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-landing-deep-teal/80 hover:shadow-xl hover:ring-2 hover:ring-landing-gold/30',
         carouselBtn: v === 'featured' ? 'size-8' : 'size-7',
         gradient: v === 'featured' ? 'h-20 from-black/40' : 'h-16 from-black/50',
         badgePos: v === 'featured' ? 'left-3 top-3' : 'top-2.5 left-2.5',
@@ -73,9 +74,11 @@ const hasImages = computed(() => props.property.images?.length > 0);
             class="size-20 shrink-0 rounded object-cover"
             loading="lazy"
         />
-        <div v-else class="flex size-20 shrink-0 items-center justify-center rounded bg-landing-charcoal">
-            <ImageOff class="size-6 text-white/20" />
-        </div>
+        <Empty v-else class="size-20 shrink-0 rounded border-0 bg-linear-to-br from-landing-deep-teal to-landing-charcoal p-0">
+            <EmptyMedia variant="icon" class="mb-0 size-8 bg-white/5 text-white/20">
+                <ImageOff class="size-4" />
+            </EmptyMedia>
+        </Empty>
         <div class="min-w-0 flex-1">
             <p class="font-serif text-sm font-bold text-landing-gold">
                 {{ property.price }}
@@ -99,17 +102,17 @@ const hasImages = computed(() => props.property.images?.length > 0);
         v-else
         :class="styles.card"
     >
-        <div class="relative">
-            <!-- No image fallback -->
-            <div v-if="!hasImages" class="aspect-property flex items-center justify-center bg-landing-charcoal">
-                <div class="flex flex-col items-center gap-2 text-white/20">
-                    <ImageOff class="size-10" />
-                    <span class="font-body text-xs tracking-wide">No photos</span>
-                </div>
-            </div>
+        <!-- No image fallback — shadcn Empty fills card, no overlays -->
+        <Empty v-if="!hasImages" class="flex-1 border-0 bg-linear-to-br from-landing-deep-teal/60 to-landing-charcoal p-6">
+            <EmptyMedia variant="icon" class="bg-white/5 text-white/20">
+                <ImageOff />
+            </EmptyMedia>
+        </Empty>
 
+        <!-- Image area with overlays -->
+        <div v-else class="relative">
             <!-- Carousel (featured + grid) -->
-            <Carousel v-else-if="showCarousel" v-slot="{ scrollPrev, scrollNext, canScrollPrev, canScrollNext }" class="w-full">
+            <Carousel v-if="showCarousel" v-slot="{ scrollPrev, scrollNext, canScrollPrev, canScrollNext }" class="w-full">
                 <CarouselContent class="ml-0">
                     <CarouselItem
                         v-for="(image, i) in property.images"
