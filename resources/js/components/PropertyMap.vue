@@ -2,6 +2,8 @@
 import 'leaflet/dist/leaflet.css';
 import { LMap, LMarker, LPopup, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
+import * as L from 'leaflet';
+import { EyeOff, Heart } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import type { FeaturedProperty } from '@/types/landing';
@@ -10,10 +12,14 @@ const props = defineProps<{
     properties: FeaturedProperty[];
     hoveredId: number | null;
     center?: [number, number] | null;
+    isFavorite?: (id: number) => boolean;
+    isDismissed?: (id: number) => boolean;
 }>();
 
 const emit = defineEmits<{
-    'select': [property: FeaturedProperty];
+    select: [property: FeaturedProperty];
+    'toggle-favorite': [id: number];
+    'toggle-dismissed': [id: number];
 }>();
 
 const isReady = ref(false);
@@ -23,14 +29,56 @@ const mapZoom = ref(12);
 let fitBoundsTimer: ReturnType<typeof setTimeout>;
 
 const geoProperties = computed(() =>
-    props.properties.filter(p => p.latitude && p.longitude)
+    props.properties.filter((p) => p.latitude && p.longitude),
 );
 
+const pinSvg = (color: string, symbol: string) => `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+        <defs><filter id="s"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.3"/></filter></defs>
+        <path d="M16 2C8.8 2 3 7.8 3 15c0 10 13 22 13 22s13-12 13-22C29 7.8 23.2 2 16 2z" fill="${color}" stroke="white" stroke-width="2" filter="url(#s)"/>
+        <text x="16" y="19" text-anchor="middle" font-size="13" font-weight="bold" fill="white">${symbol}</text>
+    </svg>`;
+
+const createIcon = (color: string, symbol: string) =>
+    L.divIcon({
+        html: pinSvg(color, symbol),
+        className: '',
+        iconSize: [32, 40],
+        iconAnchor: [16, 40],
+        popupAnchor: [0, -40],
+    });
+
+const icons = {
+    default: createIcon('#c5944a', ''),
+    favorite: createIcon('#ef4444', '♥'),
+    dismissed: createIcon('#9ca3af', '—'),
+};
+
+const markerIcon = (propertyId: number) => {
+    if (props.isFavorite?.(propertyId)) return icons.favorite;
+    if (props.isDismissed?.(propertyId)) return icons.dismissed;
+
+    return icons.default;
+};
+
+const markerState = (propertyId: number): string => {
+    if (props.isFavorite?.(propertyId)) return 'fav';
+    if (props.isDismissed?.(propertyId)) return 'dis';
+
+    return 'def';
+};
+
+const markerOpacity = (propertyId: number): number => {
+    if (props.isDismissed?.(propertyId)) return 0.6;
+    if (props.hoveredId !== null && props.hoveredId !== propertyId) return 0.5;
+
+    return 1;
+};
+
 const hasPropertyCoords = (): boolean =>
-    props.properties.some(p => p.latitude && p.longitude);
+    props.properties.some((p) => p.latitude && p.longitude);
 
 const fitToProperties = () => {
-    // If a city center is provided (from backend), use it
     if (props.center) {
         mapCenter.value = props.center;
         mapZoom.value = 12;
@@ -44,10 +92,13 @@ const fitToProperties = () => {
         return;
     }
 
-    const coords = geoProperties.value
-        .map(p => [Number(p.latitude), Number(p.longitude)] as [number, number]);
+    const coords = geoProperties.value.map(
+        (p) => [Number(p.latitude), Number(p.longitude)] as [number, number],
+    );
 
-    if (coords.length === 0) {return;}
+    if (coords.length === 0) {
+return;
+}
 
     if (coords.length === 1) {
         mapCenter.value = coords[0];
@@ -56,8 +107,8 @@ const fitToProperties = () => {
         return;
     }
 
-    const lats = coords.map(c => c[0]);
-    const lngs = coords.map(c => c[1]);
+    const lats = coords.map((c) => c[0]);
+    const lngs = coords.map((c) => c[1]);
     const bounds: LatLngBoundsExpression = [
         [Math.min(...lats), Math.min(...lngs)],
         [Math.max(...lats), Math.max(...lngs)],
@@ -77,8 +128,7 @@ const fitToProperties = () => {
 };
 
 const nextTickFitBounds = async () => {
-    // Small delay for map to initialize
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
         fitBoundsTimer = setTimeout(resolve, 200);
     });
     fitToProperties();
@@ -91,7 +141,6 @@ onBeforeUnmount(() => {
 onMounted(async () => {
     isReady.value = true;
 
-    // Try browser geolocation, fallback to Vancouver
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -100,16 +149,33 @@ onMounted(async () => {
                     mapZoom.value = 12;
                 }
             },
-            () => {}, // Silent fail — use default
+            () => {},
             { timeout: 3000 },
         );
     }
 
-    // Wait for map ready, then fit to properties
     await nextTickFitBounds();
 });
 
 watch(() => props.properties, nextTickFitBounds);
+
+const markerRefs = ref<Record<number, InstanceType<typeof LMarker>>>({});
+
+const onMarkerMouseEnter = (propertyId: number) => {
+    const marker = markerRefs.value[propertyId];
+
+    if (marker?.leafletObject) {
+        marker.leafletObject.openPopup();
+    }
+};
+
+const onMarkerMouseLeave = (propertyId: number) => {
+    const marker = markerRefs.value[propertyId];
+
+    if (marker?.leafletObject) {
+        marker.leafletObject.closePopup();
+    }
+};
 </script>
 
 <template>
@@ -130,15 +196,17 @@ watch(() => props.properties, nextTickFitBounds);
 
         <LMarker
             v-for="property in geoProperties"
-            :key="property.id"
+            :key="`${property.id}-${markerState(property.id)}`"
+            :ref="(el: any) => { if (el) markerRefs[property.id] = el; }"
             :lat-lng="[Number(property.latitude), Number(property.longitude)]"
-            :options="{
-                opacity: hoveredId === null || hoveredId === property.id ? 1 : 0.4,
-            }"
+            :icon="markerIcon(property.id)"
+            :options="{ opacity: markerOpacity(property.id) }"
             @click="emit('select', property)"
+            @mouseenter="onMarkerMouseEnter(property.id)"
+            @mouseleave="onMarkerMouseLeave(property.id)"
         >
-            <LPopup>
-                <div class="min-w-48 font-body">
+            <LPopup :options="{ closeButton: false, offset: [0, -10], maxWidth: 220 }">
+                <div class="min-w-44 font-body">
                     <img
                         v-if="property.images[0]"
                         :src="property.images[0]"
@@ -147,7 +215,26 @@ watch(() => props.properties, nextTickFitBounds);
                     />
                     <p class="font-serif text-sm font-semibold">{{ property.title }}</p>
                     <p class="text-xs text-muted-foreground">{{ property.location }}</p>
-                    <p class="mt-1 font-serif text-base font-bold text-landing-gold">{{ property.price }}</p>
+                    <p class="mt-1 font-serif font-bold text-landing-gold">{{ property.price }}</p>
+                    <!-- Favorite / Dismiss actions -->
+                    <div class="mt-2 flex gap-1 border-t pt-2">
+                        <button
+                            class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
+                            :class="isFavorite?.(property.id) ? 'text-red-500' : 'text-muted-foreground'"
+                            @click.stop="emit('toggle-favorite', property.id)"
+                        >
+                            <Heart class="size-3.5" :fill="isFavorite?.(property.id) ? 'currentColor' : 'none'" />
+                            {{ isFavorite?.(property.id) ? 'Saved' : 'Save' }}
+                        </button>
+                        <button
+                            class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
+                            :class="isDismissed?.(property.id) ? 'text-orange-500' : 'text-muted-foreground'"
+                            @click.stop="emit('toggle-dismissed', property.id)"
+                        >
+                            <EyeOff class="size-3.5" />
+                            {{ isDismissed?.(property.id) ? 'Hidden' : 'Hide' }}
+                        </button>
+                    </div>
                 </div>
             </LPopup>
         </LMarker>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 
+import CookieConsent from '@/components/CookieConsent.vue';
 import AboutSection from '@/components/landing/AboutSection.vue';
 import FeaturedProperties from '@/components/landing/FeaturedProperties.vue';
 import HeroSection from '@/components/landing/HeroSection.vue';
@@ -12,6 +14,9 @@ import PropertySearch from '@/components/landing/PropertySearch.vue';
 import TeamSection from '@/components/landing/TeamSection.vue';
 import ValueProposition from '@/components/landing/ValueProposition.vue';
 import type { FeaturedProperty, Neighborhood, TeamMember, LandingStats } from '@/types/landing';
+
+const isMounted = ref(false);
+onMounted(() => { isMounted.value = true; });
 
 const props = withDefaults(
     defineProps<{
@@ -44,5 +49,6 @@ const props = withDefaults(
         <AboutSection :stats="props.stats" />
         <OfficeLocation />
         <LandingFooter />
+        <CookieConsent v-if="isMounted" />
     </div>
 </template>

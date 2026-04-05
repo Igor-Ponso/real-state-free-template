@@ -44,7 +44,9 @@ interface UsePropertyFiltersReturn {
     applyFilters: () => void;
     clearFilters: () => void;
     goToPage: (page: number) => void;
+    selectedMapProperty: Ref<FeaturedProperty | null>;
     onMapSelect: (property: FeaturedProperty) => void;
+    clearMapSelection: () => void;
 }
 
 const toArr = (val: unknown): string[] => {
@@ -159,37 +161,61 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
     const applyFilters = () => {
         const params: Record<string, string | string[]> = {};
 
-        if (search.value) {params.search = search.value;}
+        if (search.value) {
+params.search = search.value;
+}
 
-        if (selectedTypes.value.length) {params.type = selectedTypes.value;}
+        if (selectedTypes.value.length) {
+params.type = selectedTypes.value;
+}
 
-        if (selectedCities.value.length) {params.city = selectedCities.value;}
+        if (selectedCities.value.length) {
+params.city = selectedCities.value;
+}
 
-        if (selectedListings.value.length) {params.listing = selectedListings.value;}
+        if (selectedListings.value.length) {
+params.listing = selectedListings.value;
+}
 
         if (selectedBedrooms.value.length) {
             params.bedrooms = selectedBedrooms.value;
 
-            if (bedroomsExact.value) {params.bedrooms_exact = '1';}
+            if (bedroomsExact.value) {
+params.bedrooms_exact = '1';
+}
         }
 
         if (selectedBathrooms.value.length) {
             params.bathrooms = selectedBathrooms.value;
 
-            if (bathroomsExact.value) {params.bathrooms_exact = '1';}
+            if (bathroomsExact.value) {
+params.bathrooms_exact = '1';
+}
         }
 
-        if (selectedUnitAmenities.value.length) {params.unit_amenities = selectedUnitAmenities.value;}
+        if (selectedUnitAmenities.value.length) {
+params.unit_amenities = selectedUnitAmenities.value;
+}
 
-        if (selectedBuildingAmenities.value.length) {params.building_amenities = selectedBuildingAmenities.value;}
+        if (selectedBuildingAmenities.value.length) {
+params.building_amenities = selectedBuildingAmenities.value;
+}
 
-        if (minPrice.value) {params.min_price = minPrice.value;}
+        if (minPrice.value) {
+params.min_price = minPrice.value;
+}
 
-        if (maxPrice.value) {params.max_price = maxPrice.value;}
+        if (maxPrice.value) {
+params.max_price = maxPrice.value;
+}
 
-        if (selectedSort.value !== 'newest') {params.sort = selectedSort.value;}
+        if (selectedSort.value !== 'newest') {
+params.sort = selectedSort.value;
+}
 
-        if (perPage.value !== '12') {params.per_page = perPage.value;}
+        if (perPage.value !== '12') {
+params.per_page = perPage.value;
+}
 
         isLoading.value = true;
         router.visit('/properties', {
@@ -242,8 +268,14 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         });
     };
 
+    const selectedMapProperty = ref<FeaturedProperty | null>(null);
+
     const onMapSelect = (property: FeaturedProperty) => {
-        router.visit(`/properties/${property.slug}`);
+        selectedMapProperty.value = property;
+    };
+
+    const clearMapSelection = () => {
+        selectedMapProperty.value = null;
     };
 
     // --- Watchers ---
@@ -286,6 +318,8 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         applyFilters,
         clearFilters,
         goToPage,
+        selectedMapProperty,
         onMapSelect,
+        clearMapSelection,
     };
 };
