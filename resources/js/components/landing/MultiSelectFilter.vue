@@ -149,11 +149,21 @@ watch(searchTerm, (val) => {
                         <!-- Any (select all / clear) -->
                         <button
                             class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium outline-hidden select-none"
-                            :class="!model.length ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'"
-                            @click="model = []; searchTerm = ''; open = false;"
+                            :class="
+                                !model.length
+                                    ? 'bg-accent text-accent-foreground'
+                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                            "
+                            @click="
+                                model = [];
+                                searchTerm = '';
+                                open = false;
+                            "
                         >
                             <CheckIcon v-if="!model.length" class="size-4" />
-                            <span :class="!model.length ? '' : 'pl-6'">Any</span>
+                            <span :class="!model.length ? '' : 'pl-6'"
+                                >Any</span
+                            >
                         </button>
                         <div class="my-1 h-px bg-border" />
 
@@ -161,7 +171,7 @@ watch(searchTerm, (val) => {
                             v-for="opt in filteredOptions"
                             :key="opt.slug"
                             :value="opt.slug"
-                            class="relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground"
+                            class="relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground"
                             @select="
                                 () => {
                                     searchTerm = '';
