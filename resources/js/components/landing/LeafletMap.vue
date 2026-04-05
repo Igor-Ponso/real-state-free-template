@@ -24,10 +24,10 @@ onMounted(() => {
 <template>
     <LMap
         v-if="isReady"
-        :zoom="props.zoom ?? 15"
+        :zoom="props.zoom ?? 13"
         :center="props.center"
         :use-global-leaflet="false"
-        :options="{ zoomControl: false, attributionControl: false }"
+        :options="{ zoomControl: true, attributionControl: false }"
         class="h-full w-full"
     >
         <!-- CartoDB Positron — clean, minimal light tiles. Free, no API key -->

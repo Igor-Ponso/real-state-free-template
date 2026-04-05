@@ -40,14 +40,16 @@ const scrollTo = (href: string) => {
 
 <template>
     <header
-        class="fixed left-0 right-0 top-0 z-50 transition-all duration-300"
+        class="fixed top-0 right-0 left-0 z-50 transition-all duration-300"
         :class="
             isScrolled
                 ? 'border-b border-border/50 bg-background/80 shadow-sm backdrop-blur-md'
                 : 'bg-transparent'
         "
     >
-        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        <div
+            class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6"
+        >
             <Link
                 :href="home()"
                 class="flex items-center gap-2 text-lg font-semibold"
@@ -66,7 +68,9 @@ const scrollTo = (href: string) => {
                         v-if="item.isRoute"
                         :href="item.href"
                         class="font-body text-sm font-medium tracking-wide transition-colors hover:opacity-80"
-                        :class="isScrolled ? 'text-foreground' : 'text-white/90'"
+                        :class="
+                            isScrolled ? 'text-foreground' : 'text-white/90'
+                        "
                     >
                         {{ item.label }}
                     </Link>
@@ -74,7 +78,9 @@ const scrollTo = (href: string) => {
                         v-else
                         @click="scrollTo(item.href)"
                         class="font-body text-sm font-medium tracking-wide transition-colors hover:opacity-80"
-                        :class="isScrolled ? 'text-foreground' : 'text-white/90'"
+                        :class="
+                            isScrolled ? 'text-foreground' : 'text-white/90'
+                        "
                     >
                         {{ item.label }}
                     </button>
@@ -98,7 +104,9 @@ const scrollTo = (href: string) => {
                         as-child
                         variant="ghost"
                         size="sm"
-                        :class="isScrolled ? '' : 'text-white hover:bg-white/10'"
+                        :class="
+                            isScrolled ? '' : 'text-white hover:bg-white/10'
+                        "
                     >
                         <Link :href="login()">Log in</Link>
                     </Button>
@@ -119,29 +127,36 @@ const scrollTo = (href: string) => {
                                 variant="ghost"
                                 size="icon"
                                 class="h-9 w-9"
-                                :class="isScrolled ? '' : 'text-white hover:bg-white/10'"
+                                :class="
+                                    isScrolled
+                                        ? ''
+                                        : 'text-white hover:bg-white/10'
+                                "
                             >
                                 <Menu class="size-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" class="w-[280px]">
+                        <SheetContent side="right" class="w-70">
                             <SheetTitle class="sr-only">Navigation</SheetTitle>
                             <SheetHeader class="text-left">
                                 <AppLogoIcon class="size-6 fill-current" />
                             </SheetHeader>
                             <nav class="mt-8 flex flex-col gap-4">
-                                <template v-for="item in navItems" :key="item.href">
+                                <template
+                                    v-for="item in navItems"
+                                    :key="item.href"
+                                >
                                     <Link
                                         v-if="item.isRoute"
                                         :href="item.href"
-                                        class="font-body text-left text-sm font-medium"
+                                        class="text-left font-body text-sm font-medium"
                                     >
                                         {{ item.label }}
                                     </Link>
                                     <button
                                         v-else
                                         @click="scrollTo(item.href)"
-                                        class="font-body text-left text-sm font-medium"
+                                        class="text-left font-body text-sm font-medium"
                                     >
                                         {{ item.label }}
                                     </button>

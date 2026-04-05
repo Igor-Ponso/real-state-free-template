@@ -112,12 +112,16 @@ const showLabels = computed(() => props.variant === 'featured');
                         </div>
                     </CarouselItem>
                 </CarouselContent>
-                <CarouselPrevious
-                    :class="['left-2 opacity-0 transition-opacity group-hover:opacity-100', styles.carouselBtn]"
-                />
-                <CarouselNext
-                    :class="['right-2 opacity-0 transition-opacity group-hover:opacity-100', styles.carouselBtn]"
-                />
+                <div @click.stop>
+                    <CarouselPrevious
+                        :class="['left-2 opacity-0 transition-opacity group-hover:opacity-100', styles.carouselBtn]"
+                    />
+                </div>
+                <div @click.stop>
+                    <CarouselNext
+                        :class="['right-2 opacity-0 transition-opacity group-hover:opacity-100', styles.carouselBtn]"
+                    />
+                </div>
             </Carousel>
 
             <!-- Single image (compact) -->

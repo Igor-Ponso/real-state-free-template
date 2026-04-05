@@ -46,13 +46,15 @@ const {
     selectedCities,
     selectedListings,
     selectedBedrooms,
+    bedroomsExact,
     selectedBathrooms,
+    bathroomsExact,
+    isStudio,
     selectedUnitAmenities,
     selectedBuildingAmenities,
     selectedSort,
     minPrice,
     maxPrice,
-    citySearch,
     filteredCities,
     isRental,
     hasActiveFilters,
@@ -96,25 +98,26 @@ const {
 
                     <PropertyFilters
                         v-model:search="search"
+                        v-model:selected-types="selectedTypes"
+                        v-model:selected-cities="selectedCities"
+                        v-model:selected-listings="selectedListings"
+                        v-model:selected-bedrooms="selectedBedrooms"
+                        v-model:selected-bathrooms="selectedBathrooms"
+                        v-model:selected-unit-amenities="selectedUnitAmenities"
+                        v-model:selected-building-amenities="selectedBuildingAmenities"
                         v-model:selected-sort="selectedSort"
                         v-model:min-price="minPrice"
                         v-model:max-price="maxPrice"
                         v-model:view-mode="viewMode"
-                        v-model:city-search="citySearch"
+                        v-model:bedrooms-exact="bedroomsExact"
+                        v-model:bathrooms-exact="bathroomsExact"
                         :filters="filters"
-                        :selected-types="selectedTypes"
-                        :selected-cities="selectedCities"
-                        :selected-listings="selectedListings"
-                        :selected-bedrooms="selectedBedrooms"
-                        :selected-bathrooms="selectedBathrooms"
-                        :selected-unit-amenities="selectedUnitAmenities"
-                        :selected-building-amenities="selectedBuildingAmenities"
+                        :is-studio="isStudio"
                         :has-active-filters="hasActiveFilters"
                         :is-rental="isRental"
                         :filtered-cities="filteredCities"
                         @apply="applyFilters"
                         @clear="clearFilters"
-                        @toggle-multi="(arr, val) => { const idx = arr.indexOf(val); idx >= 0 ? arr.splice(idx, 1) : arr.push(val); }"
                     />
                 </Deferred>
             </div>

@@ -18,10 +18,34 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class FeaturedPropertyResource extends JsonResource
 {
     /**
-     * Number of unique placeholder images per property.
-     * Each property gets deterministic images based on its ID via picsum.photos.
+     * Curated Unsplash photo IDs of real estate properties.
+     * Each property picks images deterministically based on its ID.
+     * In production, Spatie MediaLibrary handles real uploads.
+     *
+     * @see https://unsplash.com — Free, no API key required for hotlinking
+     *
+     * @var string[]
      */
-    private const PLACEHOLDER_IMAGE_COUNT = 3;
+    private const PLACEHOLDER_PHOTO_IDS = [
+        'KqrbNYj7QJQ', // modern house greenery
+        'r6J0hko5sQE', // luxury interior design
+        'FYnqaaBOI8k', // kitchen island
+        'qe0Tu9mVs7U', // luxury living room
+        '8WG4EXvdM4M', // modern bathroom
+        'n1OuA3zNUpA', // luxury kitchen
+        'ouK1sAbIHvk', // modern living
+        'r0IRSS5QujY', // villa exterior
+        '_vYG0J4oL0w', // house palm trees
+        '4iEuIV8_84k', // pool night
+        'vbSRUrNm3Ik', // residential exterior
+        'fhD2TTSWfG0', // modern building
+        'prBWpfgpyjA', // modernist villa
+        'ZAUHqu8Z1uU', // tall white building
+        'fk3JUWP0RNA', // building sunlight
+        'b08Pe9MV_eU', // modern lobby
+        'Ypv0MH4izf8', // lobby seating
+        'OcvPfruiEyY', // apartment buildings
+    ];
 
     /**
      * Transform the Property model into the featured listing payload.
@@ -75,6 +99,16 @@ class FeaturedPropertyResource extends JsonResource
     }
 
     /**
+     * Expose photo IDs for reuse in PropertyDetailResource.
+     *
+     * @return string[]
+     */
+    public static function placeholderPhotoIds(): array
+    {
+        return self::PLACEHOLDER_PHOTO_IDS;
+    }
+
+    /**
      * @return string[]
      */
     private function getPropertyImages(): array
@@ -85,8 +119,11 @@ class FeaturedPropertyResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        return collect(range(0, self::PLACEHOLDER_IMAGE_COUNT - 1))
-            ->map(fn ($i) => "https://picsum.photos/seed/property-{$this->id}-{$i}/800/500")
+        $ids = self::PLACEHOLDER_PHOTO_IDS;
+        $count = count($ids);
+
+        return collect(range(0, 2))
+            ->map(fn ($i) => 'https://images.unsplash.com/photo-'.$ids[($this->id * 3 + $i) % $count].'?w=800&h=500&fit=crop&auto=format')
             ->all();
     }
 }

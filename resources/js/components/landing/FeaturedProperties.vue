@@ -17,7 +17,11 @@ const hoveredImage = ref<string | null>(null);
 </script>
 
 <template>
-    <section id="properties" ref="sectionRef" class="relative overflow-hidden py-28">
+    <section
+        id="properties"
+        ref="sectionRef"
+        class="relative overflow-hidden py-28"
+    >
         <!-- Dynamic blurred background image on hover -->
         <Transition name="bg-fade">
             <div
@@ -39,22 +43,44 @@ const hoveredImage = ref<string | null>(null);
             class="absolute inset-0 transition-opacity duration-700"
             :class="hoveredImage ? 'opacity-0' : 'opacity-100'"
         >
-            <div class="absolute inset-0 bg-linear-to-b from-landing-deep-teal via-landing-charcoal to-landing-deep-teal" />
-            <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 24px 24px;" />
+            <div
+                class="absolute inset-0 bg-linear-to-b from-landing-deep-teal via-landing-charcoal to-landing-deep-teal"
+            />
+            <div
+                class="absolute inset-0 opacity-[0.02]"
+                style="
+                    background-image: radial-gradient(
+                        circle at 1px 1px,
+                        white 1px,
+                        transparent 0
+                    );
+                    background-size: 24px 24px;
+                "
+            />
         </div>
 
         <div class="relative mx-auto max-w-6xl px-6">
             <div
                 class="mb-16 text-center transition-all duration-700"
-                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                :class="
+                    isVisible
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-8 opacity-0'
+                "
             >
-                <p class="font-body text-sm font-medium uppercase tracking-[0.3em] text-landing-gold">
+                <p
+                    class="font-body text-sm font-medium tracking-[0.3em] text-landing-gold uppercase"
+                >
                     Exclusive Portfolio
                 </p>
-                <h2 class="mt-3 font-serif text-3xl font-semibold tracking-tight md:text-4xl">
+                <h2
+                    class="mt-3 font-serif text-3xl font-semibold tracking-tight md:text-4xl"
+                >
                     Featured Properties
                 </h2>
-                <p class="mx-auto mt-4 max-w-xl font-body text-muted-foreground">
+                <p
+                    class="mx-auto mt-4 max-w-xl font-body text-muted-foreground"
+                >
                     Handpicked selections from our exclusive portfolio
                 </p>
                 <div class="mx-auto mt-6 h-px w-16 bg-landing-gold/40" />
@@ -65,8 +91,16 @@ const hoveredImage = ref<string | null>(null);
                     v-for="(property, index) in properties"
                     :key="property.id"
                     class="group transition-all duration-500"
-                    :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'"
-                    :style="{ transitionDelay: isVisible ? `${300 + index * 150}ms` : '0ms' }"
+                    :class="
+                        isVisible
+                            ? 'translate-y-0 opacity-100'
+                            : 'translate-y-12 opacity-0'
+                    "
+                    :style="{
+                        transitionDelay: isVisible
+                            ? `${300 + index * 150}ms`
+                            : '0ms',
+                    }"
                     @mouseenter="hoveredImage = property.images[0]"
                     @mouseleave="hoveredImage = null"
                 >
@@ -76,7 +110,11 @@ const hoveredImage = ref<string | null>(null);
 
             <div
                 class="mt-14 text-center transition-all delay-700 duration-700"
-                :class="isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                :class="
+                    isVisible
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-8 opacity-0'
+                "
             >
                 <Button
                     as-child

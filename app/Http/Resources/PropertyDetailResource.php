@@ -18,11 +18,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PropertyDetailResource extends JsonResource
 {
-    /**
-     * Number of unique placeholder images per property.
-     * Each property gets deterministic images based on its ID via picsum.photos.
-     */
-    private const PLACEHOLDER_IMAGE_COUNT = 5;
+    /** Reuse the same curated Unsplash IDs from FeaturedPropertyResource. */
 
     /**
      * Unique avatar seeds per agent — each produces a distinct face via pravatar.cc.
@@ -150,8 +146,11 @@ class PropertyDetailResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        return collect(range(0, self::PLACEHOLDER_IMAGE_COUNT - 1))
-            ->map(fn ($i) => "https://picsum.photos/seed/property-{$this->id}-{$i}/1200/800")
+        $ids = FeaturedPropertyResource::placeholderPhotoIds();
+        $count = count($ids);
+
+        return collect(range(0, 4))
+            ->map(fn ($i) => 'https://images.unsplash.com/photo-'.$ids[($this->id * 5 + $i) % $count].'?w=1200&h=800&fit=crop&auto=format')
             ->all();
     }
 

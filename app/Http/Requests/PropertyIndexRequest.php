@@ -38,6 +38,8 @@ class PropertyIndexRequest extends FormRequest
             'bedrooms.*' => ['integer', 'min:1', 'max:10'],
             'bathrooms' => ['sometimes', 'array'],
             'bathrooms.*' => ['numeric', 'min:1', 'max:10'],
+            'bedrooms_exact' => ['sometimes', 'boolean'],
+            'bathrooms_exact' => ['sometimes', 'boolean'],
             'unit_amenities' => ['sometimes', 'array'],
             'unit_amenities.*' => ['string', 'max:50'],
             'building_amenities' => ['sometimes', 'array'],

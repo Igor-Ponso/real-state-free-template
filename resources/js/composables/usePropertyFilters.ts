@@ -26,7 +26,10 @@ interface UsePropertyFiltersReturn {
     selectedCities: Ref<string[]>;
     selectedListings: Ref<string[]>;
     selectedBedrooms: Ref<string[]>;
+    bedroomsExact: Ref<boolean>;
     selectedBathrooms: Ref<string[]>;
+    bathroomsExact: Ref<boolean>;
+    isStudio: ComputedRef<boolean>;
     selectedUnitAmenities: Ref<string[]>;
     selectedBuildingAmenities: Ref<string[]>;
     selectedSort: Ref<string>;
@@ -70,7 +73,9 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
     const selectedCities = ref<string[]>(toArr(applied.city));
     const selectedListings = ref<string[]>(toArr(applied.listing));
     const selectedBedrooms = ref<string[]>(toArr(applied.bedrooms));
+    const bedroomsExact = ref(applied.bedrooms_exact === '1');
     const selectedBathrooms = ref<string[]>(toArr(applied.bathrooms));
+    const bathroomsExact = ref(applied.bathrooms_exact === '1');
     const selectedUnitAmenities = ref<string[]>(toArr(applied.unit_amenities));
     const selectedBuildingAmenities = ref<string[]>(toArr(applied.building_amenities));
     const selectedSort = ref(applied.sort ?? 'newest');
@@ -99,6 +104,18 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
     const isRental = computed(
         () => selectedListings.value.includes('rental') && !selectedListings.value.includes('sale'),
     );
+
+    const isStudio = computed(
+        () => selectedTypes.value.includes('studio'),
+    );
+
+    // Clear bedrooms when studio is selected (studios have 0 bedrooms)
+    watch(isStudio, (studio) => {
+        if (studio) {
+            selectedBedrooms.value = [];
+            bedroomsExact.value = false;
+        }
+    });
 
     const hasActiveFilters = computed(
         () =>
@@ -150,9 +167,17 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
 
         if (selectedListings.value.length) {params.listing = selectedListings.value;}
 
-        if (selectedBedrooms.value.length) {params.bedrooms = selectedBedrooms.value;}
+        if (selectedBedrooms.value.length) {
+            params.bedrooms = selectedBedrooms.value;
 
-        if (selectedBathrooms.value.length) {params.bathrooms = selectedBathrooms.value;}
+            if (bedroomsExact.value) {params.bedrooms_exact = '1';}
+        }
+
+        if (selectedBathrooms.value.length) {
+            params.bathrooms = selectedBathrooms.value;
+
+            if (bathroomsExact.value) {params.bathrooms_exact = '1';}
+        }
 
         if (selectedUnitAmenities.value.length) {params.unit_amenities = selectedUnitAmenities.value;}
 
@@ -184,7 +209,9 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         selectedCities.value = [];
         selectedListings.value = [];
         selectedBedrooms.value = [];
+        bedroomsExact.value = false;
         selectedBathrooms.value = [];
+        bathroomsExact.value = false;
         selectedUnitAmenities.value = [];
         selectedBuildingAmenities.value = [];
         minPrice.value = '';
@@ -241,7 +268,10 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         selectedCities,
         selectedListings,
         selectedBedrooms,
+        bedroomsExact,
         selectedBathrooms,
+        bathroomsExact,
+        isStudio,
         selectedUnitAmenities,
         selectedBuildingAmenities,
         selectedSort,

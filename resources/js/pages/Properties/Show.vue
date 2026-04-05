@@ -179,7 +179,7 @@ const pageDescription = computed(() => props.property.meta_description || props.
                             <div class="overflow-hidden rounded-xl border border-white/10">
                                 <div class="h-80">
                                     <Suspense>
-                                        <LeafletMap :center="mapCenter" :zoom="15" :marker-title="property.title" />
+                                        <LeafletMap :center="mapCenter" :zoom="13" :marker-title="property.title" />
                                         <template #fallback>
                                             <div class="flex h-80 items-center justify-center bg-landing-deep-teal/30">
                                                 <div class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent" />

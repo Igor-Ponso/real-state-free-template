@@ -10,46 +10,70 @@ const props = defineProps<{
 }>();
 
 const config = computed(() => {
-    const map: Record<number, { title: string; heading: string; message: string }> = {
+    const map: Record<
+        number,
+        { title: string; heading: string; message: string }
+    > = {
         403: {
             title: '403 — Forbidden',
             heading: 'Access Denied',
-            message: "You don't have permission to access this page. If you believe this is an error, please contact our team.",
+            message:
+                "You don't have permission to access this page. If you believe this is an error, please contact our team.",
         },
         404: {
             title: '404 — Not Found',
             heading: 'Page Not Found',
-            message: "The property or page you're looking for may have been moved, sold, or doesn't exist. Let's get you back on track.",
+            message:
+                "The property or page you're looking for may have been moved, sold, or doesn't exist. Let's get you back on track.",
         },
         500: {
             title: '500 — Server Error',
             heading: 'Something Went Wrong',
-            message: "We're experiencing a temporary issue on our end. Our team has been notified and is working on it.",
+            message:
+                "We're experiencing a temporary issue on our end. Our team has been notified and is working on it.",
         },
         503: {
             title: '503 — Maintenance',
             heading: "We'll Be Right Back",
-            message: "We're performing scheduled maintenance to improve your experience. Please check back shortly.",
+            message:
+                "We're performing scheduled maintenance to improve your experience. Please check back shortly.",
         },
     };
 
-    return map[props.status] ?? {
-        title: `${props.status} — Error`,
-        heading: 'Unexpected Error',
-        message: 'Something unexpected happened. Please try again or contact our team.',
-    };
+    return (
+        map[props.status] ?? {
+            title: `${props.status} — Error`,
+            heading: 'Unexpected Error',
+            message:
+                'Something unexpected happened. Please try again or contact our team.',
+        }
+    );
 });
 </script>
 
 <template>
-    <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-landing-charcoal">
+    <div
+        class="relative flex min-h-screen items-center justify-center overflow-hidden bg-landing-charcoal"
+    >
         <Head :title="config.title" />
 
         <!-- Background pattern -->
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 32px 32px;" />
+        <div
+            class="absolute inset-0 opacity-[0.03]"
+            style="
+                background-image: radial-gradient(
+                    circle at 1px 1px,
+                    white 1px,
+                    transparent 0
+                );
+                background-size: 32px 32px;
+            "
+        />
 
         <!-- Gradient glow -->
-        <div class="absolute left-1/2 top-1/3 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-landing-deep-teal/30 blur-3xl" />
+        <div
+            class="absolute top-1/3 left-1/2 size-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-landing-deep-teal/30 blur-3xl"
+        />
 
         <div class="relative z-10 max-w-lg px-6 text-center">
             <!-- Logo -->
@@ -63,12 +87,16 @@ const config = computed(() => {
             </p>
 
             <!-- Heading -->
-            <h1 class="mt-4 font-serif text-3xl font-semibold tracking-tight text-white md:text-4xl">
+            <h1
+                class="mt-4 font-serif text-3xl font-semibold tracking-tight text-white md:text-4xl"
+            >
                 {{ config.heading }}
             </h1>
 
             <!-- Message -->
-            <p class="mx-auto mt-4 max-w-md font-body text-sm leading-relaxed text-white/50">
+            <p
+                class="mx-auto mt-4 max-w-md font-body text-sm leading-relaxed text-white/50"
+            >
                 {{ config.message }}
             </p>
 
