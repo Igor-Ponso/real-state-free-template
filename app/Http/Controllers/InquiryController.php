@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Inquiry\StoreInquiryAction;
 use App\Http\Requests\StoreInquiryRequest;
-use App\Models\Inquiry;
-use App\Models\InquiryStatus;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -18,24 +17,10 @@ class InquiryController extends Controller
     /**
      * Store a new property inquiry.
      */
-    public function store(StoreInquiryRequest $request): JsonResponse
+    public function store(StoreInquiryRequest $request, StoreInquiryAction $action): JsonResponse
     {
-        if ($request->filled('honeypot')) {
-            return response()->json(['message' => 'Thank you for your inquiry.'], 201);
-        }
+        $result = $action->execute($request->validated(), $request->user()?->id);
 
-        $newStatus = InquiryStatus::where('slug', 'new')->firstOrFail();
-
-        Inquiry::create([
-            'property_id' => $request->validated('property_id'),
-            'user_id' => $request->user()?->id,
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'phone' => $request->validated('phone'),
-            'message' => $request->validated('message'),
-            'inquiry_status_id' => $newStatus->id,
-        ]);
-
-        return response()->json(['message' => 'Thank you for your inquiry. We will get back to you shortly.'], 201);
+        return response()->json(['message' => $result['message']], 201);
     }
 }

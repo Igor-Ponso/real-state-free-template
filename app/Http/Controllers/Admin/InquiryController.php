@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Inquiry\UpdateInquiryStatusAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateInquiryStatusRequest;
 use App\Http\Resources\Admin\InquiryResource;
@@ -19,6 +20,9 @@ use Inertia\Response;
  */
 class InquiryController extends Controller
 {
+    /**
+     * List inquiries with optional status filtering.
+     */
     public function index(Request $request): Response
     {
         $this->authorize('viewAny', Inquiry::class);
@@ -37,6 +41,9 @@ class InquiryController extends Controller
         ]);
     }
 
+    /**
+     * Display a single inquiry with available statuses.
+     */
     public function show(Inquiry $inquiry): Response
     {
         $this->authorize('view', $inquiry);
@@ -49,15 +56,12 @@ class InquiryController extends Controller
         ]);
     }
 
-    public function update(UpdateInquiryStatusRequest $request, Inquiry $inquiry): RedirectResponse
+    /**
+     * Update the inquiry status.
+     */
+    public function update(UpdateInquiryStatusRequest $request, Inquiry $inquiry, UpdateInquiryStatusAction $action): RedirectResponse
     {
-        $statusId = $request->validated('inquiry_status_id');
-        $isReplied = InquiryStatus::where('id', $statusId)->where('slug', 'replied')->exists();
-
-        $inquiry->update([
-            'inquiry_status_id' => $statusId,
-            'replied_at' => $isReplied ? ($inquiry->replied_at ?? now()) : $inquiry->replied_at,
-        ]);
+        $action->execute($inquiry, $request->validated('inquiry_status_id'));
 
         return redirect()->route('admin.inquiries.show', $inquiry)
             ->with('success', 'Inquiry status updated.');

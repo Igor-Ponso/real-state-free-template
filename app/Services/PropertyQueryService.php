@@ -87,10 +87,7 @@ class PropertyQueryService
                     $q->whereJsonContains('building_amenities', $amenity);
                 }
             })
-            ->when($filters['search'] ?? null, function ($q, $search) {
-                $escaped = str_replace(['%', '_'], ['\%', '\_'], $search);
-                $q->where('title', 'ilike', "%{$escaped}%");
-            });
+            ->when($filters['search'] ?? null, fn ($q, $search) => $q->searchByTitle($search));
     }
 
     /**

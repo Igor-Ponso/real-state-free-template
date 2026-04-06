@@ -148,6 +148,17 @@ export interface InquiryFormData {
     honeypot: string;
 }
 
+export interface PropertySearchResult {
+    id: number;
+    title: string;
+    slug: string;
+    location: string;
+    price: string;
+    bedrooms: number;
+    bathrooms: number;
+    image: string;
+}
+
 export interface AppliedFilters {
     type?: string | string[];
     city?: string | string[];

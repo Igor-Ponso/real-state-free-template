@@ -15,6 +15,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class MediaController extends Controller
 {
+    /**
+     * Upload media files to a property's collection.
+     */
     public function store(StoreMediaRequest $request, Property $property): RedirectResponse
     {
         $collection = $request->validated('collection', 'images');
@@ -26,6 +29,9 @@ class MediaController extends Controller
         return back()->with('success', 'Media uploaded successfully.');
     }
 
+    /**
+     * Delete a media file from a property.
+     */
     public function destroy(Media $media): RedirectResponse
     {
         $property = Property::findOrFail($media->model_id);

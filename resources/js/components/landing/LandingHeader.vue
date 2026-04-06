@@ -4,6 +4,7 @@ import { Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import CommandPalette from '@/components/landing/CommandPalette.vue';
 import ModeToggle from '@/components/ModeToggle.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -89,6 +90,7 @@ const scrollTo = (href: string) => {
             </nav>
 
             <div class="flex items-center gap-2">
+                <CommandPalette :scrolled="isScrolled" />
                 <ModeToggle />
 
                 <template v-if="auth.user">

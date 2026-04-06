@@ -4,11 +4,13 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\PropertySearchController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeController::class)->name('home')->middleware('throttle:120,1');
 Route::get('properties', [PropertyController::class, 'index'])->name('properties.index')->middleware('throttle:120,1');
+Route::get('properties/search', PropertySearchController::class)->name('properties.search')->middleware('throttle:60,1');
 Route::get('properties/{property}', [PropertyController::class, 'show'])->name('properties.show')->middleware('throttle:120,1');
 Route::post('inquiries', [InquiryController::class, 'store'])->name('inquiries.store')->middleware('throttle:5,1');
 

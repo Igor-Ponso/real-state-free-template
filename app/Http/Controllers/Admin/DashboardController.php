@@ -16,6 +16,9 @@ use Inertia\Response;
  */
 class DashboardController extends Controller
 {
+    /**
+     * Display aggregated stats and recent inquiries.
+     */
     public function index(): Response
     {
         return Inertia::render('Admin/Dashboard', [

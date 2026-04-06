@@ -13,6 +13,9 @@ use App\Models\User;
  */
 class CreatePropertyAction
 {
+    /**
+     * @param  array<string, mixed>  $data  Validated property attributes.
+     */
     public function execute(User $user, array $data): Property
     {
         if (($data['is_published'] ?? false) && empty($data['published_at'])) {

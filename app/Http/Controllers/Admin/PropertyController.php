@@ -34,10 +34,7 @@ class PropertyController extends Controller
             ->withCount('inquiries')
             ->when($request->user()->hasRole('agent'), fn ($q) => $q->where('user_id', $request->user()->id))
             ->when($request->query('status'), fn ($q, $s) => $q->whereHas('propertyStatus', fn ($q) => $q->where('slug', $s)))
-            ->when($request->query('search'), function ($q, $search) {
-                $escaped = str_replace(['%', '_'], ['\%', '\_'], $search);
-                $q->where('title', 'ilike', "%{$escaped}%");
-            })
+            ->when($request->query('search'), fn ($q, $search) => $q->searchByTitle($search))
             ->latest()
             ->paginate(15)
             ->withQueryString();

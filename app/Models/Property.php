@@ -386,4 +386,25 @@ class Property extends Model implements HasMedia
     {
         return $query->whereJsonContains('building_amenities', $amenity);
     }
+
+    /**
+     * Scope: case-insensitive title search.
+     *
+     * Uses PostgreSQL ILIKE (leverages trigram GIN index) in production
+     * and LIKE (case-insensitive by default) for SQLite in tests.
+     *
+     * @param  Builder<Property>  $query
+     * @return Builder<Property>
+     */
+    public function scopeSearchByTitle($query, string $search)
+    {
+        $escaped = str_replace(['%', '_'], ['\%', '\_'], $search);
+        $driver = $query->getConnection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            return $query->where('title', 'ilike', "%{$escaped}%");
+        }
+
+        return $query->where('title', 'like', "%{$escaped}%");
+    }
 }

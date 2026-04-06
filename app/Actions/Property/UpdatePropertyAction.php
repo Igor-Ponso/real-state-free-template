@@ -11,6 +11,9 @@ use App\Models\Property;
  */
 class UpdatePropertyAction
 {
+    /**
+     * @param  array<string, mixed>  $data  Validated property attributes.
+     */
     public function execute(Property $property, array $data): Property
     {
         if (($data['is_published'] ?? false) && ! $property->is_published && empty($data['published_at'])) {
