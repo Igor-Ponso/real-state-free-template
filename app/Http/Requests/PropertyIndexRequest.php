@@ -44,8 +44,10 @@ class PropertyIndexRequest extends FormRequest
             'unit_amenities.*' => ['string', 'max:50'],
             'building_amenities' => ['sometimes', 'array'],
             'building_amenities.*' => ['string', 'max:50'],
-            'min_price' => ['sometimes', 'integer', 'min:0'],
-            'max_price' => ['sometimes', 'integer', 'min:0'],
+            // Filter bounds in minor units (cents) — matches the raw DB column.
+            // Not using ValidMoney here because it parses integers as major units.
+            'min_price' => ['sometimes', 'integer', 'min:0', 'max:100000000000'],
+            'max_price' => ['sometimes', 'integer', 'min:0', 'max:100000000000', 'gte:min_price'],
             'sort' => ['sometimes', 'string', 'in:newest,oldest,price_asc,price_desc'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:48'],
         ];

@@ -59,4 +59,21 @@ return [
         'redirect' => '/auth/apple/callback',
     ],
 
+    /*
+    | Nominatim (OpenStreetMap) geocoding service.
+    |
+    | Usage policy: https://operations.osmfoundation.org/policies/nominatim/
+    | - Max 1 request per second
+    | - Must set a meaningful User-Agent
+    | - Must cache results aggressively
+    | - Attribution required (ODbL)
+    */
+    'nominatim' => [
+        'enabled' => env('NOMINATIM_ENABLED', true),
+        'base_url' => env('NOMINATIM_BASE_URL', 'https://nominatim.openstreetmap.org'),
+        'user_agent' => env('NOMINATIM_USER_AGENT', 'SovereignEstates/1.0 (contact@sovereignestates.test)'),
+        'cache_ttl' => env('NOMINATIM_CACHE_TTL', 60 * 60 * 24 * 30), // 30 days
+        'timeout' => env('NOMINATIM_TIMEOUT', 5),
+    ],
+
 ];

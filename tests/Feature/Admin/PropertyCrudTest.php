@@ -90,7 +90,7 @@ test('admin can create a property', function () {
             'property_type_id' => $type->id,
             'listing_type_id' => $listingType->id,
             'property_status_id' => $status->id,
-            'price' => 250000000,
+            'price' => 2500000,
             'currency' => 'CAD',
             'address' => '123 Main St',
             'city_id' => $city->id,
@@ -141,7 +141,7 @@ test('admin can update any property', function () {
             'property_type_id' => $type->id,
             'listing_type_id' => $property->listing_type_id,
             'property_status_id' => $property->property_status_id,
-            'price' => 300000000,
+            'price' => 3000000,
             'currency' => 'CAD',
             'address' => $property->address,
             'city_id' => $city->id,
@@ -206,4 +206,98 @@ test('client cannot access property management', function () {
     $this->actingAs($client)
         ->get(route('admin.properties.index'))
         ->assertForbidden();
+});
+
+test('price above max is rejected by ValidMoney', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $city = City::factory()->create();
+    $type = PropertyType::factory()->create();
+    $listingType = ListingType::where('slug', 'sale')->first();
+    $status = PropertyStatus::where('slug', 'active')->first();
+
+    $this->actingAs($admin)
+        ->post(route('admin.properties.store'), [
+            'title' => 'Too Expensive',
+            'description' => str_repeat('A luxury mansion. ', 5),
+            'property_type_id' => $type->id,
+            'listing_type_id' => $listingType->id,
+            'property_status_id' => $status->id,
+            'price' => 100_000_000, // $100M — above $50M max
+            'currency' => 'CAD',
+            'address' => '1 Billion Dollar Lane',
+            'city_id' => $city->id,
+            'state' => 'BC',
+            'zip_code' => 'V6B 1A1',
+            'bedrooms' => 10,
+            'bathrooms' => 10,
+            'area_sqft' => 20000,
+            'parking_spaces' => 10,
+            'is_published' => true,
+        ])
+        ->assertSessionHasErrors('price');
+});
+
+test('negative price is rejected', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $city = City::factory()->create();
+    $type = PropertyType::factory()->create();
+    $listingType = ListingType::where('slug', 'sale')->first();
+    $status = PropertyStatus::where('slug', 'active')->first();
+
+    $this->actingAs($admin)
+        ->post(route('admin.properties.store'), [
+            'title' => 'Negative Price',
+            'description' => str_repeat('Invalid price. ', 5),
+            'property_type_id' => $type->id,
+            'listing_type_id' => $listingType->id,
+            'property_status_id' => $status->id,
+            'price' => -100,
+            'currency' => 'CAD',
+            'address' => '1 Main St',
+            'city_id' => $city->id,
+            'state' => 'BC',
+            'zip_code' => 'V6B 1A1',
+            'bedrooms' => 3,
+            'bathrooms' => 2,
+            'area_sqft' => 1500,
+            'parking_spaces' => 1,
+            'is_published' => true,
+        ])
+        ->assertSessionHasErrors('price');
+});
+
+test('deposit above max is rejected', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $city = City::factory()->create();
+    $type = PropertyType::factory()->create();
+    $listingType = ListingType::where('slug', 'rental')->first();
+    $status = PropertyStatus::where('slug', 'active')->first();
+
+    $this->actingAs($admin)
+        ->post(route('admin.properties.store'), [
+            'title' => 'Rental with Huge Deposit',
+            'description' => str_repeat('A nice rental. ', 5),
+            'property_type_id' => $type->id,
+            'listing_type_id' => $listingType->id,
+            'property_status_id' => $status->id,
+            'price' => 5000,
+            'currency' => 'CAD',
+            'deposit' => 2_000_000, // $2M — above $1M max
+            'address' => '1 Main St',
+            'city_id' => $city->id,
+            'state' => 'BC',
+            'zip_code' => 'V6B 1A1',
+            'bedrooms' => 2,
+            'bathrooms' => 1,
+            'area_sqft' => 800,
+            'parking_spaces' => 0,
+            'is_published' => true,
+        ])
+        ->assertSessionHasErrors('deposit');
 });

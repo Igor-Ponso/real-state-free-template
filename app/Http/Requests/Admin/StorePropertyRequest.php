@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Models\Property;
+use Elegantly\Money\Rules\ValidMoney;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,7 +28,7 @@ class StorePropertyRequest extends FormRequest
             'property_type_id' => ['required', 'integer', 'exists:property_types,id'],
             'listing_type_id' => ['required', 'integer', 'exists:listing_types,id'],
             'property_status_id' => ['required', 'integer', 'exists:property_statuses,id'],
-            'price' => ['required', 'integer', 'min:0'],
+            'price' => ['required', new ValidMoney(nullable: false, min: 0, max: 50_000_000)],
             'currency' => ['required', 'string', 'size:3'],
             'address' => ['required', 'string', 'max:255'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
@@ -48,7 +49,7 @@ class StorePropertyRequest extends FormRequest
             'unit_amenities.*' => ['string', 'in:'.implode(',', Property::UNIT_AMENITIES)],
             'building_amenities' => ['nullable', 'array'],
             'building_amenities.*' => ['string', 'in:'.implode(',', Property::BUILDING_AMENITIES)],
-            'deposit' => ['nullable', 'integer', 'min:0'],
+            'deposit' => ['nullable', new ValidMoney(nullable: true, min: 0, max: 1_000_000)],
             'lease_length_months' => ['nullable', 'integer', 'min:1'],
             'available_from' => ['nullable', 'date'],
             'pets_allowed' => ['boolean'],

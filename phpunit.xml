@@ -33,5 +33,6 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="CIPHERSWEET_KEY" value="0000000000000000000000000000000000000000000000000000000000000000"/>
+        <env name="NOMINATIM_ENABLED" value="false"/>
     </php>
 </phpunit>
