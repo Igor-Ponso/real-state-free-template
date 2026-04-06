@@ -12,8 +12,18 @@
 /vendor
 .DS_Store
 .env
+.env.*
+!.env.example
 .env.backup
 .env.production
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
