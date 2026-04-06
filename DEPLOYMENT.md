@@ -28,11 +28,11 @@ Laravel Cloud's Starter plan offers auto-hibernation (scale to zero when idle) a
 
 In the application dashboard, add:
 
-| Resource | Type | Why |
-|----------|------|-----|
-| **Database** | Serverless Postgres | Primary database (matches the project's PostgreSQL convention) |
-| **Cache** | Valkey (Redis-compatible) | Session, cache, queue backend |
-| **Storage** | Object Storage | Optional — for media uploads if scaling beyond local disk |
+| Resource     | Type                      | Why                                                            |
+| ------------ | ------------------------- | -------------------------------------------------------------- |
+| **Database** | Serverless Postgres       | Primary database (matches the project's PostgreSQL convention) |
+| **Cache**    | Valkey (Redis-compatible) | Session, cache, queue backend                                  |
+| **Storage**  | Object Storage            | Optional — for media uploads if scaling beyond local disk      |
 
 Laravel Cloud auto-wires these into env vars (`DB_*`, `REDIS_*`, `AWS_*`) — no manual config needed.
 
@@ -127,6 +127,7 @@ This runs the `deploy` script defined in `composer.json`:
 ```
 
 What it does:
+
 1. **`optimize`** — caches config, routes, views, events
 2. **`migrate --force`** — runs pending migrations
 3. **`db:seed --force`** — seeds lookup tables and (on first run) demo data
@@ -137,9 +138,9 @@ What it does:
 
 The `PropertySeeder` creates demo users for exploration:
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `admin@luxuryestate.com` | `T3st@Secure!99` |
+| Role   | Email                                                 | Password         |
+| ------ | ----------------------------------------------------- | ---------------- |
+| Admin  | `admin@luxuryestate.com`                              | `T3st@Secure!99` |
 | Agents | `agent1@luxuryestate.com` – `agent8@luxuryestate.com` | `T3st@Secure!99` |
 
 These are **known credentials** meant for a public demo. If you deploy this template for anything beyond a demo:
@@ -215,4 +216,3 @@ Check `NOMINATIM_USER_AGENT` is set to a meaningful value (Nominatim blocks gene
 - [Laravel Cloud docs](https://cloud.laravel.com/docs)
 - [Laravel Cloud pricing](https://cloud.laravel.com/pricing)
 - [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/)
-- Project conventions: [`CLAUDE.md`](./CLAUDE.md)
