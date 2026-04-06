@@ -18,7 +18,11 @@ class CreatePropertyAction
 {
     public function execute(User $user, array $data): Property
     {
-        $data['slug'] = Str::slug($data['title']).'-'.Str::random(4);
+        do {
+            $slug = Str::slug($data['title']).'-'.Str::random(4);
+        } while (Property::where('slug', $slug)->exists());
+
+        $data['slug'] = $slug;
 
         if (($data['is_published'] ?? false) && empty($data['published_at'])) {
             $data['published_at'] = now();

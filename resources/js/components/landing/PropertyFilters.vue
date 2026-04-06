@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { ChevronDown, Grid3x3, Map, Search, X } from 'lucide-vue-next';
+import { Grid3x3, Map, Search, X } from 'lucide-vue-next';
 import { computed } from 'vue';
 
+import BedBathFilter from '@/components/landing/BedBathFilter.vue';
 import MobileFilterSheet from '@/components/landing/MobileFilterSheet.vue';
 import MultiSelectFilter from '@/components/landing/MultiSelectFilter.vue';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
 import {
     Select,
     SelectContent,
@@ -19,7 +14,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import type { FilterOption, PropertyFilters } from '@/types/landing';
 
@@ -67,23 +61,7 @@ const emit = defineEmits<{
     clear: [];
 }>();
 
-const LABEL =
-    'mb-1 block font-body text-2xs font-medium tracking-wider text-white/40 uppercase';
-const TRIGGER =
-    'flex h-9 items-center justify-between rounded-md border border-white/10 bg-white/5 px-3 text-sm text-white';
-const CHIP =
-    'flex h-8 items-center justify-center rounded-full border px-3 text-xs font-medium transition-all cursor-pointer';
-const CHIP_ACTIVE = 'border-landing-gold bg-landing-gold text-white';
-const CHIP_INACTIVE =
-    'border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white';
-
-const selectSingle = (arr: string[], val: string) => {
-    if (arr.includes(val)) {
-        arr.splice(0);
-    } else {
-        arr.splice(0, arr.length, val);
-    }
-};
+const LABEL = 'mb-1 block font-body text-2xs font-medium tracking-wider text-white/40 uppercase';
 
 const listingValue = computed({
     get: () => selectedListings.value[0] ?? '',
@@ -203,144 +181,13 @@ const activeFilterCount = computed(
 
             <!-- Row 2: Bed/Bath + Amenities + Price + Sort -->
             <div class="flex items-end gap-3">
-                <!-- Bed / Bath -->
-                <div class="w-44 shrink-0">
-                    <label :class="LABEL">Bed / Bath</label>
-                    <Popover>
-                        <PopoverTrigger as-child>
-                            <button :class="[TRIGGER, 'w-full gap-2']">
-                                <template
-                                    v-if="
-                                        selectedBedrooms.length ||
-                                        selectedBathrooms.length
-                                    "
-                                >
-                                    <Badge
-                                        v-for="bd in selectedBedrooms"
-                                        :key="'bd' + bd"
-                                        class="h-6 border-0 bg-landing-gold/20 px-1.5 text-2xs text-landing-gold"
-                                    >
-                                        {{ bd
-                                        }}{{ bedroomsExact ? '' : '+' }} bd
-                                    </Badge>
-                                    <Badge
-                                        v-for="ba in selectedBathrooms"
-                                        :key="'ba' + ba"
-                                        class="h-6 border-0 bg-landing-gold/20 px-1.5 text-2xs text-landing-gold"
-                                    >
-                                        {{ ba
-                                        }}{{ bathroomsExact ? '' : '+' }} ba
-                                    </Badge>
-                                </template>
-                                <span v-else class="text-white/50">Any</span>
-                                <ChevronDown
-                                    class="ml-auto size-3.5 shrink-0 text-white/40"
-                                />
-                            </button>
-                        </PopoverTrigger>
-                        <PopoverContent class="w-72 p-4" align="start">
-                            <div class="flex items-center justify-between">
-                                <p
-                                    class="font-body text-xs font-medium text-white/50"
-                                >
-                                    Bedrooms
-                                </p>
-                                <label
-                                    v-if="!isStudio && selectedBedrooms.length"
-                                    class="flex items-center gap-1.5 font-body text-2xs text-white/40"
-                                >
-                                    <Switch
-                                        v-model:checked="bedroomsExact"
-                                        class="scale-75"
-                                    />
-                                    Exact
-                                </label>
-                            </div>
-                            <div
-                                v-if="isStudio"
-                                class="mt-2 rounded-md bg-white/5 px-3 py-2"
-                            >
-                                <p class="font-body text-xs text-white/40">
-                                    Studio selected
-                                </p>
-                            </div>
-                            <div v-else class="mt-2 flex gap-2">
-                                <button
-                                    :class="[
-                                        CHIP,
-                                        !selectedBedrooms.length
-                                            ? CHIP_ACTIVE
-                                            : CHIP_INACTIVE,
-                                    ]"
-                                    @click="selectedBedrooms.splice(0)"
-                                >
-                                    Any
-                                </button>
-                                <button
-                                    v-for="n in 4"
-                                    :key="n"
-                                    :class="[
-                                        CHIP,
-                                        selectedBedrooms.includes(String(n))
-                                            ? CHIP_ACTIVE
-                                            : CHIP_INACTIVE,
-                                    ]"
-                                    @click="
-                                        selectSingle(
-                                            selectedBedrooms,
-                                            String(n),
-                                        )
-                                    "
-                                >
-                                    {{ n }}{{ bedroomsExact ? '' : '+' }}
-                                </button>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <p
-                                    class="font-body text-xs font-medium text-white/50"
-                                >
-                                    Bathrooms
-                                </p>
-                                <label
-                                    v-if="selectedBathrooms.length"
-                                    class="flex items-center gap-1.5 font-body text-2xs text-white/40"
-                                >
-                                    <Switch
-                                        v-model:checked="bathroomsExact"
-                                        class="scale-75"
-                                    />
-                                    Exact
-                                </label>
-                            </div>
-                            <div class="mt-2 flex gap-2">
-                                <button
-                                    :class="[
-                                        CHIP,
-                                        !selectedBathrooms.length
-                                            ? CHIP_ACTIVE
-                                            : CHIP_INACTIVE,
-                                    ]"
-                                    @click="selectedBathrooms.splice(0)"
-                                >
-                                    Any
-                                </button>
-                                <button
-                                    v-for="n in ['1', '1.5', '2', '3']"
-                                    :key="n"
-                                    :class="[
-                                        CHIP,
-                                        selectedBathrooms.includes(n)
-                                            ? CHIP_ACTIVE
-                                            : CHIP_INACTIVE,
-                                    ]"
-                                    @click="selectSingle(selectedBathrooms, n)"
-                                >
-                                    {{ n }}{{ bathroomsExact ? '' : '+' }}
-                                </button>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                </div>
+                <BedBathFilter
+                    v-model:selected-bedrooms="selectedBedrooms"
+                    v-model:selected-bathrooms="selectedBathrooms"
+                    v-model:bedrooms-exact="bedroomsExact"
+                    v-model:bathrooms-exact="bathroomsExact"
+                    :is-studio="isStudio"
+                />
 
                 <!-- Unit Features -->
                 <div class="min-w-40 flex-1">

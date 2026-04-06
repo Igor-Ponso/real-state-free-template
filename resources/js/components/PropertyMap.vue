@@ -4,7 +4,8 @@ import { LMap, LMarker, LPopup, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import * as L from 'leaflet';
 import { EyeOff, Heart } from 'lucide-vue-next';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import type { ComponentPublicInstance } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import type { FeaturedProperty } from '@/types/landing';
 
@@ -160,13 +161,16 @@ onMounted(async () => {
 watch(() => props.properties, nextTickFitBounds);
 
 const animateMarker = (propertyId: number) => {
-    const marker = markerRefs.value[propertyId];
-    const el = marker?.leafletObject?.getElement();
+    // Marker remounts on state change (key includes markerState) — wait for new DOM
+    nextTick(() => {
+        const marker = markerRefs.value[propertyId];
+        const el = marker?.leafletObject?.getElement();
 
-    if (!el) return;
+        if (!el) return;
 
-    el.classList.add('pin-bounce');
-    el.addEventListener('animationend', () => el.classList.remove('pin-bounce'), { once: true });
+        el.classList.add('pin-bounce');
+        el.addEventListener('animationend', () => el.classList.remove('pin-bounce'), { once: true });
+    });
 };
 
 const markerRefs = ref<Record<number, InstanceType<typeof LMarker>>>({});
@@ -207,7 +211,7 @@ const onMarkerMouseLeave = (propertyId: number) => {
         <LMarker
             v-for="property in geoProperties"
             :key="`${property.id}-${markerState(property.id)}`"
-            :ref="(el: any) => { if (el) markerRefs[property.id] = el; }"
+            :ref="(el: ComponentPublicInstance | Element | null) => { if (el) markerRefs[property.id] = el as InstanceType<typeof LMarker>; }"
             :lat-lng="[Number(property.latitude), Number(property.longitude)]"
             :icon="markerIcon(property.id)"
             :options="{ opacity: markerOpacity(property.id) }"
@@ -230,6 +234,7 @@ const onMarkerMouseLeave = (propertyId: number) => {
                     <!-- Favorite / Dismiss actions -->
                     <div class="mt-2 flex gap-1 border-t pt-2">
                         <button
+                            :aria-label="isFavorite?.(property.id) ? 'Remove from saved' : 'Save property'"
                             class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
                             :class="isFavorite?.(property.id) ? 'text-red-500' : 'text-muted-foreground'"
                             @click.stop="emit('toggle-favorite', property.id); animateMarker(property.id);"
@@ -238,6 +243,7 @@ const onMarkerMouseLeave = (propertyId: number) => {
                             {{ isFavorite?.(property.id) ? 'Saved' : 'Save' }}
                         </button>
                         <button
+                            :aria-label="isDismissed?.(property.id) ? 'Show property' : 'Hide property'"
                             class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
                             :class="isDismissed?.(property.id) ? 'text-orange-500' : 'text-muted-foreground'"
                             @click.stop="emit('toggle-dismissed', property.id); animateMarker(property.id);"

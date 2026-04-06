@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Bath, BedDouble, ImageOff, Maximize } from 'lucide-vue-next';
+import { ArrowLeft, ArrowRight, Bath, BedDouble, ImageOff, Maximize } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Empty, EmptyMedia } from '@/components/ui/empty';
-import { ArrowLeft, ArrowRight } from 'lucide-vue-next';
 
 import {
     Carousel,
@@ -59,6 +58,15 @@ const styles = computed(() => {
 
 const showLabels = computed(() => props.variant === 'featured');
 const hasImages = computed(() => props.property.images?.length > 0);
+
+const imageSizes = computed(() => {
+    switch (props.variant) {
+        case 'featured': return '(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw';
+        case 'grid': return '(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw';
+        case 'compact': return '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw';
+        default: return '80px';
+    }
+});
 </script>
 
 <template>
@@ -71,6 +79,7 @@ const hasImages = computed(() => props.property.images?.length > 0);
             v-if="hasImages"
             :src="property.images[0]"
             :alt="property.title"
+            sizes="80px"
             class="size-20 shrink-0 rounded object-cover"
             loading="lazy"
         />
@@ -123,6 +132,7 @@ const hasImages = computed(() => props.property.images?.length > 0);
                             <img
                                 :src="image"
                                 :alt="`${property.title} — photo ${i + 1}`"
+                                :sizes="imageSizes"
                                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 loading="lazy"
                             />
@@ -131,6 +141,7 @@ const hasImages = computed(() => props.property.images?.length > 0);
                 </CarouselContent>
                 <button
                     :disabled="!canScrollPrev"
+                    aria-label="Previous photo"
                     :class="['absolute top-1/2 left-2 z-10 -translate-y-1/2 inline-flex items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white backdrop-blur-sm transition-all hover:bg-landing-charcoal opacity-0 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0', styles.carouselBtn]"
                     @click.stop.prevent="scrollPrev"
                 >
@@ -138,6 +149,7 @@ const hasImages = computed(() => props.property.images?.length > 0);
                 </button>
                 <button
                     :disabled="!canScrollNext"
+                    aria-label="Next photo"
                     :class="['absolute top-1/2 right-2 z-10 -translate-y-1/2 inline-flex items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white backdrop-blur-sm transition-all hover:bg-landing-charcoal opacity-0 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0', styles.carouselBtn]"
                     @click.stop.prevent="scrollNext"
                 >
@@ -150,6 +162,7 @@ const hasImages = computed(() => props.property.images?.length > 0);
                 <img
                     :src="property.images[0]"
                     :alt="property.title"
+                    :sizes="imageSizes"
                     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                 />

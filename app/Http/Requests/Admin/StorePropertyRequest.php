@@ -13,7 +13,7 @@ class StorePropertyRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('create', Property::class);
     }
 
     /**

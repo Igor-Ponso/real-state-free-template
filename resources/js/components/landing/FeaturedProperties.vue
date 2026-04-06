@@ -121,7 +121,7 @@ const hoveredImage = ref<string | null>(null);
                     size="lg"
                     class="bg-landing-gold font-body text-landing-gold-foreground transition-all duration-300 hover:bg-landing-gold/90"
                 >
-                    <Link href="/properties">View All Properties</Link>
+                    <Link href="/properties" prefetch>View All Properties</Link>
                 </Button>
             </div>
         </div>

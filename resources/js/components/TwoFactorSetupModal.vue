@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 
 import AlertError from '@/components/AlertError.vue';
-import InputError from '@/components/InputError.vue';
+import TwoFactorVerifyStep from '@/components/TwoFactorVerifyStep.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -14,15 +13,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSlot,
-} from '@/components/ui/input-otp';
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 
 type Props = {
@@ -42,7 +35,7 @@ const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
 const showVerificationStep = ref(false);
 const code = ref<string>('');
 
-const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
+const verifyStepRef = useTemplateRef('verifyStepRef');
 
 const modalConfig = computed<TwoFactorConfigContent>(() => {
     if (props.twoFactorEnabled) {
@@ -75,7 +68,7 @@ const handleModalNextStep = () => {
         showVerificationStep.value = true;
 
         nextTick(() => {
-            pinInputContainerRef.value?.querySelector('input')?.focus();
+            verifyStepRef.value?.focusInput();
         });
 
         return;
@@ -237,61 +230,13 @@ watch(
                     </template>
                 </template>
 
-                <template v-else>
-                    <Form
-                        v-bind="confirm.form()"
-                        error-bag="confirmTwoFactorAuthentication"
-                        reset-on-error
-                        @finish="code = ''"
-                        @success="isOpen = false"
-                        v-slot="{ errors, processing }"
-                    >
-                        <input type="hidden" name="code" :value="code" />
-                        <div
-                            ref="pinInputContainerRef"
-                            class="relative w-full space-y-3"
-                        >
-                            <div
-                                class="flex w-full flex-col items-center justify-center space-y-3 py-2"
-                            >
-                                <InputOTP
-                                    id="otp"
-                                    v-model="code"
-                                    :maxlength="6"
-                                    :disabled="processing"
-                                >
-                                    <InputOTPGroup>
-                                        <InputOTPSlot
-                                            v-for="index in 6"
-                                            :key="index"
-                                            :index="index - 1"
-                                        />
-                                    </InputOTPGroup>
-                                </InputOTP>
-                                <InputError :message="errors?.code" />
-                            </div>
-
-                            <div class="flex w-full items-center space-x-5">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    class="w-auto flex-1"
-                                    @click="showVerificationStep = false"
-                                    :disabled="processing"
-                                >
-                                    Back
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    class="w-auto flex-1"
-                                    :disabled="processing || code.length < 6"
-                                >
-                                    Confirm
-                                </Button>
-                            </div>
-                        </div>
-                    </Form>
-                </template>
+                <TwoFactorVerifyStep
+                    v-else
+                    ref="verifyStepRef"
+                    v-model:code="code"
+                    @back="showVerificationStep = false"
+                    @success="isOpen = false"
+                />
             </div>
         </DialogContent>
     </Dialog>

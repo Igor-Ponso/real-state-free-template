@@ -58,8 +58,6 @@ class PropertyController extends Controller
 
     public function store(StorePropertyRequest $request, CreatePropertyAction $action): RedirectResponse
     {
-        $this->authorize('create', Property::class);
-
         $property = $action->execute($request->user(), $request->validated());
 
         return redirect()->route('admin.properties.edit', $property)

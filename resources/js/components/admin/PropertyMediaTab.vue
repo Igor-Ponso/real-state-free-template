@@ -56,8 +56,9 @@ const deleteMedia = (mediaId: number) => {
 <template>
     <div class="space-y-6">
         <!-- Upload zone -->
-        <div
-            class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 transition-colors hover:border-muted-foreground/50"
+        <button
+            type="button"
+            class="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 transition-colors hover:border-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             @click="fileInput?.click()"
         >
             <Upload class="mb-2 size-8 text-muted-foreground" />
@@ -71,7 +72,7 @@ const deleteMedia = (mediaId: number) => {
                 class="hidden"
                 @change="handleUpload"
             />
-        </div>
+        </button>
 
         <p v-if="uploading" class="text-sm text-muted-foreground">Uploading...</p>
 

@@ -162,6 +162,34 @@ class Property extends Model implements HasMedia
     }
 
     /**
+     * Register responsive image conversions for property photos.
+     *
+     * Generates thumbnail (400px), card (800px), and gallery (1400px) sizes
+     * for optimal loading across grid cards, detail pages, and galleries.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(400)
+            ->height(250)
+            ->sharpen(10)
+            ->performOnCollections('images')
+            ->nonQueued();
+
+        $this->addMediaConversion('card')
+            ->width(800)
+            ->height(500)
+            ->performOnCollections('images')
+            ->nonQueued();
+
+        $this->addMediaConversion('gallery')
+            ->width(1400)
+            ->height(875)
+            ->performOnCollections('images')
+            ->nonQueued();
+    }
+
+    /**
      * The agent (user) who created this property listing.
      *
      * @return BelongsTo<User, $this>

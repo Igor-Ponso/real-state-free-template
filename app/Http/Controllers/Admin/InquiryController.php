@@ -51,13 +51,12 @@ class InquiryController extends Controller
 
     public function update(UpdateInquiryStatusRequest $request, Inquiry $inquiry): RedirectResponse
     {
-        $this->authorize('update', $inquiry);
+        $statusId = $request->validated('inquiry_status_id');
+        $isReplied = InquiryStatus::where('id', $statusId)->where('slug', 'replied')->exists();
 
         $inquiry->update([
-            'inquiry_status_id' => $request->validated('inquiry_status_id'),
-            'replied_at' => $request->validated('inquiry_status_id') === InquiryStatus::where('slug', 'replied')->value('id')
-                ? now()
-                : $inquiry->replied_at,
+            'inquiry_status_id' => $statusId,
+            'replied_at' => $isReplied ? ($inquiry->replied_at ?? now()) : $inquiry->replied_at,
         ]);
 
         return redirect()->route('admin.inquiries.show', $inquiry)

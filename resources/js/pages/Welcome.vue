@@ -13,7 +13,7 @@ import OfficeLocation from '@/components/landing/OfficeLocation.vue';
 import PropertySearch from '@/components/landing/PropertySearch.vue';
 import TeamSection from '@/components/landing/TeamSection.vue';
 import ValueProposition from '@/components/landing/ValueProposition.vue';
-import type { FeaturedProperty, Neighborhood, TeamMember, LandingStats } from '@/types/landing';
+import type { FeaturedProperty, FilterOption, Neighborhood, TeamMember, LandingStats } from '@/types/landing';
 
 const isMounted = ref(false);
 onMounted(() => { isMounted.value = true; });
@@ -25,6 +25,7 @@ const props = withDefaults(
         neighborhoods?: Neighborhood[];
         teamMembers?: TeamMember[];
         stats?: LandingStats;
+        searchOptions?: { propertyTypes: FilterOption[]; listingTypes: FilterOption[]; cities: FilterOption[] };
     }>(),
     {
         canRegister: true,
@@ -42,7 +43,11 @@ const props = withDefaults(
         <LandingHeader :can-register="props.canRegister" />
         <HeroSection />
         <ValueProposition />
-        <PropertySearch />
+        <PropertySearch
+            :property-types="props.searchOptions?.propertyTypes ?? []"
+            :listing-types="props.searchOptions?.listingTypes ?? []"
+            :cities="props.searchOptions?.cities ?? []"
+        />
         <FeaturedProperties :properties="props.featuredProperties" />
         <NeighborhoodCarousel :neighborhoods="props.neighborhoods" />
         <TeamSection :members="props.teamMembers" />

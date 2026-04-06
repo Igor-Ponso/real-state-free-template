@@ -67,6 +67,7 @@ const scrollTo = (href: string) => {
                     <Link
                         v-if="item.isRoute"
                         :href="item.href"
+                        prefetch
                         class="font-body text-sm font-medium tracking-wide transition-colors hover:opacity-80"
                         :class="
                             isScrolled ? 'text-foreground' : 'text-white/90'
@@ -96,7 +97,7 @@ const scrollTo = (href: string) => {
                         :variant="isScrolled ? 'default' : 'secondary'"
                         size="sm"
                     >
-                        <Link :href="dashboard()">Dashboard</Link>
+                        <Link :href="dashboard()" prefetch>Dashboard</Link>
                     </Button>
                 </template>
                 <template v-else>
@@ -108,7 +109,7 @@ const scrollTo = (href: string) => {
                             isScrolled ? '' : 'text-white hover:bg-white/10'
                         "
                     >
-                        <Link :href="login()">Log in</Link>
+                        <Link :href="login()" prefetch>Log in</Link>
                     </Button>
                     <Button
                         v-if="canRegister"
@@ -116,7 +117,7 @@ const scrollTo = (href: string) => {
                         size="sm"
                         class="bg-landing-gold text-landing-gold-foreground hover:bg-landing-gold/90"
                     >
-                        <Link :href="register()">Register</Link>
+                        <Link :href="register()" prefetch>Register</Link>
                     </Button>
                 </template>
 
@@ -126,6 +127,7 @@ const scrollTo = (href: string) => {
                             <Button
                                 variant="ghost"
                                 size="icon"
+                                aria-label="Open menu"
                                 class="h-9 w-9"
                                 :class="
                                     isScrolled

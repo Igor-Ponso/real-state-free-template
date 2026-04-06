@@ -7,7 +7,9 @@ use App\Http\Resources\FeaturedPropertyResource;
 use App\Http\Resources\TeamMemberResource;
 use App\Models\AgentProfile;
 use App\Models\City;
+use App\Models\ListingType;
 use App\Models\Property;
+use App\Models\PropertyType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -59,6 +61,15 @@ class WelcomeController extends Controller
                     ->featured()
                     ->get(),
             )->resolve(),
+            'searchOptions' => fn () => Cache::tags(['filter-options'])->remember(
+                'home_search_options',
+                3600,
+                fn () => [
+                    'propertyTypes' => PropertyType::active()->ordered()->get(['name', 'slug'])->toArray(),
+                    'listingTypes' => ListingType::active()->ordered()->get(['name', 'slug'])->toArray(),
+                    'cities' => City::ordered()->get(['name', 'slug'])->toArray(),
+                ],
+            ),
             'stats' => fn () => Cache::flexible('home_stats', [1800, 3600], fn () => [
                 'properties_sold' => Property::whereHas('propertyStatus', fn ($q) => $q->where('slug', 'sold'))->count(),
                 'clients' => User::whereHas('roles', fn ($q) => $q->where('name', 'client'))->count(),

@@ -30,7 +30,7 @@ class InquiryPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('manage-inquiries') && $inquiry->property->user_id === $user->id;
+        return $user->hasPermissionTo('manage-inquiries') && $inquiry->loadMissing('property')->property->user_id === $user->id;
     }
 
     /**
@@ -42,6 +42,6 @@ class InquiryPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('manage-inquiries') && $inquiry->property->user_id === $user->id;
+        return $user->hasPermissionTo('manage-inquiries') && $inquiry->loadMissing('property')->property->user_id === $user->id;
     }
 }

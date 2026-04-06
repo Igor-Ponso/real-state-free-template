@@ -17,8 +17,6 @@ class MediaController extends Controller
 {
     public function store(StoreMediaRequest $request, Property $property): RedirectResponse
     {
-        $this->authorize('update', $property);
-
         $collection = $request->validated('collection', 'images');
 
         foreach ($request->file('files') as $file) {

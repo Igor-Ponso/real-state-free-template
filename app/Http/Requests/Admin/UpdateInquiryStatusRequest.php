@@ -2,17 +2,24 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Inquiry;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Validates inquiry status changes from the admin panel.
+ * Validates and authorizes inquiry status changes from the admin panel.
+ *
+ * Authorization: checks the 'update' policy on the route-bound Inquiry.
+ * Admins can update any inquiry; agents can only update inquiries on their own properties.
  */
 class UpdateInquiryStatusRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        /** @var Inquiry $inquiry */
+        $inquiry = $this->route('inquiry');
+
+        return $this->user()->can('update', $inquiry);
     }
 
     /**
