@@ -10,7 +10,6 @@ use App\Models\PropertyType;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * Factory for generating fake property listings.
@@ -57,7 +56,6 @@ class PropertyFactory extends Factory
             'user_id' => User::factory(),
             'property_type_id' => PropertyType::factory(),
             'title' => $title,
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1000, 9999),
             'description' => fake()->paragraphs(3, true),
             'listing_type_id' => fn () => ListingType::where('slug', $isSale ? 'sale' : 'rental')->first()?->id ?? ListingType::first()->id,
             'property_status_id' => fn () => PropertyStatus::where('slug', 'active')->first()?->id ?? PropertyStatus::first()->id,

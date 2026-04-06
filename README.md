@@ -25,6 +25,7 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 | Roles         | spatie/laravel-permission (admin, agent, client)            |
 | Media         | spatie/laravel-medialibrary (property images, conversions)  |
 | Money         | elegantly/laravel-money + brick/money (integer cents)       |
+| Slugs         | spatie/laravel-sluggable (auto-generated URL slugs)         |
 | Encryption    | spatie/laravel-ciphersweet (PII encrypted at rest)          |
 | Routes        | Laravel Wayfinder (typed route generation)                 |
 | Maps          | Leaflet + vue-leaflet (CartoDB Positron tiles, no API key)  |

@@ -20,7 +20,8 @@
         "socialiteproviders/apple": "^5.9",
         "spatie/laravel-ciphersweet": "^1.7",
         "spatie/laravel-medialibrary": "^11.21",
-        "spatie/laravel-permission": "^7.2"
+        "spatie/laravel-permission": "^7.2",
+        "spatie/laravel-sluggable": "^3.8"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.2",
