@@ -65,6 +65,10 @@ QUEUE_CONNECTION=redis
 # Nominatim geocoding — set a real contact email per their usage policy
 NOMINATIM_ENABLED=true
 NOMINATIM_USER_AGENT="SovereignEstates/1.0 (contact@yourdomain.com)"
+
+# Show placeholder images for properties without uploaded media (demo only).
+# Set to false for real production deployments.
+SHOW_PLACEHOLDER_IMAGES=true
 ```
 
 ### Auto-wired by Laravel Cloud

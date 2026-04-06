@@ -96,8 +96,14 @@ class FeaturedPropertyResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        // Skip placeholders in production, or when factory `withoutImages()` state is used
-        if (! app()->environment('local', 'testing') || ($this->features['_no_images'] ?? false)) {
+        // Skip placeholders when factory `withoutImages()` state is used
+        if ($this->features['_no_images'] ?? false) {
+            return [];
+        }
+
+        // Show placeholders in local/testing always; in other environments
+        // only when the demo flag is enabled (see config/demo.php).
+        if (! app()->environment('local', 'testing') && ! config('demo.show_placeholder_images')) {
             return [];
         }
 

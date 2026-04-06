@@ -146,7 +146,11 @@ class PropertyDetailResource extends JsonResource
             return $media->map(fn ($item) => $item->getUrl())->all();
         }
 
-        if (! app()->environment('local', 'testing') || ($this->features['_no_images'] ?? false)) {
+        if ($this->features['_no_images'] ?? false) {
+            return [];
+        }
+
+        if (! app()->environment('local', 'testing') && ! config('demo.show_placeholder_images')) {
             return [];
         }
 
