@@ -21,7 +21,7 @@ Agents `agent1` through `agent8` exist with the same password.
 
 ### A few notes
 
-- The demo runs on Laravel Cloud's **free tier with no credit card attached**. If anyone tries to abuse it, the platform will throttle or stop the environment automatically — no risk of surprise charges.
+- The demo runs on Laravel Cloud's **free tier**. If anyone tries to abuse it, the platform will throttle or stop the environment automatically — no risk of surprise charges.
 - Property photos are **placeholder images** shipped with the template (real production deployments leave `SHOW_PLACEHOLDER_IMAGES=false`).
 - The database is **periodically reset** to keep demo data clean — feel free to break things, they'll come back.
 - Social login providers are intentionally **disabled** in the demo (no OAuth credentials configured).
