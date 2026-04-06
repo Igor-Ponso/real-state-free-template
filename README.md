@@ -4,6 +4,30 @@ A complete, production-ready real estate website built with **Laravel 13**, **Vu
 
 > Built with best practices: SOLID principles, DRY code, Eloquent query optimization, caching strategies, TypeScript strict mode, and modern frontend patterns.
 
+## 🌐 Live Demo
+
+**[→ sovereign-estates-main-vrk8yc.free.laravel.cloud](https://sovereign-estates-main-vrk8yc.free.laravel.cloud/properties?page=2)**
+
+Hosted on **[Laravel Cloud](https://cloud.laravel.com)** Starter (free tier) with auto-hibernation, so the first request after idle may take a few seconds to wake up.
+
+### Demo credentials
+
+| Role  | Email                       | Password         |
+| ----- | --------------------------- | ---------------- |
+| Admin | `admin@luxuryestate.com`    | `T3st@Secure!99` |
+| Agent | `agent1@luxuryestate.com`   | `T3st@Secure!99` |
+
+Agents `agent1` through `agent8` exist with the same password.
+
+### A few notes
+
+- The demo runs on Laravel Cloud's **free tier with no credit card attached**. If anyone tries to abuse it, the platform will throttle or stop the environment automatically — no risk of surprise charges.
+- Property photos are **placeholder images** shipped with the template (real production deployments leave `SHOW_PLACEHOLDER_IMAGES=false`).
+- The database is **periodically reset** to keep demo data clean — feel free to break things, they'll come back.
+- Social login providers are intentionally **disabled** in the demo (no OAuth credentials configured).
+
+> Want to deploy your own copy? See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for the full Laravel Cloud guide.
+
 ## Foundation
 
 This project was bootstrapped using the official **Laravel Installer** with the **Vue Starter Kit** (Split auth layout, Header navigation, SSR enabled, Pest testing, PostgreSQL). It also includes **Laravel Boost** for AI-assisted development with MCP server integration, guidelines, and skills.
