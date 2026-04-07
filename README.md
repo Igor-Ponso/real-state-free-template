@@ -6,7 +6,7 @@ A complete, production-ready real estate website built with **Laravel 13**, **Vu
 
 ## 🌐 Live Demo
 
-**[→ sovereign-estates-main-vrk8yc.free.laravel.cloud](https://sovereign-estates-main-vrk8yc.free.laravel.cloud/properties?page=2)**
+**[→ sovereign-estates-main-vrk8yc.free.laravel.cloud](https://sovereign-estates-main-vrk8yc.free.laravel.cloud/)**
 
 Hosted on **[Laravel Cloud](https://cloud.laravel.com)** Starter (free tier) with auto-hibernation, so the first request after idle may take a few seconds to wake up.
 
