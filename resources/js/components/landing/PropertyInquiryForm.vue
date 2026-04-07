@@ -5,11 +5,7 @@ import { vMaska } from 'maska/vue';
 import { ref } from 'vue';
 
 import { store } from '@/actions/App/Http/Controllers/InquiryController';
-import {
-    Alert,
-    AlertDescription,
-    AlertTitle,
-} from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,9 +40,7 @@ const submit = () => {
 
 <template>
     <div>
-        <h3
-            class="mb-4 font-serif text-lg font-semibold text-white"
-        >
+        <h3 class="mb-4 font-serif text-lg font-semibold text-white">
             Inquire About This Property
         </h3>
 
@@ -60,17 +54,12 @@ const submit = () => {
                 Inquiry Sent
             </AlertTitle>
             <AlertDescription class="font-body text-white/60">
-                Thank you for your inquiry. We will get back to you
-                shortly.
+                Thank you for your inquiry. We will get back to you shortly.
             </AlertDescription>
         </Alert>
 
         <!-- Form -->
-        <form
-            v-else
-            class="space-y-4"
-            @submit.prevent="submit"
-        >
+        <form v-else class="space-y-4" @submit.prevent="submit">
             <!-- Honeypot (hidden from real users) -->
             <input
                 v-model="form.honeypot"

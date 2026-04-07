@@ -5,8 +5,12 @@ import { toast } from 'vue-sonner';
 import { initializeTheme } from '@/composables/useAppearance';
 
 const AppLayout = defineAsyncComponent(() => import('@/layouts/AppLayout.vue'));
-const AuthLayout = defineAsyncComponent(() => import('@/layouts/AuthLayout.vue'));
-const SettingsLayout = defineAsyncComponent(() => import('@/layouts/settings/Layout.vue'));
+const AuthLayout = defineAsyncComponent(
+    () => import('@/layouts/AuthLayout.vue'),
+);
+const SettingsLayout = defineAsyncComponent(
+    () => import('@/layouts/settings/Layout.vue'),
+);
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -39,18 +43,18 @@ router.on('flash', (event) => {
     const flash = event.detail.flash as Record<string, string>;
 
     if (flash.success) {
-toast.success(flash.success);
-}
+        toast.success(flash.success);
+    }
 
     if (flash.error) {
-toast.error(flash.error);
-}
+        toast.error(flash.error);
+    }
 
     if (flash.warning) {
-toast.warning(flash.warning);
-}
+        toast.warning(flash.warning);
+    }
 
     if (flash.info) {
-toast.info(flash.info);
-}
+        toast.info(flash.info);
+    }
 });

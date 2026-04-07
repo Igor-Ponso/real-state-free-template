@@ -37,10 +37,21 @@ const toggleAmenity = (list: string[], slug: string) => {
                     class="flex cursor-pointer items-center gap-2 rounded-md border p-3 transition-colors hover:bg-muted"
                 >
                     <Checkbox
-                        :checked="(form.unit_amenities as string[]).includes(amenity)"
-                        @update:checked="toggleAmenity(form.unit_amenities as string[], amenity)"
+                        :checked="
+                            (form.unit_amenities as string[]).includes(amenity)
+                        "
+                        @update:checked="
+                            toggleAmenity(
+                                form.unit_amenities as string[],
+                                amenity,
+                            )
+                        "
                     />
-                    <component :is="getIcon(amenity)" v-if="getIcon(amenity)" class="size-4 text-muted-foreground" />
+                    <component
+                        :is="getIcon(amenity)"
+                        v-if="getIcon(amenity)"
+                        class="size-4 text-muted-foreground"
+                    />
                     <span class="text-sm">{{ formatLabel(amenity) }}</span>
                 </label>
             </div>
@@ -55,10 +66,23 @@ const toggleAmenity = (list: string[], slug: string) => {
                     class="flex cursor-pointer items-center gap-2 rounded-md border p-3 transition-colors hover:bg-muted"
                 >
                     <Checkbox
-                        :checked="(form.building_amenities as string[]).includes(amenity)"
-                        @update:checked="toggleAmenity(form.building_amenities as string[], amenity)"
+                        :checked="
+                            (form.building_amenities as string[]).includes(
+                                amenity,
+                            )
+                        "
+                        @update:checked="
+                            toggleAmenity(
+                                form.building_amenities as string[],
+                                amenity,
+                            )
+                        "
                     />
-                    <component :is="getIcon(amenity)" v-if="getIcon(amenity)" class="size-4 text-muted-foreground" />
+                    <component
+                        :is="getIcon(amenity)"
+                        v-if="getIcon(amenity)"
+                        class="size-4 text-muted-foreground"
+                    />
                     <span class="text-sm">{{ formatLabel(amenity) }}</span>
                 </label>
             </div>
@@ -71,7 +95,7 @@ const toggleAmenity = (list: string[], slug: string) => {
                 v-model="form.meta_title"
                 type="text"
                 maxlength="70"
-                class="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                class="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
             />
         </div>
 
@@ -82,7 +106,7 @@ const toggleAmenity = (list: string[], slug: string) => {
                 v-model="form.meta_description"
                 type="text"
                 maxlength="160"
-                class="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                class="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
             />
         </div>
     </div>

@@ -23,12 +23,15 @@ interface ConsentRecord {
 
 const CONSENT_VERSION = 1;
 
-const consent = useLocalStorage<ConsentRecord | null>('sovereign-cookie-consent', null);
+const consent = useLocalStorage<ConsentRecord | null>(
+    'sovereign-cookie-consent',
+    null,
+);
 
 const showBanner = computed(() => {
     if (!consent.value) {
-return true;
-}
+        return true;
+    }
 
     return consent.value.version < CONSENT_VERSION;
 });
@@ -53,15 +56,23 @@ const respond = (accepted: boolean) => {
             v-if="showBanner"
             class="fixed inset-x-0 bottom-0 z-[9999] border-t border-white/10 bg-landing-charcoal px-6 py-5 shadow-2xl"
         >
-            <div class="mx-auto flex max-w-5xl flex-col items-start gap-4 sm:flex-row sm:items-center">
-                <Shield class="hidden size-8 shrink-0 text-landing-gold sm:block" />
+            <div
+                class="mx-auto flex max-w-5xl flex-col items-start gap-4 sm:flex-row sm:items-center"
+            >
+                <Shield
+                    class="hidden size-8 shrink-0 text-landing-gold sm:block"
+                />
                 <div class="flex-1">
                     <p class="font-body text-sm font-medium text-white">
                         We value your privacy
                     </p>
-                    <p class="mt-1 font-body text-xs leading-relaxed text-white/50">
-                        We use local storage to save your preferences, favorites, and property interactions.
-                        No personal data is shared with third parties. You can change your preferences at any time.
+                    <p
+                        class="mt-1 font-body text-xs leading-relaxed text-white/50"
+                    >
+                        We use local storage to save your preferences,
+                        favorites, and property interactions. No personal data
+                        is shared with third parties. You can change your
+                        preferences at any time.
                     </p>
                 </div>
                 <div class="flex w-full shrink-0 gap-3 sm:w-auto">

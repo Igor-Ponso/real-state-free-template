@@ -53,12 +53,12 @@ const applyFilters = () => {
     const params: Record<string, string> = {};
 
     if (searchQuery.value) {
-params.search = searchQuery.value;
-}
+        params.search = searchQuery.value;
+    }
 
     if (statusFilter.value) {
-params.status = statusFilter.value;
-}
+        params.status = statusFilter.value;
+    }
 
     router.visit('/admin/properties', { data: params, preserveState: true });
 };
@@ -84,7 +84,9 @@ const deleteProperty = (slug: string) => {
         <!-- Filters -->
         <div class="flex flex-wrap items-center gap-3">
             <div class="relative">
-                <Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Search
+                    class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                />
                 <Input
                     v-model="searchQuery"
                     placeholder="Search properties..."
@@ -98,7 +100,12 @@ const deleteProperty = (slug: string) => {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="">All Statuses</SelectItem>
-                    <SelectItem v-for="s in statuses" :key="s.slug" :value="s.slug">{{ s.name }}</SelectItem>
+                    <SelectItem
+                        v-for="s in statuses"
+                        :key="s.slug"
+                        :value="s.slug"
+                        >{{ s.name }}</SelectItem
+                    >
                 </SelectContent>
             </Select>
         </div>
@@ -116,47 +123,82 @@ const deleteProperty = (slug: string) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow v-for="property in properties.data" :key="property.id">
+                <TableRow
+                    v-for="property in properties.data"
+                    :key="property.id"
+                >
                     <TableCell>
-                        <Link :href="edit.url({ property: property.slug })" class="font-medium hover:underline">
+                        <Link
+                            :href="edit.url({ property: property.slug })"
+                            class="font-medium hover:underline"
+                        >
                             {{ property.title }}
                         </Link>
                         <div class="mt-0.5 flex gap-1">
-                            <Badge v-if="property.is_featured" variant="secondary" class="text-2xs">Featured</Badge>
-                            <Badge v-if="!property.is_published" variant="outline" class="text-2xs">Draft</Badge>
+                            <Badge
+                                v-if="property.is_featured"
+                                variant="secondary"
+                                class="text-2xs"
+                                >Featured</Badge
+                            >
+                            <Badge
+                                v-if="!property.is_published"
+                                variant="outline"
+                                class="text-2xs"
+                                >Draft</Badge
+                            >
                         </div>
                     </TableCell>
                     <TableCell>{{ property.price }}</TableCell>
-                    <TableCell class="text-muted-foreground">{{ property.city }}</TableCell>
+                    <TableCell class="text-muted-foreground">{{
+                        property.city
+                    }}</TableCell>
                     <TableCell>
                         <Badge
                             :class="{
-                                'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': property.status_slug === 'active',
-                                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': property.status_slug === 'draft',
-                                'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': property.status_slug === 'sold',
+                                'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400':
+                                    property.status_slug === 'active',
+                                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400':
+                                    property.status_slug === 'draft',
+                                'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400':
+                                    property.status_slug === 'sold',
                             }"
                         >
                             {{ property.status }}
                         </Badge>
                     </TableCell>
-                    <TableCell class="text-muted-foreground">{{ property.inquiries_count }}</TableCell>
+                    <TableCell class="text-muted-foreground">{{
+                        property.inquiries_count
+                    }}</TableCell>
                     <TableCell>
                         <AlertDialog>
                             <AlertDialogTrigger as-child>
-                                <Button variant="ghost" size="sm" class="size-8 p-0 text-destructive hover:text-destructive">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    class="size-8 p-0 text-destructive hover:text-destructive"
+                                >
                                     <Trash2 class="size-4" />
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Property</AlertDialogTitle>
+                                    <AlertDialogTitle
+                                        >Delete Property</AlertDialogTitle
+                                    >
                                     <AlertDialogDescription>
-                                        "{{ property.title }}" will be soft-deleted. It can be restored later.
+                                        "{{ property.title }}" will be
+                                        soft-deleted. It can be restored later.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction @click="deleteProperty(property.slug)">Delete</AlertDialogAction>
+                                    <AlertDialogCancel
+                                        >Cancel</AlertDialogCancel
+                                    >
+                                    <AlertDialogAction
+                                        @click="deleteProperty(property.slug)"
+                                        >Delete</AlertDialogAction
+                                    >
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
@@ -166,10 +208,16 @@ const deleteProperty = (slug: string) => {
         </Table>
 
         <!-- Pagination -->
-        <div v-if="properties.meta.last_page > 1" class="flex items-center justify-between">
+        <div
+            v-if="properties.meta.last_page > 1"
+            class="flex items-center justify-between"
+        >
             <p class="text-sm text-muted-foreground">
-                Page {{ properties.meta.current_page }} of {{ properties.meta.last_page }}
-                ({{ properties.meta.total }} properties)
+                Page {{ properties.meta.current_page }} of
+                {{ properties.meta.last_page }} ({{
+                    properties.meta.total
+                }}
+                properties)
             </p>
             <div class="flex gap-2">
                 <Button

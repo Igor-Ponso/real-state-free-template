@@ -9,10 +9,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from '@/components/ui/carousel';
-import {
-    Dialog,
-    DialogContent,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 const props = defineProps<{
     images: string[];
@@ -51,10 +48,7 @@ const openLightbox = (index: number) => {
         <!-- Main gallery carousel -->
         <Carousel class="w-full" @init-api="onMainApiInit">
             <CarouselContent>
-                <CarouselItem
-                    v-for="(image, i) in props.images"
-                    :key="i"
-                >
+                <CarouselItem v-for="(image, i) in props.images" :key="i">
                     <button
                         class="block w-full cursor-zoom-in"
                         @click="openLightbox(i)"
@@ -87,9 +81,11 @@ const openLightbox = (index: number) => {
                 v-for="(image, i) in props.images.slice(0, 6)"
                 :key="i"
                 class="aspect-property w-20 shrink-0 overflow-hidden rounded-md border transition-all"
-                :class="currentIndex === i
-                    ? 'border-landing-gold opacity-100'
-                    : 'border-white/10 opacity-60 hover:opacity-100'"
+                :class="
+                    currentIndex === i
+                        ? 'border-landing-gold opacity-100'
+                        : 'border-white/10 opacity-60 hover:opacity-100'
+                "
                 @click="goToSlide(i)"
             >
                 <img
@@ -110,17 +106,20 @@ const openLightbox = (index: number) => {
 
         <!-- Lightbox dialog (single, outside carousel) -->
         <Dialog v-model:open="lightboxOpen">
-            <DialogContent class="max-w-5xl border-0 bg-black/95 p-0 backdrop-blur-md">
+            <DialogContent
+                class="max-w-5xl border-0 bg-black/95 p-0 backdrop-blur-md"
+            >
                 <Carousel
                     class="w-full"
                     :opts="{ startIndex: currentIndex }"
-                    @init-api="(api: CarouselApi) => { lightboxApi = api; }"
+                    @init-api="
+                        (api: CarouselApi) => {
+                            lightboxApi = api;
+                        }
+                    "
                 >
                     <CarouselContent>
-                        <CarouselItem
-                            v-for="(img, j) in props.images"
-                            :key="j"
-                        >
+                        <CarouselItem v-for="(img, j) in props.images" :key="j">
                             <div class="flex items-center justify-center p-2">
                                 <img
                                     :src="img"

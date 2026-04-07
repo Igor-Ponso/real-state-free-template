@@ -34,17 +34,21 @@ const applyFilters = () => {
     const params: Record<string, string> = {};
 
     if (statusFilter.value) {
-params.status = statusFilter.value;
-}
+        params.status = statusFilter.value;
+    }
 
     router.visit('/admin/inquiries', { data: params, preserveState: true });
 };
 
 const statusClass = (slug: string | null) => ({
-    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400': slug === 'new',
-    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': slug === 'read',
-    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': slug === 'replied',
-    'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400': slug === 'archived',
+    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400':
+        slug === 'new',
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400':
+        slug === 'read',
+    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400':
+        slug === 'replied',
+    'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400':
+        slug === 'archived',
 });
 </script>
 
@@ -62,7 +66,12 @@ const statusClass = (slug: string | null) => ({
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="">All Statuses</SelectItem>
-                    <SelectItem v-for="s in statuses" :key="s.slug" :value="s.slug">{{ s.name }}</SelectItem>
+                    <SelectItem
+                        v-for="s in statuses"
+                        :key="s.slug"
+                        :value="s.slug"
+                        >{{ s.name }}</SelectItem
+                    >
                 </SelectContent>
             </Select>
         </div>
@@ -85,11 +94,16 @@ const statusClass = (slug: string | null) => ({
                     class="cursor-pointer hover:bg-muted/50"
                 >
                     <TableCell>
-                        <Link :href="show.url({ inquiry: inquiry.id })" class="font-medium hover:underline">
+                        <Link
+                            :href="show.url({ inquiry: inquiry.id })"
+                            class="font-medium hover:underline"
+                        >
                             {{ inquiry.name }}
                         </Link>
                     </TableCell>
-                    <TableCell class="text-muted-foreground">{{ inquiry.email }}</TableCell>
+                    <TableCell class="text-muted-foreground">{{
+                        inquiry.email
+                    }}</TableCell>
                     <TableCell>
                         <Link
                             v-if="inquiry.property_slug"
@@ -111,7 +125,10 @@ const statusClass = (slug: string | null) => ({
             </TableBody>
         </Table>
 
-        <p v-if="!inquiries.data.length" class="py-10 text-center text-sm text-muted-foreground">
+        <p
+            v-if="!inquiries.data.length"
+            class="py-10 text-center text-sm text-muted-foreground"
+        >
             No inquiries found.
         </p>
     </div>

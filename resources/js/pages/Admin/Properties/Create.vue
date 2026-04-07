@@ -18,7 +18,16 @@ const props = defineProps<{
     buildingAmenities: string[];
 }>();
 
-const { form, submit, propertyTypes, cities, listingTypes, propertyStatuses, unitAmenities, buildingAmenities } = usePropertyForm(props);
+const {
+    form,
+    submit,
+    propertyTypes,
+    cities,
+    listingTypes,
+    propertyStatuses,
+    unitAmenities,
+    buildingAmenities,
+} = usePropertyForm(props);
 </script>
 
 <template>

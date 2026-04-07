@@ -12,7 +12,10 @@ withDefaults(
 
 <template>
     <!-- Sidebar skeleton -->
-    <div v-if="variant === 'sidebar'" class="flex gap-3 rounded-lg border border-white/5 bg-white/5 p-2">
+    <div
+        v-if="variant === 'sidebar'"
+        class="flex gap-3 rounded-lg border border-white/5 bg-white/5 p-2"
+    >
         <Skeleton class="size-20 shrink-0 rounded" />
         <div class="min-w-0 flex-1 space-y-2 py-1">
             <Skeleton class="h-4 w-20" />

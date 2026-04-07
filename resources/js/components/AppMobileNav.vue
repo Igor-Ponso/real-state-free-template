@@ -20,7 +20,8 @@ defineProps<{
 
 const { whenCurrentUrl } = useCurrentUrl();
 
-const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
+const activeItemStyles =
+    'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 </script>
 
 <template>
@@ -32,9 +33,13 @@ const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral
             <SheetContent side="left" class="w-[300px] p-6">
                 <SheetTitle class="sr-only">Navigation menu</SheetTitle>
                 <SheetHeader class="flex justify-start text-left">
-                    <AppLogoIcon class="size-6 fill-current text-black dark:text-white" />
+                    <AppLogoIcon
+                        class="size-6 fill-current text-black dark:text-white"
+                    />
                 </SheetHeader>
-                <div class="flex h-full flex-1 flex-col justify-between space-y-4 py-6">
+                <div
+                    class="flex h-full flex-1 flex-col justify-between space-y-4 py-6"
+                >
                     <nav class="-mx-3 space-y-1">
                         <Link
                             v-for="item in mainNavItems"
@@ -43,7 +48,11 @@ const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral
                             class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
                             :class="whenCurrentUrl(item.href, activeItemStyles)"
                         >
-                            <component v-if="item.icon" :is="item.icon" class="h-5 w-5" />
+                            <component
+                                v-if="item.icon"
+                                :is="item.icon"
+                                class="h-5 w-5"
+                            />
                             {{ item.title }}
                         </Link>
                     </nav>
@@ -56,7 +65,11 @@ const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral
                             rel="noopener noreferrer"
                             class="flex items-center space-x-2 text-sm font-medium"
                         >
-                            <component v-if="item.icon" :is="item.icon" class="h-5 w-5" />
+                            <component
+                                v-if="item.icon"
+                                :is="item.icon"
+                                class="h-5 w-5"
+                            />
                             <span>{{ item.title }}</span>
                         </a>
                     </div>

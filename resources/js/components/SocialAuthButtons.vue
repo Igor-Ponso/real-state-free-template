@@ -23,10 +23,10 @@ const providerConfig: Record<SocialProvider, { label: string }> = {
 <template>
     <div v-if="providers.length > 0" class="grid gap-6">
         <div
-            class="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t"
+            class="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border"
         >
             <span
-                class="bg-background text-muted-foreground relative z-10 px-2"
+                class="relative z-10 bg-background px-2 text-muted-foreground"
             >
                 Or continue with
             </span>

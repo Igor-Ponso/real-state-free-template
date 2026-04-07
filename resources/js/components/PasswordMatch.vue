@@ -26,10 +26,7 @@ const matches = computed(
             v-if="hasInput"
             class="flex items-center gap-2 pt-1 text-sm transition-colors duration-200"
         >
-            <Check
-                v-if="matches"
-                class="size-3.5 shrink-0 text-green-500"
-            />
+            <Check v-if="matches" class="size-3.5 shrink-0 text-green-500" />
             <X v-else class="size-3.5 shrink-0 text-destructive" />
             <span
                 :class="

@@ -26,7 +26,8 @@ export const usePropertyInteractions = (): PropertyInteractions => {
     const dismissedIds = useLocalStorage<number[]>('sovereign-dismissed', []);
 
     const isFavorite = (id: number): boolean => favoriteIds.value.includes(id);
-    const isDismissed = (id: number): boolean => dismissedIds.value.includes(id);
+    const isDismissed = (id: number): boolean =>
+        dismissedIds.value.includes(id);
 
     const toggleFavorite = (id: number) => {
         const idx = favoriteIds.value.indexOf(id);

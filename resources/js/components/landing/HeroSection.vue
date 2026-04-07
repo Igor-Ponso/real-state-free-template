@@ -12,7 +12,9 @@ onMounted(() => {
 });
 
 const scrollToProperties = () => {
-    document.querySelector('#properties')?.scrollIntoView({ behavior: 'smooth' });
+    document
+        .querySelector('#properties')
+        ?.scrollIntoView({ behavior: 'smooth' });
 };
 </script>
 
@@ -24,26 +26,40 @@ const scrollToProperties = () => {
             video-mp4-src="/videos/auth/luxury-real-estate.mp4"
         />
 
-        <div class="absolute inset-0 bg-linear-to-b from-black/50 via-black/20 to-black/60" />
+        <div
+            class="absolute inset-0 bg-linear-to-b from-black/50 via-black/20 to-black/60"
+        />
 
         <div class="relative z-10 mx-auto max-w-4xl px-6 text-center">
             <h1
                 class="font-serif text-5xl font-bold tracking-tight text-white transition-all duration-700 md:text-7xl"
-                :class="isMounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                :class="
+                    isMounted
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-8 opacity-0'
+                "
             >
                 Where Luxury Meets Home
             </h1>
 
             <p
                 class="mx-auto mt-6 max-w-2xl font-body text-lg font-light text-white/80 transition-all delay-300 duration-700 md:text-xl"
-                :class="isMounted ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
+                :class="
+                    isMounted
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-5 opacity-0'
+                "
             >
                 Discover exceptional properties curated for discerning buyers
             </p>
 
             <div
                 class="mt-10 transition-all delay-500 duration-700"
-                :class="isMounted ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
+                :class="
+                    isMounted
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-5 opacity-0'
+                "
             >
                 <Button
                     size="lg"

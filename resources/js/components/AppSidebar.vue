@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Building2, FolderGit2, Inbox, LayoutGrid } from 'lucide-vue-next';
+import {
+    BookOpen,
+    Building2,
+    FolderGit2,
+    Inbox,
+    LayoutGrid,
+} from 'lucide-vue-next';
 
 import { index as adminDashboard } from '@/actions/App/Http/Controllers/Admin/DashboardController';
 import { index as adminInquiries } from '@/actions/App/Http/Controllers/Admin/InquiryController';

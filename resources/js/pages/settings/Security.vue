@@ -60,7 +60,11 @@ onUnmounted(() => clearTwoFactorAuthData());
         <Heading
             variant="small"
             :title="props.hasPassword ? 'Update password' : 'Set a password'"
-            :description="props.hasPassword ? 'Ensure your account is using a long, random password to stay secure' : 'Set a password to enable email-based login alongside your social account'"
+            :description="
+                props.hasPassword
+                    ? 'Ensure your account is using a long, random password to stay secure'
+                    : 'Set a password to enable email-based login alongside your social account'
+            "
         />
 
         <Form

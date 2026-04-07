@@ -61,7 +61,8 @@ const emit = defineEmits<{
     clear: [];
 }>();
 
-const LABEL = 'mb-1 block font-body text-2xs font-medium tracking-wider text-white/40 uppercase';
+const LABEL =
+    'mb-1 block font-body text-2xs font-medium tracking-wider text-white/40 uppercase';
 
 const listingValue = computed({
     get: () => selectedListings.value[0] ?? '',

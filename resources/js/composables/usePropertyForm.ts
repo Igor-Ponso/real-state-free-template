@@ -23,13 +23,22 @@ export const usePropertyForm = (options: UsePropertyFormOptions) => {
     const form = useForm({
         title: options.property?.title ?? '',
         description: options.property?.description ?? '',
-        property_type_id: options.property?.property_type_id ?? (options.propertyTypes[0]?.id ?? ''),
-        listing_type_id: options.property?.listing_type_id ?? (options.listingTypes[0]?.id ?? ''),
-        property_status_id: options.property?.property_status_id ?? (options.propertyStatuses[0]?.id ?? ''),
+        property_type_id:
+            options.property?.property_type_id ??
+            options.propertyTypes[0]?.id ??
+            '',
+        listing_type_id:
+            options.property?.listing_type_id ??
+            options.listingTypes[0]?.id ??
+            '',
+        property_status_id:
+            options.property?.property_status_id ??
+            options.propertyStatuses[0]?.id ??
+            '',
         price: options.property?.price_raw ?? 0,
         currency: options.property?.currency ?? 'CAD',
         address: options.property?.address ?? '',
-        city_id: options.property?.city_id ?? (options.cities[0]?.id ?? ''),
+        city_id: options.property?.city_id ?? options.cities[0]?.id ?? '',
         neighborhood: options.property?.neighborhood ?? '',
         state: options.property?.state ?? '',
         zip_code: options.property?.zip_code ?? '',

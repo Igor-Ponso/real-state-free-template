@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { Deferred, Head, Link } from '@inertiajs/vue3';
-import { ArrowLeft, Bath, BedDouble, EyeOff, Heart, Maximize } from 'lucide-vue-next';
+import {
+    ArrowLeft,
+    Bath,
+    BedDouble,
+    EyeOff,
+    Heart,
+    Maximize,
+} from 'lucide-vue-next';
 import { defineAsyncComponent, onMounted, ref } from 'vue';
 
 import CookieConsent from '@/components/CookieConsent.vue';
@@ -67,12 +74,8 @@ const {
     filters: () => props.filters,
 });
 
-const {
-    isFavorite,
-    isDismissed,
-    toggleFavorite,
-    toggleDismissed,
-} = usePropertyInteractions();
+const { isFavorite, isDismissed, toggleFavorite, toggleDismissed } =
+    usePropertyInteractions();
 
 // Client-only flag — prevents SSR hydration mismatch for Leaflet map
 // @see https://vuejs.org/guide/scaling-up/ssr.html#hydration-mismatch
@@ -89,24 +92,35 @@ onMounted(() => {
         <LandingHeader :can-register="canRegister ?? true" />
 
         <!-- Hero -->
-        <section class="bg-linear-to-b from-landing-deep-teal to-landing-charcoal pt-28 pb-8">
+        <section
+            class="bg-linear-to-b from-landing-deep-teal to-landing-charcoal pt-28 pb-8"
+        >
             <div class="mx-auto max-w-7xl px-6 text-center">
-                <h1 class="font-serif text-4xl font-semibold tracking-tight text-white md:text-5xl">
+                <h1
+                    class="font-serif text-4xl font-semibold tracking-tight text-white md:text-5xl"
+                >
                     Our Properties
                 </h1>
                 <p class="mx-auto mt-4 max-w-xl font-body text-white/60">
-                    Browse our exclusive portfolio of luxury properties across Canada
+                    Browse our exclusive portfolio of luxury properties across
+                    Canada
                 </p>
             </div>
         </section>
 
         <!-- Filters -->
-        <section class="sticky top-16 z-40 border-b border-white/10 bg-landing-charcoal/95 backdrop-blur-md">
+        <section
+            class="sticky top-16 z-40 border-b border-white/10 bg-landing-charcoal/95 backdrop-blur-md"
+        >
             <div class="mx-auto max-w-7xl px-6 py-4">
                 <Deferred data="filters">
                     <template #fallback>
                         <div class="flex gap-3">
-                            <Skeleton v-for="i in 7" :key="i" class="h-14 w-32" />
+                            <Skeleton
+                                v-for="i in 7"
+                                :key="i"
+                                class="h-14 w-32"
+                            />
                         </div>
                     </template>
 
@@ -117,7 +131,9 @@ onMounted(() => {
                         v-model:selected-bedrooms="selectedBedrooms"
                         v-model:selected-bathrooms="selectedBathrooms"
                         v-model:selected-unit-amenities="selectedUnitAmenities"
-                        v-model:selected-building-amenities="selectedBuildingAmenities"
+                        v-model:selected-building-amenities="
+                            selectedBuildingAmenities
+                        "
                         v-model:selected-sort="selectedSort"
                         v-model:min-price="minPrice"
                         v-model:max-price="maxPrice"
@@ -143,7 +159,10 @@ onMounted(() => {
         >
             <div class="mx-auto max-w-7xl">
                 <!-- Loading skeleton -->
-                <div v-if="isLoading" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div
+                    v-if="isLoading"
+                    class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                >
                     <PropertyCardSkeleton v-for="n in 12" :key="n" />
                 </div>
 
@@ -167,8 +186,14 @@ onMounted(() => {
 
                 <!-- Empty state -->
                 <div v-else class="py-20 text-center">
-                    <p class="font-serif text-xl text-white/50">No properties found</p>
-                    <Button variant="outline" class="mt-4 border-white/20 text-white hover:bg-white/10" @click="clearFilters">
+                    <p class="font-serif text-xl text-white/50">
+                        No properties found
+                    </p>
+                    <Button
+                        variant="outline"
+                        class="mt-4 border-white/20 text-white hover:bg-white/10"
+                        @click="clearFilters"
+                    >
                         Clear filters
                     </Button>
                 </div>
@@ -179,15 +204,25 @@ onMounted(() => {
                     :per-page="perPage"
                     show-results
                     @page-change="goToPage"
-                    @update:per-page="(v: string) => { perPage = v; applyFilters(); }"
+                    @update:per-page="
+                        (v: string) => {
+                            perPage = v;
+                            applyFilters();
+                        }
+                    "
                 />
             </div>
         </section>
 
         <!-- Map view — v-if mounts fresh, guarded by isMounted for Leaflet SSR safety -->
-        <section v-if="viewMode === 'map' && isMounted" class="relative z-0 min-h-[70vh]">
+        <section
+            v-if="viewMode === 'map' && isMounted"
+            class="relative z-0 min-h-[70vh]"
+        >
             <div class="flex h-[calc(100vh-8rem)]">
-                <div class="w-full overflow-y-auto border-r border-white/10 bg-landing-charcoal p-4 sm:w-80 lg:w-96">
+                <div
+                    class="w-full overflow-y-auto border-r border-white/10 bg-landing-charcoal p-4 sm:w-80 lg:w-96"
+                >
                     <!-- Selected property detail -->
                     <div v-if="selectedMapProperty">
                         <button
@@ -197,25 +232,35 @@ onMounted(() => {
                             <ArrowLeft class="size-3.5" />
                             Back to list
                         </button>
-                        <div class="overflow-hidden rounded-lg border border-white/10">
+                        <div
+                            class="overflow-hidden rounded-lg border border-white/10"
+                        >
                             <img
                                 :src="selectedMapProperty.images[0]"
                                 :alt="selectedMapProperty.title"
                                 class="aspect-video w-full object-cover"
                             />
                         </div>
-                        <h3 class="mt-3 font-serif text-lg font-semibold text-white">
+                        <h3
+                            class="mt-3 font-serif text-lg font-semibold text-white"
+                        >
                             {{ selectedMapProperty.title }}
                         </h3>
                         <p class="mt-1 font-body text-sm text-white/40">
                             {{ selectedMapProperty.location }}
                         </p>
-                        <p class="mt-2 font-serif text-xl font-bold text-landing-gold">
+                        <p
+                            class="mt-2 font-serif text-xl font-bold text-landing-gold"
+                        >
                             {{ selectedMapProperty.price }}
                         </p>
-                        <div class="mt-3 flex gap-4 font-body text-sm text-white/50">
+                        <div
+                            class="mt-3 flex gap-4 font-body text-sm text-white/50"
+                        >
                             <span class="flex items-center gap-1">
-                                <BedDouble class="size-4 text-landing-gold/60" />
+                                <BedDouble
+                                    class="size-4 text-landing-gold/60"
+                                />
                                 {{ selectedMapProperty.bedrooms }} bd
                             </span>
                             <span class="flex items-center gap-1">
@@ -227,14 +272,29 @@ onMounted(() => {
                                 {{ selectedMapProperty.area_sqft }} sqft
                             </span>
                         </div>
-                        <p v-if="selectedMapProperty.description" class="mt-3 line-clamp-3 font-body text-xs leading-relaxed text-white/40">
+                        <p
+                            v-if="selectedMapProperty.description"
+                            class="mt-3 line-clamp-3 font-body text-xs leading-relaxed text-white/40"
+                        >
                             {{ selectedMapProperty.description }}
                         </p>
-                        <div v-if="selectedMapProperty.listing_type || selectedMapProperty.property_type" class="mt-3 flex gap-2">
-                            <Badge v-if="selectedMapProperty.listing_type" class="border-0 bg-landing-gold px-2 py-0.5 font-body text-2xs font-semibold tracking-wider text-white uppercase">
+                        <div
+                            v-if="
+                                selectedMapProperty.listing_type ||
+                                selectedMapProperty.property_type
+                            "
+                            class="mt-3 flex gap-2"
+                        >
+                            <Badge
+                                v-if="selectedMapProperty.listing_type"
+                                class="border-0 bg-landing-gold px-2 py-0.5 font-body text-2xs font-semibold tracking-wider text-white uppercase"
+                            >
                                 {{ selectedMapProperty.listing_type }}
                             </Badge>
-                            <Badge v-if="selectedMapProperty.property_type" class="border-0 bg-white/10 px-2 py-0.5 font-body text-2xs text-white/80">
+                            <Badge
+                                v-if="selectedMapProperty.property_type"
+                                class="border-0 bg-white/10 px-2 py-0.5 font-body text-2xs text-white/80"
+                            >
                                 {{ selectedMapProperty.property_type }}
                             </Badge>
                         </div>
@@ -242,23 +302,47 @@ onMounted(() => {
                             <Button
                                 variant="outline"
                                 class="flex-1 border-white/10 text-white hover:bg-white/10"
-                                :class="isFavorite(selectedMapProperty.id) ? 'border-red-500/30 text-red-400' : ''"
+                                :class="
+                                    isFavorite(selectedMapProperty.id)
+                                        ? 'border-red-500/30 text-red-400'
+                                        : ''
+                                "
                                 @click="toggleFavorite(selectedMapProperty.id)"
                             >
-                                <Heart class="mr-1.5 size-4" :fill="isFavorite(selectedMapProperty.id) ? 'currentColor' : 'none'" />
-                                {{ isFavorite(selectedMapProperty.id) ? 'Saved' : 'Save' }}
+                                <Heart
+                                    class="mr-1.5 size-4"
+                                    :fill="
+                                        isFavorite(selectedMapProperty.id)
+                                            ? 'currentColor'
+                                            : 'none'
+                                    "
+                                />
+                                {{
+                                    isFavorite(selectedMapProperty.id)
+                                        ? 'Saved'
+                                        : 'Save'
+                                }}
                             </Button>
                             <Button
                                 variant="outline"
                                 class="border-white/10 text-white/50 hover:bg-white/10"
-                                @click="toggleDismissed(selectedMapProperty.id); clearMapSelection();"
+                                @click="
+                                    toggleDismissed(selectedMapProperty.id);
+                                    clearMapSelection();
+                                "
                             >
                                 <EyeOff class="mr-1.5 size-4" />
                                 Hide
                             </Button>
                         </div>
-                        <Button as-child class="mt-2 w-full bg-landing-gold font-body text-landing-gold-foreground hover:bg-landing-gold/90">
-                            <Link :href="`/properties/${selectedMapProperty.slug}`" prefetch>
+                        <Button
+                            as-child
+                            class="mt-2 w-full bg-landing-gold font-body text-landing-gold-foreground hover:bg-landing-gold/90"
+                        >
+                            <Link
+                                :href="`/properties/${selectedMapProperty.slug}`"
+                                prefetch
+                            >
                                 View Property Details
                             </Link>
                         </Button>
@@ -279,10 +363,17 @@ onMounted(() => {
                                 @mouseenter="hoveredPropertyId = property.id"
                                 @mouseleave="hoveredPropertyId = null"
                             >
-                                <PropertyCard :property="property" variant="sidebar" />
+                                <PropertyCard
+                                    :property="property"
+                                    variant="sidebar"
+                                />
                             </Link>
                         </div>
-                        <PropertyPagination :meta="properties.meta" variant="compact" @page-change="goToPage" />
+                        <PropertyPagination
+                            :meta="properties.meta"
+                            variant="compact"
+                            @page-change="goToPage"
+                        />
                     </template>
                 </div>
                 <div class="hidden flex-1 sm:block">
@@ -298,8 +389,12 @@ onMounted(() => {
                             @toggle-dismissed="toggleDismissed"
                         />
                         <template #fallback>
-                            <div class="flex h-full items-center justify-center bg-landing-charcoal">
-                                <div class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent" />
+                            <div
+                                class="flex h-full items-center justify-center bg-landing-charcoal"
+                            >
+                                <div
+                                    class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent"
+                                />
                             </div>
                         </template>
                     </Suspense>

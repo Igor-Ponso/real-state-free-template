@@ -52,7 +52,9 @@ const entries = computed(() =>
                     class="mt-0.5 size-4 shrink-0 text-landing-gold/70"
                 />
                 <div>
-                    <p class="font-body text-xs tracking-wider text-white/40 uppercase">
+                    <p
+                        class="font-body text-xs tracking-wider text-white/40 uppercase"
+                    >
                         {{ feature.label }}
                     </p>
                     <p class="font-body text-sm font-medium text-white/80">

@@ -36,14 +36,26 @@ const onSourceError = () => {
         />
 
         <video
-            v-if="isMounted && !isMobile && !videoError && (videoWebmSrc || videoMp4Src)"
+            v-if="
+                isMounted &&
+                !isMobile &&
+                !videoError &&
+                (videoWebmSrc || videoMp4Src)
+            "
             autoplay
             muted
             loop
             playsinline
             :poster="posterSrc"
             class="absolute inset-0 h-full w-full object-cover"
-            :ref="(el) => { if (el) totalSources = (el as HTMLVideoElement).querySelectorAll('source').length }"
+            :ref="
+                (el) => {
+                    if (el)
+                        totalSources = (
+                            el as HTMLVideoElement
+                        ).querySelectorAll('source').length;
+                }
+            "
         >
             <source
                 v-if="videoWebmSrc"

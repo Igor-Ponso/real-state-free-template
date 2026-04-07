@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/vue3';
-import {   computed, onBeforeUnmount, ref, watch } from 'vue';
-import type {ComputedRef, Ref} from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 
 import type {
     AppliedFilters,
@@ -40,7 +40,11 @@ interface UsePropertyFiltersReturn {
     isRental: ComputedRef<boolean>;
     hasActiveFilters: ComputedRef<boolean>;
     toggleMulti: (arr: string[], val: string) => void;
-    multiLabel: (selected: string[], options: FilterOption[] | undefined, fallback: string) => string;
+    multiLabel: (
+        selected: string[],
+        options: FilterOption[] | undefined,
+        fallback: string,
+    ) => string;
     applyFilters: () => void;
     clearFilters: () => void;
     goToPage: (page: number) => void;
@@ -61,7 +65,9 @@ const toArr = (val: unknown): string[] => {
     return [];
 };
 
-export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePropertyFiltersReturn => {
+export const usePropertyFilters = (
+    options: UsePropertyFiltersOptions,
+): UsePropertyFiltersReturn => {
     const applied = options.appliedFilters();
     const meta = options.properties().meta;
 
@@ -79,7 +85,9 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
     const selectedBathrooms = ref<string[]>(toArr(applied.bathrooms));
     const bathroomsExact = ref(applied.bathrooms_exact === '1');
     const selectedUnitAmenities = ref<string[]>(toArr(applied.unit_amenities));
-    const selectedBuildingAmenities = ref<string[]>(toArr(applied.building_amenities));
+    const selectedBuildingAmenities = ref<string[]>(
+        toArr(applied.building_amenities),
+    );
     const selectedSort = ref(applied.sort ?? 'newest');
     const minPrice = ref(applied.min_price ?? '');
     const maxPrice = ref(applied.max_price ?? '');
@@ -104,12 +112,12 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
     });
 
     const isRental = computed(
-        () => selectedListings.value.includes('rental') && !selectedListings.value.includes('sale'),
+        () =>
+            selectedListings.value.includes('rental') &&
+            !selectedListings.value.includes('sale'),
     );
 
-    const isStudio = computed(
-        () => selectedTypes.value.includes('studio'),
-    );
+    const isStudio = computed(() => selectedTypes.value.includes('studio'));
 
     // Clear bedrooms when studio is selected (studios have 0 bedrooms)
     watch(isStudio, (studio) => {
@@ -146,13 +154,19 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         }
     };
 
-    const multiLabel = (selected: string[], opts: FilterOption[] | undefined, fallback: string): string => {
+    const multiLabel = (
+        selected: string[],
+        opts: FilterOption[] | undefined,
+        fallback: string,
+    ): string => {
         if (!selected.length) {
             return fallback;
         }
 
         if (selected.length === 1) {
-            return opts?.find((o) => o.slug === selected[0])?.name ?? selected[0];
+            return (
+                opts?.find((o) => o.slug === selected[0])?.name ?? selected[0]
+            );
         }
 
         return `${selected.length} selected`;
@@ -162,60 +176,60 @@ export const usePropertyFilters = (options: UsePropertyFiltersOptions): UsePrope
         const params: Record<string, string | string[]> = {};
 
         if (search.value) {
-params.search = search.value;
-}
+            params.search = search.value;
+        }
 
         if (selectedTypes.value.length) {
-params.type = selectedTypes.value;
-}
+            params.type = selectedTypes.value;
+        }
 
         if (selectedCities.value.length) {
-params.city = selectedCities.value;
-}
+            params.city = selectedCities.value;
+        }
 
         if (selectedListings.value.length) {
-params.listing = selectedListings.value;
-}
+            params.listing = selectedListings.value;
+        }
 
         if (selectedBedrooms.value.length) {
             params.bedrooms = selectedBedrooms.value;
 
             if (bedroomsExact.value) {
-params.bedrooms_exact = '1';
-}
+                params.bedrooms_exact = '1';
+            }
         }
 
         if (selectedBathrooms.value.length) {
             params.bathrooms = selectedBathrooms.value;
 
             if (bathroomsExact.value) {
-params.bathrooms_exact = '1';
-}
+                params.bathrooms_exact = '1';
+            }
         }
 
         if (selectedUnitAmenities.value.length) {
-params.unit_amenities = selectedUnitAmenities.value;
-}
+            params.unit_amenities = selectedUnitAmenities.value;
+        }
 
         if (selectedBuildingAmenities.value.length) {
-params.building_amenities = selectedBuildingAmenities.value;
-}
+            params.building_amenities = selectedBuildingAmenities.value;
+        }
 
         if (minPrice.value) {
-params.min_price = minPrice.value;
-}
+            params.min_price = minPrice.value;
+        }
 
         if (maxPrice.value) {
-params.max_price = maxPrice.value;
-}
+            params.max_price = maxPrice.value;
+        }
 
         if (selectedSort.value !== 'newest') {
-params.sort = selectedSort.value;
-}
+            params.sort = selectedSort.value;
+        }
 
         if (perPage.value !== '12') {
-params.per_page = perPage.value;
-}
+            params.per_page = perPage.value;
+        }
 
         isLoading.value = true;
         router.visit('/properties', {

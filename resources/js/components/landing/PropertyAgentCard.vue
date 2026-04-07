@@ -26,13 +26,20 @@ const initials = (name: string): string =>
             <div class="flex items-center gap-4">
                 <Avatar class="size-14">
                     <AvatarImage :src="agent.avatar" :alt="agent.name" />
-                    <AvatarFallback class="bg-landing-deep-teal font-serif text-white">
+                    <AvatarFallback
+                        class="bg-landing-deep-teal font-serif text-white"
+                    >
                         {{ initials(agent.name) }}
                     </AvatarFallback>
                 </Avatar>
                 <div>
-                    <p class="font-serif font-semibold text-white">{{ agent.name }}</p>
-                    <div v-if="agent.specializations.length" class="mt-1 flex flex-wrap gap-1">
+                    <p class="font-serif font-semibold text-white">
+                        {{ agent.name }}
+                    </p>
+                    <div
+                        v-if="agent.specializations.length"
+                        class="mt-1 flex flex-wrap gap-1"
+                    >
                         <Badge
                             v-for="spec in agent.specializations.slice(0, 2)"
                             :key="spec"

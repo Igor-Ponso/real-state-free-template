@@ -30,8 +30,8 @@ const handleUpload = (event: Event) => {
     const files = (event.target as HTMLInputElement).files;
 
     if (!files?.length) {
-return;
-}
+        return;
+    }
 
     const formData = new FormData();
     Array.from(files).forEach((f) => formData.append('files[]', f));
@@ -60,12 +60,14 @@ const deleteMedia = (mediaId: number) => {
         <!-- Upload zone -->
         <button
             type="button"
-            class="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 transition-colors hover:border-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            class="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 transition-colors hover:border-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             @click="fileInput?.click()"
         >
             <Upload class="mb-2 size-8 text-muted-foreground" />
             <p class="text-sm text-muted-foreground">Click to upload images</p>
-            <p class="mt-1 text-xs text-muted-foreground/60">JPEG, PNG, WebP — max 10MB each</p>
+            <p class="mt-1 text-xs text-muted-foreground/60">
+                JPEG, PNG, WebP — max 10MB each
+            </p>
             <input
                 ref="fileInput"
                 type="file"
@@ -76,10 +78,15 @@ const deleteMedia = (mediaId: number) => {
             />
         </button>
 
-        <p v-if="uploading" class="text-sm text-muted-foreground">Uploading...</p>
+        <p v-if="uploading" class="text-sm text-muted-foreground">
+            Uploading...
+        </p>
 
         <!-- Image grid -->
-        <div v-if="media.length" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div
+            v-if="media.length"
+            class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+        >
             <div
                 v-for="item in media"
                 :key="item.id"
@@ -105,16 +112,21 @@ const deleteMedia = (mediaId: number) => {
                         <AlertDialogHeader>
                             <AlertDialogTitle>Delete Image</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This will permanently remove this image. This action cannot be undone.
+                                This will permanently remove this image. This
+                                action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction @click="deleteMedia(item.id)">Delete</AlertDialogAction>
+                            <AlertDialogAction @click="deleteMedia(item.id)"
+                                >Delete</AlertDialogAction
+                            >
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
-                <p class="truncate px-2 py-1 text-xs text-muted-foreground">{{ item.name }}</p>
+                <p class="truncate px-2 py-1 text-xs text-muted-foreground">
+                    {{ item.name }}
+                </p>
             </div>
         </div>
 

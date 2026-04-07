@@ -75,8 +75,16 @@ const rightNavItems: NavItem[] = [
         <div class="border-b border-sidebar-border/80">
             <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                 <!-- Mobile Menu -->
-                <AppMobileNav :main-nav-items="mainNavItems" :right-nav-items="rightNavItems">
-                    <Button variant="ghost" size="icon" aria-label="Open menu" class="mr-2 h-9 w-9">
+                <AppMobileNav
+                    :main-nav-items="mainNavItems"
+                    :right-nav-items="rightNavItems"
+                >
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Open menu"
+                        class="mr-2 h-9 w-9"
+                    >
                         <Menu class="h-5 w-5" />
                     </Button>
                 </AppMobileNav>

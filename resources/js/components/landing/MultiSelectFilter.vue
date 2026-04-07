@@ -139,7 +139,7 @@ watch(searchTerm, (val) => {
                 </PopoverAnchor>
 
                 <PopoverContent
-                    class="min-w-[--reka-popper-anchor-width] w-72 p-2"
+                    class="w-72 min-w-[--reka-popper-anchor-width] p-2"
                     @open-auto-focus.prevent
                 >
                     <ListboxContent

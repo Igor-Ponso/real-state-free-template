@@ -39,10 +39,16 @@ const handleClear = () => {
     <div class="md:hidden">
         <Sheet v-model:open="open">
             <SheetTrigger as-child>
-                <Button variant="outline" class="border-white/10 bg-white/5 text-white">
+                <Button
+                    variant="outline"
+                    class="border-white/10 bg-white/5 text-white"
+                >
                     <Filter class="mr-2 size-4" />
                     Filters
-                    <Badge v-if="activeCount" class="ml-2 bg-landing-gold text-white">
+                    <Badge
+                        v-if="activeCount"
+                        class="ml-2 bg-landing-gold text-white"
+                    >
                         {{ activeCount }}
                     </Badge>
                 </Button>
@@ -55,10 +61,17 @@ const handleClear = () => {
                     <slot />
                 </div>
                 <SheetFooter class="flex gap-2">
-                    <Button class="flex-1 bg-landing-gold text-white hover:bg-landing-gold/90" @click="handleApply">
+                    <Button
+                        class="flex-1 bg-landing-gold text-white hover:bg-landing-gold/90"
+                        @click="handleApply"
+                    >
                         Apply Filters
                     </Button>
-                    <Button variant="outline" class="flex-1" @click="handleClear">
+                    <Button
+                        variant="outline"
+                        class="flex-1"
+                        @click="handleClear"
+                    >
                         Clear All
                     </Button>
                 </SheetFooter>

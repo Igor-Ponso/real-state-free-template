@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { Deferred, Head, Link } from '@inertiajs/vue3';
-import {
-    ArrowLeft,
-    Building2,
-    ChevronRight,
-    MapPin,
-} from 'lucide-vue-next';
+import { ArrowLeft, Building2, ChevronRight, MapPin } from 'lucide-vue-next';
 import { computed, defineAsyncComponent } from 'vue';
 
 import { show } from '@/actions/App/Http/Controllers/PropertyController';
@@ -44,11 +39,15 @@ const props = defineProps<{
     canRegister?: boolean;
 }>();
 
-const { target: descriptionRef, isVisible: descriptionVisible } = useFadeInOnScroll();
+const { target: descriptionRef, isVisible: descriptionVisible } =
+    useFadeInOnScroll();
 
 const mapCenter = computed<[number, number] | null>(() => {
     if (props.property.latitude && props.property.longitude) {
-        return [parseFloat(props.property.latitude), parseFloat(props.property.longitude)];
+        return [
+            parseFloat(props.property.latitude),
+            parseFloat(props.property.longitude),
+        ];
     }
 
     return null;
@@ -67,8 +66,14 @@ const fullAddress = computed(() => {
     return parts.filter(Boolean).join(', ');
 });
 
-const pageTitle = computed(() => props.property.meta_title || props.property.title);
-const pageDescription = computed(() => props.property.meta_description || props.property.description.substring(0, 160));
+const pageTitle = computed(
+    () => props.property.meta_title || props.property.title,
+);
+const pageDescription = computed(
+    () =>
+        props.property.meta_description ||
+        props.property.description.substring(0, 160),
+);
 </script>
 
 <template>
@@ -77,20 +82,37 @@ const pageDescription = computed(() => props.property.meta_description || props.
             <meta name="description" :content="pageDescription" />
             <meta property="og:title" :content="pageTitle" />
             <meta property="og:description" :content="pageDescription" />
-            <meta v-if="property.images.length" property="og:image" :content="property.images[0]" />
+            <meta
+                v-if="property.images.length"
+                property="og:image"
+                :content="property.images[0]"
+            />
         </Head>
 
         <LandingHeader :can-register="canRegister ?? false" />
 
         <!-- Hero gallery -->
-        <section class="bg-linear-to-b from-landing-deep-teal to-landing-charcoal pt-20">
+        <section
+            class="bg-linear-to-b from-landing-deep-teal to-landing-charcoal pt-20"
+        >
             <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-                <nav class="mb-4 flex items-center gap-1 font-body text-sm text-white/40">
-                    <Link href="/properties" class="transition-colors hover:text-landing-gold">Properties</Link>
+                <nav
+                    class="mb-4 flex items-center gap-1 font-body text-sm text-white/40"
+                >
+                    <Link
+                        href="/properties"
+                        class="transition-colors hover:text-landing-gold"
+                        >Properties</Link
+                    >
                     <ChevronRight class="size-3.5" />
-                    <span class="truncate text-white/60">{{ property.title }}</span>
+                    <span class="truncate text-white/60">{{
+                        property.title
+                    }}</span>
                 </nav>
-                <PropertyImageGallery :images="property.images" :title="property.title" />
+                <PropertyImageGallery
+                    :images="property.images"
+                    :title="property.title"
+                />
             </div>
         </section>
 
@@ -100,22 +122,41 @@ const pageDescription = computed(() => props.property.meta_description || props.
                 <!-- Property header -->
                 <div class="mb-8">
                     <div class="flex flex-wrap items-start gap-3">
-                        <Badge v-if="property.listing_type" class="border-0 bg-landing-gold px-2.5 py-1 font-body text-xs font-semibold tracking-wider text-white uppercase">
+                        <Badge
+                            v-if="property.listing_type"
+                            class="border-0 bg-landing-gold px-2.5 py-1 font-body text-xs font-semibold tracking-wider text-white uppercase"
+                        >
                             {{ property.listing_type }}
                         </Badge>
-                        <Badge v-if="property.property_type" class="border-0 bg-white/10 px-2.5 py-1 font-body text-xs text-white/80 backdrop-blur-sm">
+                        <Badge
+                            v-if="property.property_type"
+                            class="border-0 bg-white/10 px-2.5 py-1 font-body text-xs text-white/80 backdrop-blur-sm"
+                        >
                             {{ property.property_type }}
                         </Badge>
-                        <Badge v-if="property.property_status" class="border-0 bg-landing-deep-teal px-2.5 py-1 font-body text-xs text-white/80">
+                        <Badge
+                            v-if="property.property_status"
+                            class="border-0 bg-landing-deep-teal px-2.5 py-1 font-body text-xs text-white/80"
+                        >
                             {{ property.property_status }}
                         </Badge>
                     </div>
-                    <h1 class="mt-4 font-serif text-3xl font-bold text-white md:text-4xl">{{ property.title }}</h1>
-                    <p class="mt-2 flex items-center gap-1 font-body text-sm text-white/50">
+                    <h1
+                        class="mt-4 font-serif text-3xl font-bold text-white md:text-4xl"
+                    >
+                        {{ property.title }}
+                    </h1>
+                    <p
+                        class="mt-2 flex items-center gap-1 font-body text-sm text-white/50"
+                    >
                         <MapPin class="size-4 text-landing-gold/60" />
                         {{ fullAddress }}
                     </p>
-                    <p class="mt-4 font-serif text-3xl font-bold text-landing-gold">{{ property.price }}</p>
+                    <p
+                        class="mt-4 font-serif text-3xl font-bold text-landing-gold"
+                    >
+                        {{ property.price }}
+                    </p>
                 </div>
 
                 <!-- Specs bar -->
@@ -136,18 +177,39 @@ const pageDescription = computed(() => props.property.meta_description || props.
                         <div
                             ref="descriptionRef"
                             class="transition-all duration-700"
-                            :class="descriptionVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'"
+                            :class="
+                                descriptionVisible
+                                    ? 'translate-y-0 opacity-100'
+                                    : 'translate-y-8 opacity-0'
+                            "
                         >
-                            <h2 class="mb-4 font-serif text-xl font-semibold text-white">About This Property</h2>
-                            <p class="whitespace-pre-line font-body leading-relaxed text-white/60">{{ property.description }}</p>
+                            <h2
+                                class="mb-4 font-serif text-xl font-semibold text-white"
+                            >
+                                About This Property
+                            </h2>
+                            <p
+                                class="font-body leading-relaxed whitespace-pre-line text-white/60"
+                            >
+                                {{ property.description }}
+                            </p>
                         </div>
 
                         <Separator class="bg-white/10" />
 
-                        <PropertyAmenities title="Unit Amenities" :amenities="property.unit_amenities" />
-                        <PropertyAmenities title="Building Amenities" :amenities="property.building_amenities" />
+                        <PropertyAmenities
+                            title="Unit Amenities"
+                            :amenities="property.unit_amenities"
+                        />
+                        <PropertyAmenities
+                            title="Building Amenities"
+                            :amenities="property.building_amenities"
+                        />
 
-                        <PropertyFeatures v-if="Object.keys(property.features).length" :features="property.features" />
+                        <PropertyFeatures
+                            v-if="Object.keys(property.features).length"
+                            :features="property.features"
+                        />
 
                         <PropertyRentalDetails
                             v-if="property.is_rental"
@@ -162,11 +224,21 @@ const pageDescription = computed(() => props.property.meta_description || props.
                             <Separator class="mb-10 bg-white/10" />
                             <div class="flex items-center gap-6">
                                 <div>
-                                    <Building2 class="mb-1 size-4 text-landing-gold/70" />
-                                    <p class="font-body text-xs text-white/40">Floor</p>
-                                    <p class="font-body text-sm font-semibold text-white">
+                                    <Building2
+                                        class="mb-1 size-4 text-landing-gold/70"
+                                    />
+                                    <p class="font-body text-xs text-white/40">
+                                        Floor
+                                    </p>
+                                    <p
+                                        class="font-body text-sm font-semibold text-white"
+                                    >
                                         {{ property.floor }}
-                                        <span v-if="property.total_floors" class="text-white/40">/ {{ property.total_floors }}</span>
+                                        <span
+                                            v-if="property.total_floors"
+                                            class="text-white/40"
+                                            >/ {{ property.total_floors }}</span
+                                        >
                                     </p>
                                 </div>
                             </div>
@@ -175,30 +247,53 @@ const pageDescription = computed(() => props.property.meta_description || props.
                         <!-- Location map -->
                         <div v-if="mapCenter">
                             <Separator class="mb-10 bg-white/10" />
-                            <h2 class="mb-4 font-serif text-xl font-semibold text-white">Location</h2>
-                            <div class="overflow-hidden rounded-xl border border-white/10">
+                            <h2
+                                class="mb-4 font-serif text-xl font-semibold text-white"
+                            >
+                                Location
+                            </h2>
+                            <div
+                                class="overflow-hidden rounded-xl border border-white/10"
+                            >
                                 <div class="h-80">
                                     <Suspense>
-                                        <LeafletMap :center="mapCenter" :zoom="13" :marker-title="property.title" />
+                                        <LeafletMap
+                                            :center="mapCenter"
+                                            :zoom="13"
+                                            :marker-title="property.title"
+                                        />
                                         <template #fallback>
-                                            <div class="flex h-80 items-center justify-center bg-landing-deep-teal/30">
-                                                <div class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent" />
+                                            <div
+                                                class="flex h-80 items-center justify-center bg-landing-deep-teal/30"
+                                            >
+                                                <div
+                                                    class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent"
+                                                />
                                             </div>
                                         </template>
                                     </Suspense>
                                 </div>
                             </div>
-                            <p class="mt-2 font-body text-xs text-white/30">{{ fullAddress }}</p>
+                            <p class="mt-2 font-body text-xs text-white/30">
+                                {{ fullAddress }}
+                            </p>
                         </div>
                     </div>
 
                     <!-- Right column (sticky sidebar) -->
                     <div class="lg:col-span-1">
                         <div class="sticky top-24 space-y-6">
-                            <PropertyAgentCard v-if="property.agent" :agent="property.agent" />
-                            <Card class="border-white/10 bg-white/5 backdrop-blur-sm">
+                            <PropertyAgentCard
+                                v-if="property.agent"
+                                :agent="property.agent"
+                            />
+                            <Card
+                                class="border-white/10 bg-white/5 backdrop-blur-sm"
+                            >
                                 <CardContent class="p-5">
-                                    <PropertyInquiryForm :property-id="property.id" />
+                                    <PropertyInquiryForm
+                                        :property-id="property.id"
+                                    />
                                 </CardContent>
                             </Card>
                         </div>
@@ -208,15 +303,27 @@ const pageDescription = computed(() => props.property.meta_description || props.
                 <!-- Similar properties -->
                 <div class="mt-16">
                     <Separator class="mb-10 bg-white/10" />
-                    <h2 class="mb-6 font-serif text-2xl font-semibold text-white">Similar Properties</h2>
+                    <h2
+                        class="mb-6 font-serif text-2xl font-semibold text-white"
+                    >
+                        Similar Properties
+                    </h2>
                     <Deferred data="similarProperties">
                         <template #fallback>
-                            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                                <Skeleton v-for="n in 4" :key="n" class="h-72 rounded-xl bg-white/10" />
+                            <div
+                                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+                            >
+                                <Skeleton
+                                    v-for="n in 4"
+                                    :key="n"
+                                    class="h-72 rounded-xl bg-white/10"
+                                />
                             </div>
                         </template>
 
-                        <div v-if="similarProperties && similarProperties.length">
+                        <div
+                            v-if="similarProperties && similarProperties.length"
+                        >
                             <Carousel class="w-full" :opts="{ align: 'start' }">
                                 <CarouselContent class="-ml-4">
                                     <CarouselItem
@@ -224,25 +331,42 @@ const pageDescription = computed(() => props.property.meta_description || props.
                                         :key="similar.id"
                                         class="basis-full pl-4 sm:basis-1/2 lg:basis-1/4"
                                     >
-                                        <Link :href="show.url(similar.slug)" prefetch class="group">
-                                            <PropertyCard :property="similar" variant="compact" />
+                                        <Link
+                                            :href="show.url(similar.slug)"
+                                            prefetch
+                                            class="group"
+                                        >
+                                            <PropertyCard
+                                                :property="similar"
+                                                variant="compact"
+                                            />
                                         </Link>
                                     </CarouselItem>
                                 </CarouselContent>
-                                <CarouselPrevious class="-left-4 border-white/20 bg-landing-charcoal text-white hover:bg-landing-deep-teal" />
-                                <CarouselNext class="-right-4 border-white/20 bg-landing-charcoal text-white hover:bg-landing-deep-teal" />
+                                <CarouselPrevious
+                                    class="-left-4 border-white/20 bg-landing-charcoal text-white hover:bg-landing-deep-teal"
+                                />
+                                <CarouselNext
+                                    class="-right-4 border-white/20 bg-landing-charcoal text-white hover:bg-landing-deep-teal"
+                                />
                             </Carousel>
                         </div>
 
                         <div v-else class="py-10 text-center">
-                            <p class="font-body text-sm text-white/40">No similar properties found in this area.</p>
+                            <p class="font-body text-sm text-white/40">
+                                No similar properties found in this area.
+                            </p>
                         </div>
                     </Deferred>
                 </div>
 
                 <!-- Back to listings -->
                 <div class="mt-12 text-center">
-                    <Button as-child variant="outline" class="border-white/20 text-white hover:bg-white/10">
+                    <Button
+                        as-child
+                        variant="outline"
+                        class="border-white/20 text-white hover:bg-white/10"
+                    >
                         <Link href="/properties">
                             <ArrowLeft class="mr-2 size-4" />
                             Back to All Properties

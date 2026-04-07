@@ -8,7 +8,11 @@ import PropertyMediaTab from '@/components/admin/PropertyMediaTab.vue';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePropertyForm } from '@/composables/usePropertyForm';
-import type { AdminMediaItem, AdminProperty, LookupOption } from '@/types/admin';
+import type {
+    AdminMediaItem,
+    AdminProperty,
+    LookupOption,
+} from '@/types/admin';
 
 const props = defineProps<{
     property: AdminProperty;
@@ -21,7 +25,16 @@ const props = defineProps<{
     buildingAmenities: string[];
 }>();
 
-const { form, submit, propertyTypes, cities, listingTypes, propertyStatuses, unitAmenities, buildingAmenities } = usePropertyForm(props);
+const {
+    form,
+    submit,
+    propertyTypes,
+    cities,
+    listingTypes,
+    propertyStatuses,
+    unitAmenities,
+    buildingAmenities,
+} = usePropertyForm(props);
 </script>
 
 <template>
@@ -61,7 +74,10 @@ const { form, submit, propertyTypes, cities, listingTypes, propertyStatuses, uni
                 </TabsContent>
 
                 <TabsContent value="media" class="mt-6">
-                    <PropertyMediaTab :property-slug="property.slug" :media="media" />
+                    <PropertyMediaTab
+                        :property-slug="property.slug"
+                        :media="media"
+                    />
                 </TabsContent>
             </Tabs>
 

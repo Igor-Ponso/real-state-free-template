@@ -40,7 +40,9 @@ onMounted(() => {
         <LMarker :lat-lng="props.center">
             <LPopup>
                 <div class="font-body text-sm">
-                    <strong class="text-foreground">{{ props.markerTitle ?? 'Our Office' }}</strong>
+                    <strong class="text-foreground">{{
+                        props.markerTitle ?? 'Our Office'
+                    }}</strong>
                 </div>
             </LPopup>
         </LMarker>

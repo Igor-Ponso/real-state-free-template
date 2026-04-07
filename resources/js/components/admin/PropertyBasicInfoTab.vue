@@ -26,13 +26,25 @@ defineProps<{
         <div>
             <Label for="title">Title</Label>
             <Input id="title" v-model="form.title" class="mt-1" />
-            <p v-if="form.errors?.title" class="mt-1 text-sm text-destructive">{{ form.errors.title }}</p>
+            <p v-if="form.errors?.title" class="mt-1 text-sm text-destructive">
+                {{ form.errors.title }}
+            </p>
         </div>
 
         <div>
             <Label for="description">Description</Label>
-            <Textarea id="description" v-model="form.description" rows="6" class="mt-1" />
-            <p v-if="form.errors?.description" class="mt-1 text-sm text-destructive">{{ form.errors.description }}</p>
+            <Textarea
+                id="description"
+                v-model="form.description"
+                rows="6"
+                class="mt-1"
+            />
+            <p
+                v-if="form.errors?.description"
+                class="mt-1 text-sm text-destructive"
+            >
+                {{ form.errors.description }}
+            </p>
         </div>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -41,7 +53,12 @@ defineProps<{
                 <Select v-model="form.property_type_id">
                     <SelectTrigger class="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem v-for="t in propertyTypes" :key="t.id" :value="String(t.id)">{{ t.name }}</SelectItem>
+                        <SelectItem
+                            v-for="t in propertyTypes"
+                            :key="t.id"
+                            :value="String(t.id)"
+                            >{{ t.name }}</SelectItem
+                        >
                     </SelectContent>
                 </Select>
             </div>
@@ -50,7 +67,12 @@ defineProps<{
                 <Select v-model="form.listing_type_id">
                     <SelectTrigger class="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem v-for="t in listingTypes" :key="t.id" :value="String(t.id)">{{ t.name }}</SelectItem>
+                        <SelectItem
+                            v-for="t in listingTypes"
+                            :key="t.id"
+                            :value="String(t.id)"
+                            >{{ t.name }}</SelectItem
+                        >
                     </SelectContent>
                 </Select>
             </div>
@@ -59,7 +81,12 @@ defineProps<{
                 <Select v-model="form.property_status_id">
                     <SelectTrigger class="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem v-for="s in propertyStatuses" :key="s.id" :value="String(s.id)">{{ s.name }}</SelectItem>
+                        <SelectItem
+                            v-for="s in propertyStatuses"
+                            :key="s.id"
+                            :value="String(s.id)"
+                            >{{ s.name }}</SelectItem
+                        >
                     </SelectContent>
                 </Select>
             </div>
@@ -68,35 +95,76 @@ defineProps<{
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
                 <Label for="price">Price (cents)</Label>
-                <Input id="price" v-model="form.price" type="number" class="mt-1" />
-                <p v-if="form.errors?.price" class="mt-1 text-sm text-destructive">{{ form.errors.price }}</p>
+                <Input
+                    id="price"
+                    v-model="form.price"
+                    type="number"
+                    class="mt-1"
+                />
+                <p
+                    v-if="form.errors?.price"
+                    class="mt-1 text-sm text-destructive"
+                >
+                    {{ form.errors.price }}
+                </p>
             </div>
             <div>
                 <Label for="currency">Currency</Label>
-                <Input id="currency" v-model="form.currency" maxlength="3" class="mt-1" />
+                <Input
+                    id="currency"
+                    v-model="form.currency"
+                    maxlength="3"
+                    class="mt-1"
+                />
             </div>
             <div>
                 <Label for="parking">Parking Spaces</Label>
-                <Input id="parking" v-model="form.parking_spaces" type="number" class="mt-1" />
+                <Input
+                    id="parking"
+                    v-model="form.parking_spaces"
+                    type="number"
+                    class="mt-1"
+                />
             </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div>
                 <Label for="bedrooms">Bedrooms</Label>
-                <Input id="bedrooms" v-model="form.bedrooms" type="number" class="mt-1" />
+                <Input
+                    id="bedrooms"
+                    v-model="form.bedrooms"
+                    type="number"
+                    class="mt-1"
+                />
             </div>
             <div>
                 <Label for="bathrooms">Bathrooms</Label>
-                <Input id="bathrooms" v-model="form.bathrooms" type="number" step="0.5" class="mt-1" />
+                <Input
+                    id="bathrooms"
+                    v-model="form.bathrooms"
+                    type="number"
+                    step="0.5"
+                    class="mt-1"
+                />
             </div>
             <div>
                 <Label for="area">Area (sqft)</Label>
-                <Input id="area" v-model="form.area_sqft" type="number" class="mt-1" />
+                <Input
+                    id="area"
+                    v-model="form.area_sqft"
+                    type="number"
+                    class="mt-1"
+                />
             </div>
             <div>
                 <Label for="year">Year Built</Label>
-                <Input id="year" v-model="form.year_built" type="number" class="mt-1" />
+                <Input
+                    id="year"
+                    v-model="form.year_built"
+                    type="number"
+                    class="mt-1"
+                />
             </div>
         </div>
 

@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight, Bath, BedDouble, ImageOff, Maximize } from 'lucide-vue-next';
+import {
+    ArrowLeft,
+    ArrowRight,
+    Bath,
+    BedDouble,
+    ImageOff,
+    Maximize,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
@@ -23,36 +30,51 @@ const props = withDefaults(
     { variant: 'grid' },
 );
 
-const showCarousel = computed(() => props.variant === 'featured' || props.variant === 'grid');
+const showCarousel = computed(
+    () => props.variant === 'featured' || props.variant === 'grid',
+);
 const showBadges = computed(() => props.variant !== 'sidebar');
-const showPropertyTypeBadge = computed(() => props.variant === 'featured' || props.variant === 'grid');
+const showPropertyTypeBadge = computed(
+    () => props.variant === 'featured' || props.variant === 'grid',
+);
 
 const styles = computed(() => {
     const v = props.variant;
 
     return {
-        card: v === 'featured'
-            ? 'h-full gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40'
-            : 'h-full gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-landing-deep-teal/80 hover:shadow-xl hover:ring-2 hover:ring-landing-gold/30',
+        card:
+            v === 'featured'
+                ? 'h-full gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 shadow-lg backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:bg-landing-deep-teal/80 hover:shadow-2xl hover:ring-2 hover:ring-landing-gold/40'
+                : 'h-full gap-0 overflow-hidden border border-white/10 bg-white/5 py-0 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-landing-deep-teal/80 hover:shadow-xl hover:ring-2 hover:ring-landing-gold/30',
         carouselBtn: v === 'featured' ? 'size-8' : 'size-7',
-        gradient: v === 'featured' ? 'h-20 from-black/40' : 'h-16 from-black/50',
+        gradient:
+            v === 'featured' ? 'h-20 from-black/40' : 'h-16 from-black/50',
         badgePos: v === 'featured' ? 'left-3 top-3' : 'top-2.5 left-2.5',
         badgeText: v === 'featured' ? 'text-xs' : 'text-2xs',
         badgeTypPos: v === 'featured' ? 'right-3 top-3' : 'top-2.5 right-2.5',
         pricePos: v === 'featured' ? 'bottom-3 left-3' : 'bottom-2 left-2.5',
         priceText: v === 'featured' ? 'text-2xl' : 'text-lg',
         content: v === 'featured' ? 'p-5' : 'p-3.5',
-        title: v === 'featured'
-            ? 'font-serif text-lg font-semibold transition-colors group-hover:text-landing-gold'
-            : 'truncate font-serif text-sm font-semibold text-white transition-colors group-hover:text-landing-gold',
-        location: v === 'featured'
-            ? 'mt-1 font-body text-sm text-muted-foreground'
-            : 'mt-0.5 font-body text-xs text-white/40',
-        divider: v === 'featured' ? 'my-4 h-px bg-border' : 'my-2.5 h-px bg-white/10',
-        specIcon: v === 'featured' ? 'size-4 text-landing-gold/70' : 'size-3 text-landing-gold/60',
-        specText: v === 'featured'
-            ? 'flex items-center gap-1.5 font-body text-sm text-muted-foreground'
-            : 'flex items-center gap-1 font-body text-xs text-white/40',
+        title:
+            v === 'featured'
+                ? 'font-serif text-lg font-semibold transition-colors group-hover:text-landing-gold'
+                : 'truncate font-serif text-sm font-semibold text-white transition-colors group-hover:text-landing-gold',
+        location:
+            v === 'featured'
+                ? 'mt-1 font-body text-sm text-muted-foreground'
+                : 'mt-0.5 font-body text-xs text-white/40',
+        divider:
+            v === 'featured'
+                ? 'my-4 h-px bg-border'
+                : 'my-2.5 h-px bg-white/10',
+        specIcon:
+            v === 'featured'
+                ? 'size-4 text-landing-gold/70'
+                : 'size-3 text-landing-gold/60',
+        specText:
+            v === 'featured'
+                ? 'flex items-center gap-1.5 font-body text-sm text-muted-foreground'
+                : 'flex items-center gap-1 font-body text-xs text-white/40',
     };
 });
 
@@ -61,10 +83,14 @@ const hasImages = computed(() => props.property.images?.length > 0);
 
 const imageSizes = computed(() => {
     switch (props.variant) {
-        case 'featured': return '(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw';
-        case 'grid': return '(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw';
-        case 'compact': return '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw';
-        default: return '80px';
+        case 'featured':
+            return '(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw';
+        case 'grid':
+            return '(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw';
+        case 'compact':
+            return '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw';
+        default:
+            return '80px';
     }
 });
 </script>
@@ -83,8 +109,14 @@ const imageSizes = computed(() => {
             class="size-20 shrink-0 rounded object-cover"
             loading="lazy"
         />
-        <Empty v-else class="size-20 shrink-0 rounded border-0 bg-linear-to-br from-landing-deep-teal to-landing-charcoal p-0">
-            <EmptyMedia variant="icon" class="mb-0 size-8 bg-white/5 text-white/20">
+        <Empty
+            v-else
+            class="size-20 shrink-0 rounded border-0 bg-linear-to-br from-landing-deep-teal to-landing-charcoal p-0"
+        >
+            <EmptyMedia
+                variant="icon"
+                class="mb-0 size-8 bg-white/5 text-white/20"
+            >
                 <ImageOff class="size-4" />
             </EmptyMedia>
         </Empty>
@@ -107,12 +139,12 @@ const imageSizes = computed(() => {
     </div>
 
     <!-- Card variants: featured, grid, compact -->
-    <Card
-        v-else
-        :class="styles.card"
-    >
+    <Card v-else :class="styles.card">
         <!-- No image fallback — shadcn Empty fills card, no overlays -->
-        <Empty v-if="!hasImages" class="flex-1 border-0 bg-linear-to-br from-landing-deep-teal/60 to-landing-charcoal p-6">
+        <Empty
+            v-if="!hasImages"
+            class="flex-1 border-0 bg-linear-to-br from-landing-deep-teal/60 to-landing-charcoal p-6"
+        >
             <EmptyMedia variant="icon" class="bg-white/5 text-white/20">
                 <ImageOff />
             </EmptyMedia>
@@ -121,7 +153,16 @@ const imageSizes = computed(() => {
         <!-- Image area with overlays -->
         <div v-else class="relative">
             <!-- Carousel (featured + grid) -->
-            <Carousel v-if="showCarousel" v-slot="{ scrollPrev, scrollNext, canScrollPrev, canScrollNext }" class="w-full">
+            <Carousel
+                v-if="showCarousel"
+                v-slot="{
+                    scrollPrev,
+                    scrollNext,
+                    canScrollPrev,
+                    canScrollNext,
+                }"
+                class="w-full"
+            >
                 <CarouselContent class="ml-0">
                     <CarouselItem
                         v-for="(image, i) in property.images"
@@ -142,7 +183,10 @@ const imageSizes = computed(() => {
                 <button
                     :disabled="!canScrollPrev"
                     aria-label="Previous photo"
-                    :class="['absolute top-1/2 left-2 z-10 -translate-y-1/2 inline-flex items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white backdrop-blur-sm transition-all hover:bg-landing-charcoal opacity-0 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0', styles.carouselBtn]"
+                    :class="[
+                        'absolute top-1/2 left-2 z-10 inline-flex -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 hover:bg-landing-charcoal disabled:pointer-events-none disabled:opacity-0',
+                        styles.carouselBtn,
+                    ]"
                     @click.stop.prevent="scrollPrev"
                 >
                     <ArrowLeft class="size-3.5" />
@@ -150,7 +194,10 @@ const imageSizes = computed(() => {
                 <button
                     :disabled="!canScrollNext"
                     aria-label="Next photo"
-                    :class="['absolute top-1/2 right-2 z-10 -translate-y-1/2 inline-flex items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white backdrop-blur-sm transition-all hover:bg-landing-charcoal opacity-0 group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0', styles.carouselBtn]"
+                    :class="[
+                        'absolute top-1/2 right-2 z-10 inline-flex -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-landing-charcoal/80 text-white opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100 hover:bg-landing-charcoal disabled:pointer-events-none disabled:opacity-0',
+                        styles.carouselBtn,
+                    ]"
                     @click.stop.prevent="scrollNext"
                 >
                     <ArrowRight class="size-3.5" />
@@ -170,26 +217,42 @@ const imageSizes = computed(() => {
 
             <!-- Gradient overlay -->
             <div
-                :class="['pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t to-transparent', styles.gradient]"
+                :class="[
+                    'pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t to-transparent',
+                    styles.gradient,
+                ]"
             />
 
             <!-- Badges -->
             <Badge
                 v-if="showBadges && property.listing_type"
-                :class="['absolute border-0 bg-landing-gold px-2 py-0.5 font-body font-semibold tracking-wider text-white uppercase', styles.badgePos, styles.badgeText]"
+                :class="[
+                    'absolute border-0 bg-landing-gold px-2 py-0.5 font-body font-semibold tracking-wider text-white uppercase',
+                    styles.badgePos,
+                    styles.badgeText,
+                ]"
             >
                 {{ property.listing_type }}
             </Badge>
             <Badge
                 v-if="showPropertyTypeBadge && property.property_type"
-                :class="['absolute border-0 bg-black/60 px-2 py-0.5 font-body text-white/90 backdrop-blur-sm', styles.badgeTypPos, styles.badgeText]"
+                :class="[
+                    'absolute border-0 bg-black/60 px-2 py-0.5 font-body text-white/90 backdrop-blur-sm',
+                    styles.badgeTypPos,
+                    styles.badgeText,
+                ]"
             >
                 {{ property.property_type }}
             </Badge>
 
             <!-- Price overlay -->
             <div :class="['absolute', styles.pricePos]">
-                <p :class="['font-serif font-bold text-white drop-shadow-lg', styles.priceText]">
+                <p
+                    :class="[
+                        'font-serif font-bold text-white drop-shadow-lg',
+                        styles.priceText,
+                    ]"
+                >
                     {{ property.price }}
                 </p>
             </div>

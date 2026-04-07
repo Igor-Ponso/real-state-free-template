@@ -1,5 +1,5 @@
-import { computed   } from 'vue';
-import type {ComputedRef, Ref} from 'vue';
+import { computed } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 
 type PasswordRule = {
     key: string;

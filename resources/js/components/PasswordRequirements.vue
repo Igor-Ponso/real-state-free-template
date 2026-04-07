@@ -34,10 +34,7 @@ const { rules, hasInput } = usePasswordValidation({
                         v-if="rule.passed"
                         class="size-3.5 shrink-0 text-green-500"
                     />
-                    <X
-                        v-else
-                        class="size-3.5 shrink-0 text-muted-foreground"
-                    />
+                    <X v-else class="size-3.5 shrink-0 text-muted-foreground" />
                     <span
                         :class="
                             rule.passed

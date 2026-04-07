@@ -5,7 +5,14 @@ import type { LatLngBoundsExpression } from 'leaflet';
 import * as L from 'leaflet';
 import { EyeOff, Heart } from 'lucide-vue-next';
 import type { ComponentPublicInstance } from 'vue';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch,
+} from 'vue';
 
 import type { FeaturedProperty } from '@/types/landing';
 
@@ -57,36 +64,36 @@ const icons = {
 
 const markerIcon = (propertyId: number) => {
     if (props.isFavorite?.(propertyId)) {
-return icons.favorite;
-}
+        return icons.favorite;
+    }
 
     if (props.isDismissed?.(propertyId)) {
-return icons.dismissed;
-}
+        return icons.dismissed;
+    }
 
     return icons.default;
 };
 
 const markerState = (propertyId: number): string => {
     if (props.isFavorite?.(propertyId)) {
-return 'fav';
-}
+        return 'fav';
+    }
 
     if (props.isDismissed?.(propertyId)) {
-return 'dis';
-}
+        return 'dis';
+    }
 
     return 'def';
 };
 
 const markerOpacity = (propertyId: number): number => {
     if (props.isDismissed?.(propertyId)) {
-return 0.6;
-}
+        return 0.6;
+    }
 
     if (props.hoveredId !== null && props.hoveredId !== propertyId) {
-return 0.5;
-}
+        return 0.5;
+    }
 
     return 1;
 };
@@ -113,8 +120,8 @@ const fitToProperties = () => {
     );
 
     if (coords.length === 0) {
-return;
-}
+        return;
+    }
 
     if (coords.length === 1) {
         mapCenter.value = coords[0];
@@ -161,7 +168,10 @@ onMounted(async () => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 if (!hasPropertyCoords()) {
-                    mapCenter.value = [pos.coords.latitude, pos.coords.longitude];
+                    mapCenter.value = [
+                        pos.coords.latitude,
+                        pos.coords.longitude,
+                    ];
                     mapZoom.value = 12;
                 }
             },
@@ -182,11 +192,15 @@ const animateMarker = (propertyId: number) => {
         const el = marker?.leafletObject?.getElement();
 
         if (!el) {
-return;
-}
+            return;
+        }
 
         el.classList.add('pin-bounce');
-        el.addEventListener('animationend', () => el.classList.remove('pin-bounce'), { once: true });
+        el.addEventListener(
+            'animationend',
+            () => el.classList.remove('pin-bounce'),
+            { once: true },
+        );
     });
 };
 
@@ -228,7 +242,14 @@ const onMarkerMouseLeave = (propertyId: number) => {
         <LMarker
             v-for="property in geoProperties"
             :key="`${property.id}-${markerState(property.id)}`"
-            :ref="(el: ComponentPublicInstance | Element | null) => { if (el) markerRefs[property.id] = el as InstanceType<typeof LMarker>; }"
+            :ref="
+                (el: ComponentPublicInstance | Element | null) => {
+                    if (el)
+                        markerRefs[property.id] = el as InstanceType<
+                            typeof LMarker
+                        >;
+                }
+            "
             :lat-lng="[Number(property.latitude), Number(property.longitude)]"
             :icon="markerIcon(property.id)"
             :options="{ opacity: markerOpacity(property.id) }"
@@ -236,7 +257,13 @@ const onMarkerMouseLeave = (propertyId: number) => {
             @mouseenter="onMarkerMouseEnter(property.id)"
             @mouseleave="onMarkerMouseLeave(property.id)"
         >
-            <LPopup :options="{ closeButton: false, offset: [0, -10], maxWidth: 220 }">
+            <LPopup
+                :options="{
+                    closeButton: false,
+                    offset: [0, -10],
+                    maxWidth: 220,
+                }"
+            >
                 <div class="min-w-44 font-body">
                     <img
                         v-if="property.images[0]"
@@ -244,26 +271,66 @@ const onMarkerMouseLeave = (propertyId: number) => {
                         :alt="property.title"
                         class="mb-2 h-24 w-full rounded object-cover"
                     />
-                    <p class="font-serif text-sm font-semibold">{{ property.title }}</p>
-                    <p class="text-xs text-muted-foreground">{{ property.location }}</p>
-                    <p class="mt-1 font-serif font-bold text-landing-gold">{{ property.price }}</p>
-                    <p v-if="property.description" class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{{ property.description }}</p>
+                    <p class="font-serif text-sm font-semibold">
+                        {{ property.title }}
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ property.location }}
+                    </p>
+                    <p class="mt-1 font-serif font-bold text-landing-gold">
+                        {{ property.price }}
+                    </p>
+                    <p
+                        v-if="property.description"
+                        class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground"
+                    >
+                        {{ property.description }}
+                    </p>
                     <!-- Favorite / Dismiss actions -->
                     <div class="mt-2 flex gap-1 border-t pt-2">
                         <button
-                            :aria-label="isFavorite?.(property.id) ? 'Remove from saved' : 'Save property'"
+                            :aria-label="
+                                isFavorite?.(property.id)
+                                    ? 'Remove from saved'
+                                    : 'Save property'
+                            "
                             class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
-                            :class="isFavorite?.(property.id) ? 'text-red-500' : 'text-muted-foreground'"
-                            @click.stop="emit('toggle-favorite', property.id); animateMarker(property.id);"
+                            :class="
+                                isFavorite?.(property.id)
+                                    ? 'text-red-500'
+                                    : 'text-muted-foreground'
+                            "
+                            @click.stop="
+                                emit('toggle-favorite', property.id);
+                                animateMarker(property.id);
+                            "
                         >
-                            <Heart class="size-3.5" :fill="isFavorite?.(property.id) ? 'currentColor' : 'none'" />
+                            <Heart
+                                class="size-3.5"
+                                :fill="
+                                    isFavorite?.(property.id)
+                                        ? 'currentColor'
+                                        : 'none'
+                                "
+                            />
                             {{ isFavorite?.(property.id) ? 'Saved' : 'Save' }}
                         </button>
                         <button
-                            :aria-label="isDismissed?.(property.id) ? 'Show property' : 'Hide property'"
+                            :aria-label="
+                                isDismissed?.(property.id)
+                                    ? 'Show property'
+                                    : 'Hide property'
+                            "
                             class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
-                            :class="isDismissed?.(property.id) ? 'text-orange-500' : 'text-muted-foreground'"
-                            @click.stop="emit('toggle-dismissed', property.id); animateMarker(property.id);"
+                            :class="
+                                isDismissed?.(property.id)
+                                    ? 'text-orange-500'
+                                    : 'text-muted-foreground'
+                            "
+                            @click.stop="
+                                emit('toggle-dismissed', property.id);
+                                animateMarker(property.id);
+                            "
                         >
                             <EyeOff class="size-3.5" />
                             {{ isDismissed?.(property.id) ? 'Hidden' : 'Hide' }}
@@ -285,9 +352,17 @@ const onMarkerMouseLeave = (propertyId: number) => {
 }
 
 @keyframes pin-bounce {
-    0% { transform: scale(1) translateY(0); }
-    30% { transform: scale(1.3) translateY(-10px); }
-    60% { transform: scale(0.95) translateY(2px); }
-    100% { transform: scale(1) translateY(0); }
+    0% {
+        transform: scale(1) translateY(0);
+    }
+    30% {
+        transform: scale(1.3) translateY(-10px);
+    }
+    60% {
+        transform: scale(0.95) translateY(2px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
 }
 </style>

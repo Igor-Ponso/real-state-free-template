@@ -20,7 +20,10 @@ const emit = defineEmits<{
 
 const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 
-defineExpose({ focusInput: () => pinInputContainerRef.value?.querySelector('input')?.focus() });
+defineExpose({
+    focusInput: () =>
+        pinInputContainerRef.value?.querySelector('input')?.focus(),
+});
 </script>
 
 <template>
@@ -34,19 +37,40 @@ defineExpose({ focusInput: () => pinInputContainerRef.value?.querySelector('inpu
     >
         <input type="hidden" name="code" :value="code" />
         <div ref="pinInputContainerRef" class="relative w-full space-y-3">
-            <div class="flex w-full flex-col items-center justify-center space-y-3 py-2">
-                <InputOTP id="otp" v-model="code" :maxlength="6" :disabled="processing">
+            <div
+                class="flex w-full flex-col items-center justify-center space-y-3 py-2"
+            >
+                <InputOTP
+                    id="otp"
+                    v-model="code"
+                    :maxlength="6"
+                    :disabled="processing"
+                >
                     <InputOTPGroup>
-                        <InputOTPSlot v-for="index in 6" :key="index" :index="index - 1" />
+                        <InputOTPSlot
+                            v-for="index in 6"
+                            :key="index"
+                            :index="index - 1"
+                        />
                     </InputOTPGroup>
                 </InputOTP>
                 <InputError :message="errors?.code" />
             </div>
             <div class="flex w-full items-center space-x-5">
-                <Button type="button" variant="outline" class="w-auto flex-1" :disabled="processing" @click="emit('back')">
+                <Button
+                    type="button"
+                    variant="outline"
+                    class="w-auto flex-1"
+                    :disabled="processing"
+                    @click="emit('back')"
+                >
                     Back
                 </Button>
-                <Button type="submit" class="w-auto flex-1" :disabled="processing || code.length < 6">
+                <Button
+                    type="submit"
+                    class="w-auto flex-1"
+                    :disabled="processing || code.length < 6"
+                >
                     Confirm
                 </Button>
             </div>

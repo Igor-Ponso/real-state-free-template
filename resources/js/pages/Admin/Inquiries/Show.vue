@@ -21,13 +21,17 @@ const props = defineProps<{
 }>();
 
 const updateStatus = (statusId: string) => {
-    router.put(update.url({ inquiry: props.inquiry.id }), {
-        inquiry_status_id: Number(statusId),
-    }, {
-        onSuccess: () => {
-            toast.success('Inquiry status updated.');
+    router.put(
+        update.url({ inquiry: props.inquiry.id }),
+        {
+            inquiry_status_id: Number(statusId),
         },
-    });
+        {
+            onSuccess: () => {
+                toast.success('Inquiry status updated.');
+            },
+        },
+    );
 };
 </script>
 
@@ -52,7 +56,9 @@ const updateStatus = (statusId: string) => {
                         <CardTitle>Message</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p class="whitespace-pre-line leading-relaxed text-muted-foreground">
+                        <p
+                            class="leading-relaxed whitespace-pre-line text-muted-foreground"
+                        >
                             {{ inquiry.message }}
                         </p>
                     </CardContent>
@@ -72,17 +78,25 @@ const updateStatus = (statusId: string) => {
                         </div>
                         <div class="flex items-center gap-2">
                             <Mail class="size-4 text-muted-foreground" />
-                            <a :href="`mailto:${inquiry.email}`" class="text-primary hover:underline">
+                            <a
+                                :href="`mailto:${inquiry.email}`"
+                                class="text-primary hover:underline"
+                            >
                                 {{ inquiry.email }}
                             </a>
                         </div>
-                        <div v-if="inquiry.phone" class="flex items-center gap-2">
+                        <div
+                            v-if="inquiry.phone"
+                            class="flex items-center gap-2"
+                        >
                             <Phone class="size-4 text-muted-foreground" />
                             <span>{{ inquiry.phone }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <Calendar class="size-4 text-muted-foreground" />
-                            <span class="text-muted-foreground">{{ new Date(inquiry.created_at).toLocaleString() }}</span>
+                            <span class="text-muted-foreground">{{
+                                new Date(inquiry.created_at).toLocaleString()
+                            }}</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -92,10 +106,18 @@ const updateStatus = (statusId: string) => {
                         <CardTitle>Status</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Select :model-value="String(inquiry.inquiry_status_id)" @update:model-value="updateStatus">
+                        <Select
+                            :model-value="String(inquiry.inquiry_status_id)"
+                            @update:model-value="updateStatus"
+                        >
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="s in statuses" :key="s.id" :value="String(s.id)">{{ s.name }}</SelectItem>
+                                <SelectItem
+                                    v-for="s in statuses"
+                                    :key="s.id"
+                                    :value="String(s.id)"
+                                    >{{ s.name }}</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                     </CardContent>
@@ -106,7 +128,10 @@ const updateStatus = (statusId: string) => {
                         <CardTitle>Property</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Link :href="`/properties/${inquiry.property_slug}`" class="text-primary hover:underline">
+                        <Link
+                            :href="`/properties/${inquiry.property_slug}`"
+                            class="text-primary hover:underline"
+                        >
                             {{ inquiry.property_title }}
                         </Link>
                     </CardContent>
