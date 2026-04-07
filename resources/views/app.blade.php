@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {{-- SEO defaults — overridden per-page via Inertia Head when needed --}}
-        <meta data-inertia="description" name="description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue. Production-ready, SOLID, fully tested.">
+        {{-- SEO defaults — pure static tags, not managed by Inertia --}}
+        <meta name="description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue. Production-ready, SOLID, fully tested.">
 
         {{-- Authorship --}}
         <meta name="author" content="Igor Ponso">
@@ -16,13 +16,13 @@
         {{-- Open Graph defaults --}}
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="Sovereign Estates">
-        <meta data-inertia="og:title" property="og:title" content="Sovereign Estates — Real Estate Template">
-        <meta data-inertia="og:description" property="og:description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue.">
+        <meta property="og:title" content="Sovereign Estates — Real Estate Template">
+        <meta property="og:description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue.">
 
         {{-- Twitter Card --}}
         <meta name="twitter:card" content="summary_large_image">
-        <meta data-inertia="twitter:title" name="twitter:title" content="Sovereign Estates — Real Estate Template">
-        <meta data-inertia="twitter:description" name="twitter:description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue.">
+        <meta name="twitter:title" content="Sovereign Estates — Real Estate Template">
+        <meta name="twitter:description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue.">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -56,12 +56,6 @@
 
         {{-- Preload hero poster — makes it the LCP element on the landing page --}}
         <link rel="preload" as="image" href="/images/auth/luxury-real-estate-poster.jpg" fetchpriority="high">
-
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>
-        <link rel="preconnect" href="https://b.basemaps.cartocdn.com" crossorigin>
-        <link rel="preconnect" href="https://c.basemaps.cartocdn.com" crossorigin>
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|playfair-display:400,500,600,700|inter:300,400,500,600&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         <x-inertia::head>

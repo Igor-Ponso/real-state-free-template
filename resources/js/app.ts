@@ -1,3 +1,18 @@
+// Self-hosted fonts via @fontsource — bundled by Vite, served from same origin
+// with content-hashed filenames (immutable cache). Replaces the external
+// fonts.bunny.net request and eliminates ~1s of cross-origin critical path.
+import '@fontsource/instrument-sans/400.css';
+import '@fontsource/instrument-sans/500.css';
+import '@fontsource/instrument-sans/600.css';
+import '@fontsource/playfair-display/400.css';
+import '@fontsource/playfair-display/500.css';
+import '@fontsource/playfair-display/600.css';
+import '@fontsource/playfair-display/700.css';
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { defineAsyncComponent } from 'vue';
 import { toast } from 'vue-sonner';
