@@ -146,7 +146,7 @@ const mapReady = ref(false);
                     <div
                         class="aspect-[4/3] w-full lg:aspect-auto lg:h-[420px]"
                     >
-                        <Suspense>
+                        <Suspense v-if="isVisible">
                             <LeafletMap
                                 :center="office.coordinates"
                                 :zoom="15"
@@ -170,6 +170,10 @@ const mapReady = ref(false);
                                 </div>
                             </template>
                         </Suspense>
+                        <div
+                            v-else
+                            class="flex h-full w-full items-center justify-center bg-landing-charcoal/50"
+                        />
                     </div>
                 </div>
             </div>

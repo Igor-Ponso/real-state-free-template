@@ -32,6 +32,7 @@ const onSourceError = () => {
         <img
             :src="posterSrc"
             alt=""
+            fetchpriority="high"
             class="absolute inset-0 h-full w-full object-cover"
         />
 

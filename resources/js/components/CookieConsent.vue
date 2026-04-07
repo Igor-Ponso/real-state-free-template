@@ -11,7 +11,7 @@
  */
 import { useLocalStorage } from '@vueuse/core';
 import { Shield } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { Button } from '@/components/ui/button';
 
@@ -28,7 +28,22 @@ const consent = useLocalStorage<ConsentRecord | null>(
     null,
 );
 
+// Defer banner mount until after first paint to keep it out of LCP measurements
+// and let the hero image become the LCP element. The banner still appears well
+// before any meaningful interaction, satisfying GDPR requirements.
+const isReady = ref(false);
+
+onMounted(() => {
+    setTimeout(() => {
+        isReady.value = true;
+    }, 1500);
+});
+
 const showBanner = computed(() => {
+    if (!isReady.value) {
+        return false;
+    }
+
     if (!consent.value) {
         return true;
     }

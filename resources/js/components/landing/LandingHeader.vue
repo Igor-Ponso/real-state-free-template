@@ -53,6 +53,7 @@ const scrollTo = (href: string) => {
         >
             <Link
                 :href="home()"
+                :aria-label="`${name} home`"
                 class="flex items-center gap-2 text-lg font-semibold"
                 :class="isScrolled ? 'text-foreground' : 'text-white'"
             >

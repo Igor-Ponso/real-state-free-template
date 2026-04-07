@@ -104,7 +104,6 @@ const handleSearch = () => {
                 class="absolute inset-0 h-full w-full object-cover"
             >
                 <source src="/videos/landing/search.webm" type="video/webm" />
-                <source src="/videos/landing/search.mp4" type="video/mp4" />
             </video>
             <div class="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
         </div>

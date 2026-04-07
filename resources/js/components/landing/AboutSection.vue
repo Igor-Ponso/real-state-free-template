@@ -59,7 +59,6 @@ const statsDisplay = computed(() => [
                         src="/videos/landing/about.webm"
                         type="video/webm"
                     />
-                    <source src="/videos/landing/about.mp4" type="video/mp4" />
                 </video>
                 <div
                     class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"

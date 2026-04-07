@@ -128,6 +128,7 @@ watch(searchTerm, (val) => {
 
                         <PopoverTrigger as-child>
                             <Button
+                                :aria-label="`Open ${label} filter`"
                                 size="icon"
                                 variant="ghost"
                                 class="order-last ml-auto size-6 shrink-0 self-center text-white/40 hover:text-white"
