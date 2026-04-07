@@ -32,12 +32,7 @@ const scrollToProperties = () => {
 
         <div class="relative z-10 mx-auto max-w-4xl px-6 text-center">
             <h1
-                class="font-serif text-5xl font-bold tracking-tight text-white transition-all duration-700 md:text-7xl"
-                :class="
-                    isMounted
-                        ? 'translate-y-0 opacity-100'
-                        : 'translate-y-8 opacity-0'
-                "
+                class="font-serif text-5xl font-bold tracking-tight text-white md:text-7xl"
             >
                 Where Luxury Meets Home
             </h1>
