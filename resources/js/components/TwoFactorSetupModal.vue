@@ -32,6 +32,22 @@ const { copy, copied } = useClipboard();
 const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
     useTwoFactorAuth();
 
+/**
+ * Render the QR code SVG as an `<img>` data URL instead of injecting it via
+ * `v-html`. The W3C SVG spec disables scripts and external resources when SVG
+ * is loaded through an `<img>` element, providing defense-in-depth even though
+ * the SVG itself comes from Fortify's trusted server-side generator.
+ *
+ * @see https://www.w3.org/TR/SVG2/embedded.html#ImageElement
+ */
+const qrCodeDataUrl = computed(() => {
+    if (!qrCodeSvg.value) {
+return null;
+}
+
+    return `data:image/svg+xml;utf8,${encodeURIComponent(qrCodeSvg.value)}`;
+});
+
 const showVerificationStep = ref(false);
 const code = ref<string>('');
 
@@ -164,8 +180,10 @@ watch(
                                     v-else
                                     class="relative z-10 overflow-hidden border p-5"
                                 >
-                                    <div
-                                        v-html="qrCodeSvg"
+                                    <img
+                                        v-if="qrCodeDataUrl"
+                                        :src="qrCodeDataUrl"
+                                        alt="Two-factor authentication QR code"
                                         class="flex aspect-square size-full items-center justify-center"
                                         :style="{
                                             filter:
