@@ -26,7 +26,11 @@ class PropertySeeder extends Seeder
     /**
      * Seed users, properties, and all related interaction data.
      *
-     * Hierarchy created:
+     * Idempotent via early-return guard: if any property already exists,
+     * the seeder is a no-op. To force a fresh reseed, use:
+     *   php artisan migrate:fresh --seed
+     *
+     * Hierarchy created on first run:
      * 1. Admin user (admin@luxuryestate.com) with 'admin' role
      * 2. 8 agent users (agent1-8@luxuryestate.com) with 'agent' role and featured profiles
      * 3. 10 anonymous client users with 'client' role
@@ -41,6 +45,12 @@ class PropertySeeder extends Seeder
      */
     public function run(): void
     {
+        if (Property::query()->exists()) {
+            $this->command?->info('PropertySeeder: properties already exist, skipping.');
+
+            return;
+        }
+
         $propertyTypes = PropertyType::all();
         $cities = City::all();
 
