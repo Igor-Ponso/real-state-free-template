@@ -11,7 +11,7 @@
         <meta name="author" content="Igor Ponso">
         <meta name="generator" content="Laravel 13 + Vue 3 + Inertia.js v3">
         <link rel="author" href="https://github.com/Igor-Ponso">
-        <meta name="copyright" content="© Igor Ponso — MIT License">
+        <meta name="copyright" content="Igor Ponso — MIT License">
 
         {{-- Open Graph defaults --}}
         <meta property="og:type" content="website">
