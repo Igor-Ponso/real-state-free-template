@@ -56,22 +56,37 @@ const icons = {
 };
 
 const markerIcon = (propertyId: number) => {
-    if (props.isFavorite?.(propertyId)) return icons.favorite;
-    if (props.isDismissed?.(propertyId)) return icons.dismissed;
+    if (props.isFavorite?.(propertyId)) {
+return icons.favorite;
+}
+
+    if (props.isDismissed?.(propertyId)) {
+return icons.dismissed;
+}
 
     return icons.default;
 };
 
 const markerState = (propertyId: number): string => {
-    if (props.isFavorite?.(propertyId)) return 'fav';
-    if (props.isDismissed?.(propertyId)) return 'dis';
+    if (props.isFavorite?.(propertyId)) {
+return 'fav';
+}
+
+    if (props.isDismissed?.(propertyId)) {
+return 'dis';
+}
 
     return 'def';
 };
 
 const markerOpacity = (propertyId: number): number => {
-    if (props.isDismissed?.(propertyId)) return 0.6;
-    if (props.hoveredId !== null && props.hoveredId !== propertyId) return 0.5;
+    if (props.isDismissed?.(propertyId)) {
+return 0.6;
+}
+
+    if (props.hoveredId !== null && props.hoveredId !== propertyId) {
+return 0.5;
+}
 
     return 1;
 };
@@ -166,7 +181,9 @@ const animateMarker = (propertyId: number) => {
         const marker = markerRefs.value[propertyId];
         const el = marker?.leafletObject?.getElement();
 
-        if (!el) return;
+        if (!el) {
+return;
+}
 
         el.classList.add('pin-bounce');
         el.addEventListener('animationend', () => el.classList.remove('pin-bounce'), { once: true });

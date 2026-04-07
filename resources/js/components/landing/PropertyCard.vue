@@ -4,13 +4,13 @@ import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Empty, EmptyMedia } from '@/components/ui/empty';
-
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
 } from '@/components/ui/carousel';
+import { Empty, EmptyMedia } from '@/components/ui/empty';
+
 import type { FeaturedProperty } from '@/types/landing';
 
 type CardVariant = 'featured' | 'grid' | 'compact' | 'sidebar';

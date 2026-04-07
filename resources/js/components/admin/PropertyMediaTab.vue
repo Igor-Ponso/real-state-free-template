@@ -29,7 +29,9 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const handleUpload = (event: Event) => {
     const files = (event.target as HTMLInputElement).files;
 
-    if (!files?.length) {return;}
+    if (!files?.length) {
+return;
+}
 
     const formData = new FormData();
     Array.from(files).forEach((f) => formData.append('files[]', f));

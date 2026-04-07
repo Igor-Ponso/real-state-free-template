@@ -35,6 +35,7 @@ export function useCommandPalette() {
         if (q.length < 2) {
             results.value = [];
             isSearching.value = false;
+
             return;
         }
 
@@ -51,14 +52,19 @@ export function useCommandPalette() {
                 results.value = await response.json();
             }
         } catch (e) {
-            if (e instanceof DOMException && e.name === 'AbortError') return;
+            if (e instanceof DOMException && e.name === 'AbortError') {
+                return;
+            }
         } finally {
             isSearching.value = false;
         }
     }
 
     watch(query, (value) => {
-        if (debounceTimer) clearTimeout(debounceTimer);
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+
         debounceTimer = setTimeout(() => searchProperties(value), 300);
     });
 

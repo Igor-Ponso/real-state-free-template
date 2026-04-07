@@ -38,8 +38,19 @@ initializeTheme();
 router.on('flash', (event) => {
     const flash = event.detail.flash as Record<string, string>;
 
-    if (flash.success) toast.success(flash.success);
-    if (flash.error) toast.error(flash.error);
-    if (flash.warning) toast.warning(flash.warning);
-    if (flash.info) toast.info(flash.info);
+    if (flash.success) {
+toast.success(flash.success);
+}
+
+    if (flash.error) {
+toast.error(flash.error);
+}
+
+    if (flash.warning) {
+toast.warning(flash.warning);
+}
+
+    if (flash.info) {
+toast.info(flash.info);
+}
 });

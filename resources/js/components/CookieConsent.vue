@@ -26,7 +26,9 @@ const CONSENT_VERSION = 1;
 const consent = useLocalStorage<ConsentRecord | null>('sovereign-cookie-consent', null);
 
 const showBanner = computed(() => {
-    if (!consent.value) return true;
+    if (!consent.value) {
+return true;
+}
 
     return consent.value.version < CONSENT_VERSION;
 });

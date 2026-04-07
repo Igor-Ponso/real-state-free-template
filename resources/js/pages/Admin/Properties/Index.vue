@@ -52,9 +52,13 @@ const statusFilter = ref(props.filters.status ?? '');
 const applyFilters = () => {
     const params: Record<string, string> = {};
 
-    if (searchQuery.value) {params.search = searchQuery.value;}
+    if (searchQuery.value) {
+params.search = searchQuery.value;
+}
 
-    if (statusFilter.value) {params.status = statusFilter.value;}
+    if (statusFilter.value) {
+params.status = statusFilter.value;
+}
 
     router.visit('/admin/properties', { data: params, preserveState: true });
 };

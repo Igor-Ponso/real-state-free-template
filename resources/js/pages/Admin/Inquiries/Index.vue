@@ -33,7 +33,9 @@ const statusFilter = ref(props.filters.status ?? '');
 const applyFilters = () => {
     const params: Record<string, string> = {};
 
-    if (statusFilter.value) {params.status = statusFilter.value;}
+    if (statusFilter.value) {
+params.status = statusFilter.value;
+}
 
     router.visit('/admin/inquiries', { data: params, preserveState: true });
 };

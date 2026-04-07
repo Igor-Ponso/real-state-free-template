@@ -16,7 +16,9 @@ import ValueProposition from '@/components/landing/ValueProposition.vue';
 import type { FeaturedProperty, FilterOption, Neighborhood, TeamMember, LandingStats } from '@/types/landing';
 
 const isMounted = ref(false);
-onMounted(() => { isMounted.value = true; });
+onMounted(() => {
+ isMounted.value = true; 
+});
 
 const props = withDefaults(
     defineProps<{
