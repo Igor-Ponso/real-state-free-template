@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { Search } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import BedBathFilter from '@/components/landing/BedBathFilter.vue';
 import MultiSelectFilter from '@/components/landing/MultiSelectFilter.vue';
@@ -19,7 +19,6 @@ defineProps<{
 
 const { target: sectionRef, isVisible } = useFadeInOnScroll();
 
-const isMounted = ref(false);
 const selectedTypes = ref<string[]>([]);
 const selectedListings = ref<string[]>([]);
 const selectedCities = ref<string[]>([]);
@@ -28,10 +27,6 @@ const selectedBathrooms = ref<string[]>([]);
 const bedroomsExact = ref(false);
 const bathroomsExact = ref(false);
 const maxPrice = ref('');
-
-onMounted(() => {
-    isMounted.value = true;
-});
 
 const listingValue = computed({
     get: () => selectedListings.value[0] ?? '',
@@ -95,11 +90,12 @@ const handleSearch = () => {
                 class="absolute inset-0 h-full w-full object-cover"
             />
             <video
-                v-if="isMounted"
+                v-if="isVisible"
                 autoplay
                 muted
                 loop
                 playsinline
+                preload="none"
                 poster="/images/landing/search-bg.jpg"
                 class="absolute inset-0 h-full w-full object-cover"
             >

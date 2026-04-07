@@ -97,9 +97,7 @@ const goToSlide = (index: number) => {
                                 <p
                                     class="mt-4 font-body text-sm font-medium text-landing-gold"
                                 >
-                                    {{
-                                        neighborhood.properties_count
-                                    }}
+                                    {{ neighborhood.properties_count }}
                                     exclusive properties
                                 </p>
                             </div>

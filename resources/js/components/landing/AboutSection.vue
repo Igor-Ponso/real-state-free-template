@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 
 import AnimatedCounter from '@/components/landing/AnimatedCounter.vue';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
 import type { LandingStats } from '@/types/landing';
 
 const { target: sectionRef, isVisible } = useFadeInOnScroll();
-
-const isMounted = ref(false);
-
-onMounted(() => {
-    isMounted.value = true;
-});
 
 const props = defineProps<{
     stats: LandingStats;
@@ -47,11 +41,12 @@ const statsDisplay = computed(() => [
                     class="absolute inset-0 h-full w-full object-cover"
                 />
                 <video
-                    v-if="isMounted"
+                    v-if="isVisible"
                     autoplay
                     muted
                     loop
                     playsinline
+                    preload="none"
                     poster="/images/landing/about-bg.jpg"
                     class="absolute inset-0 h-full w-full object-cover"
                 >

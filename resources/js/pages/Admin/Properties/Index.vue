@@ -214,9 +214,7 @@ const deleteProperty = (slug: string) => {
         >
             <p class="text-sm text-muted-foreground">
                 Page {{ properties.meta.current_page }} of
-                {{ properties.meta.last_page }} ({{
-                    properties.meta.total
-                }}
+                {{ properties.meta.last_page }} ({{ properties.meta.total }}
                 properties)
             </p>
             <div class="flex gap-2">
