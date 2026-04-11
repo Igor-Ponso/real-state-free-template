@@ -1,5 +1,5 @@
-import { useMagicKeys, whenever } from '@vueuse/core';
-import { ref, watch } from 'vue';
+import { useMagicKeys, watchDebounced, whenever } from '@vueuse/core';
+import { ref } from 'vue';
 
 import { search as propertySearchRoute } from '@/routes/properties';
 import type { PropertySearchResult } from '@/types/landing';
@@ -27,7 +27,6 @@ export function useCommandPalette() {
     });
 
     let abortController: AbortController | null = null;
-    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function searchProperties(q: string): Promise<void> {
         abortController?.abort();
@@ -60,12 +59,8 @@ export function useCommandPalette() {
         }
     }
 
-    watch(query, (value) => {
-        if (debounceTimer) {
-            clearTimeout(debounceTimer);
-        }
-
-        debounceTimer = setTimeout(() => searchProperties(value), 300);
+    watchDebounced(query, (value) => searchProperties(value), {
+        debounce: 300,
     });
 
     function reset(): void {

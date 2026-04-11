@@ -25,11 +25,7 @@ defineProps<{
                 :key="similar.id"
                 class="basis-full pl-4 sm:basis-1/2 lg:basis-1/4"
             >
-                <Link
-                    :href="show.url(similar.slug)"
-                    prefetch
-                    class="group"
-                >
+                <Link :href="show.url(similar.slug)" prefetch class="group">
                     <PropertyCard :property="similar" variant="compact" />
                 </Link>
             </CarouselItem>

@@ -214,7 +214,13 @@ const activeFilterCount = computed(
                     <label :class="LABEL">Min Rent</label>
                     <Input
                         v-model="minPrice"
-                        v-maska="{ number: { locale: 'en-US', fraction: 0, unsigned: true } }"
+                        v-maska="{
+                            number: {
+                                locale: 'en-US',
+                                fraction: 0,
+                                unsigned: true,
+                            },
+                        }"
                         type="text"
                         inputmode="numeric"
                         placeholder="$0"
@@ -227,7 +233,13 @@ const activeFilterCount = computed(
                     }}</label>
                     <Input
                         v-model="maxPrice"
-                        v-maska="{ number: { locale: 'en-US', fraction: 0, unsigned: true } }"
+                        v-maska="{
+                            number: {
+                                locale: 'en-US',
+                                fraction: 0,
+                                unsigned: true,
+                            },
+                        }"
                         type="text"
                         inputmode="numeric"
                         :placeholder="isRental ? '$10,000' : '$10,000,000'"

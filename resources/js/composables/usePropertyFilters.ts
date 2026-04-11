@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/vue3';
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { watchDebounced } from '@vueuse/core';
+import { computed, ref } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 
 import type {
@@ -20,7 +21,6 @@ interface UsePropertyFiltersReturn {
     viewMode: Ref<'grid' | 'map'>;
     hoveredPropertyId: Ref<number | null>;
     isLoading: Ref<boolean>;
-    perPage: Ref<string>;
     search: Ref<string>;
     selectedTypes: Ref<string[]>;
     selectedCities: Ref<string[]>;
@@ -39,6 +39,7 @@ interface UsePropertyFiltersReturn {
     filteredCities: ComputedRef<FilterOption[]>;
     isRental: ComputedRef<boolean>;
     hasActiveFilters: ComputedRef<boolean>;
+    hasMorePages: ComputedRef<boolean>;
     toggleMulti: (arr: string[], val: string) => void;
     multiLabel: (
         selected: string[],
@@ -47,7 +48,7 @@ interface UsePropertyFiltersReturn {
     ) => string;
     applyFilters: () => void;
     clearFilters: () => void;
-    goToPage: (page: number) => void;
+    loadMore: () => void;
     selectedMapProperty: Ref<FeaturedProperty | null>;
     onMapSelect: (property: FeaturedProperty) => void;
     clearMapSelection: () => void;
@@ -79,7 +80,9 @@ const centsToDisplay = (cents: string | undefined): string => {
     const dollars = Math.floor(parseInt(cents, 10) / 100);
 
     return dollars > 0
-        ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(dollars)
+        ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
+              dollars,
+          )
         : '';
 };
 
@@ -98,13 +101,11 @@ export const usePropertyFilters = (
     options: UsePropertyFiltersOptions,
 ): UsePropertyFiltersReturn => {
     const applied = options.appliedFilters();
-    const meta = options.properties().meta;
 
     // --- State ---
     const viewMode = ref<'grid' | 'map'>('grid');
     const hoveredPropertyId = ref<number | null>(null);
     const isLoading = ref(false);
-    const perPage = ref(String(meta.per_page));
     const search = ref(applied.search ?? '');
     const selectedTypes = ref<string[]>(toArr(applied.type));
     const selectedCities = ref<string[]>(toArr(applied.city));
@@ -148,14 +149,6 @@ export const usePropertyFilters = (
 
     const isStudio = computed(() => selectedTypes.value.includes('studio'));
 
-    // Clear bedrooms when studio is selected (studios have 0 bedrooms)
-    watch(isStudio, (studio) => {
-        if (studio) {
-            selectedBedrooms.value = [];
-            bedroomsExact.value = false;
-        }
-    });
-
     const hasActiveFilters = computed(
         () =>
             !!(
@@ -171,6 +164,12 @@ export const usePropertyFilters = (
                 maxPrice.value
             ),
     );
+
+    const hasMorePages = computed(() => {
+        const meta = options.properties().meta;
+
+        return meta.current_page < meta.last_page;
+    });
 
     // --- Methods ---
     const toggleMulti = (arr: string[], val: string) => {
@@ -201,7 +200,10 @@ export const usePropertyFilters = (
         return `${selected.length} selected`;
     };
 
-    const applyFilters = () => {
+    /**
+     * Build the current filter params for API requests.
+     */
+    const buildParams = (): Record<string, string | string[]> => {
         const params: Record<string, string | string[]> = {};
 
         if (search.value) {
@@ -256,14 +258,20 @@ export const usePropertyFilters = (
             params.sort = selectedSort.value;
         }
 
-        if (perPage.value !== '12') {
-            params.per_page = perPage.value;
-        }
+        return params;
+    };
 
+    /**
+     * Apply filters and reset infinite scroll data.
+     * Uses `reset: ['properties']` to clear accumulated scroll data
+     * when filters change — prevents merging new results with stale data.
+     */
+    const applyFilters = () => {
         isLoading.value = true;
         router.visit('/properties', {
-            data: params,
+            data: buildParams(),
             only: ['properties', 'appliedFilters', 'mapCenter'],
+            reset: ['properties'],
             preserveState: true,
             preserveScroll: true,
             onFinish: () => {
@@ -289,22 +297,27 @@ export const usePropertyFilters = (
         applyFilters();
     };
 
-    const goToPage = (page: number) => {
-        const params: Record<string, unknown> = {
-            ...options.appliedFilters(),
-            page: String(page),
-        };
-
-        if (perPage.value !== '12') {
-            params.per_page = perPage.value;
+    /**
+     * Load the next page of properties for the map sidebar.
+     * Uses partial reload WITHOUT reset — data accumulates via Inertia::scroll().
+     * The grid view uses <InfiniteScroll> which handles this automatically.
+     */
+    const loadMore = () => {
+        if (isLoading.value || !hasMorePages.value) {
+            return;
         }
 
+        const meta = options.properties().meta;
+
         isLoading.value = true;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        router.visit(options.properties().meta.path, {
-            data: params as Record<string, string>,
-            only: ['properties', 'appliedFilters', 'mapCenter'],
+        router.visit(meta.path, {
+            data: {
+                ...buildParams(),
+                page: String(meta.current_page + 1),
+            },
+            only: ['properties'],
             preserveState: true,
+            preserveScroll: true,
             onFinish: () => {
                 isLoading.value = false;
             },
@@ -322,22 +335,14 @@ export const usePropertyFilters = (
     };
 
     // --- Watchers ---
-    let searchTimeout: ReturnType<typeof setTimeout>;
 
-    watch(search, () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(applyFilters, 400);
-    });
-
-    onBeforeUnmount(() => {
-        clearTimeout(searchTimeout);
-    });
+    // Debounced search — auto-applies after 400ms of inactivity
+    watchDebounced(search, applyFilters, { debounce: 400 });
 
     return {
         viewMode,
         hoveredPropertyId,
         isLoading,
-        perPage,
         search,
         selectedTypes,
         selectedCities,
@@ -356,11 +361,12 @@ export const usePropertyFilters = (
         filteredCities,
         isRental,
         hasActiveFilters,
+        hasMorePages,
         toggleMulti,
         multiLabel,
         applyFilters,
         clearFilters,
-        goToPage,
+        loadMore,
         selectedMapProperty,
         onMapSelect,
         clearMapSelection,

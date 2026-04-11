@@ -66,9 +66,9 @@ class PropertyQueryService
     private function applyFilters(Builder $query, array $filters): Builder
     {
         return $query
-            ->when($filters['type'] ?? null, fn ($q, $slugs) => $q->whereHas('propertyType', fn ($q) => $q->whereIn('slug', (array) $slugs)))
-            ->when($filters['city'] ?? null, fn ($q, $slugs) => $q->whereHas('city', fn ($q) => $q->whereIn('slug', (array) $slugs)))
-            ->when($filters['listing'] ?? null, fn ($q, $slugs) => $q->whereHas('listingType', fn ($q) => $q->whereIn('slug', (array) $slugs)))
+            ->when($filters['type'] ?? null, fn ($q, $slugs) => $q->withWhereHas('propertyType', fn ($q) => $q->whereIn('slug', (array) $slugs)))
+            ->when($filters['city'] ?? null, fn ($q, $slugs) => $q->withWhereHas('city', fn ($q) => $q->whereIn('slug', (array) $slugs)))
+            ->when($filters['listing'] ?? null, fn ($q, $slugs) => $q->withWhereHas('listingType', fn ($q) => $q->whereIn('slug', (array) $slugs)))
             ->when($filters['min_price'] ?? null, fn ($q, $min) => $q->where('price', '>=', (int) $min))
             ->when($filters['max_price'] ?? null, fn ($q, $max) => $q->where('price', '<=', (int) $max))
             ->when($filters['bedrooms'] ?? null, fn ($q) => ($filters['bedrooms_exact'] ?? false)
@@ -87,7 +87,7 @@ class PropertyQueryService
                     $q->whereJsonContains('building_amenities', $amenity);
                 }
             })
-            ->when($filters['search'] ?? null, fn ($q, $search) => $q->searchByTitle($search));
+            ->when($filters['search'] ?? null, fn ($q, $search) => $q->search($search));
     }
 
     /**

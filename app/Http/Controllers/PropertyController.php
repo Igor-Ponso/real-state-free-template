@@ -35,9 +35,9 @@ class PropertyController extends Controller
         $citySlugs = (array) ($filters['city'] ?? []);
 
         return Inertia::render('Properties/Index', [
-            'properties' => FeaturedPropertyResource::collection(
+            'properties' => Inertia::scroll(fn () => FeaturedPropertyResource::collection(
                 $this->queryService->filteredListing($filters, (int) ($filters['per_page'] ?? 12)),
-            ),
+            )),
             'filters' => Inertia::defer(fn () => Cache::tags(['filter-options'])->remember(
                 'property_filter_options',
                 3600,

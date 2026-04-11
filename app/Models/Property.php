@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
@@ -94,7 +95,7 @@ use Spatie\Sluggable\SlugOptions;
 class Property extends Model implements HasMedia
 {
     /** @use HasFactory<PropertyFactory> */
-    use HasFactory, HasSlug, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasSlug, InteractsWithMedia, Searchable, SoftDeletes;
 
     public function getSlugOptions(): SlugOptions
     {
@@ -387,11 +388,69 @@ class Property extends Model implements HasMedia
         return $query->whereJsonContains('building_amenities', $amenity);
     }
 
+    // ── Scout ──────────────────────────────────────────────────
+
     /**
-     * Scope: case-insensitive title search.
+     * Get the indexable data array for the model.
      *
-     * Uses PostgreSQL ILIKE (leverages trigram GIN index) in production
-     * and LIKE (case-insensitive by default) for SQLite in tests.
+     * Used by Scout's database/collection engine for search queries.
+     * Only title, description, and address are indexed — city search
+     * is handled via the scopeSearch() Eloquent scope.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'title' => $this->title,
+            'description' => $this->description,
+            'address' => $this->address,
+        ];
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     *
+     * Note: has no effect with the database engine (queries the table directly).
+     * Effective when using collection, Algolia, Meilisearch, or Typesense engines.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return (bool) $this->is_published;
+    }
+
+    // ── Scopes ─────────────────────────────────────────────────
+
+    /**
+     * Scope: multi-column case-insensitive search across title, description,
+     * address, and city name.
+     *
+     * Uses ILIKE on PostgreSQL (leverages trigram GIN indexes) and
+     * LIKE on SQLite (case-insensitive by default for ASCII).
+     *
+     * @param  Builder<Property>  $query
+     * @return Builder<Property>
+     */
+    public function scopeSearch($query, string $search)
+    {
+        $escaped = str_replace(['%', '_'], ['\%', '\_'], $search);
+        $driver = $query->getConnection()->getDriverName();
+        $operator = $driver === 'pgsql' ? 'ilike' : 'like';
+        $term = "%{$escaped}%";
+
+        return $query->where(function ($q) use ($operator, $term) {
+            $q->where('title', $operator, $term)
+                ->orWhere('description', $operator, $term)
+                ->orWhere('address', $operator, $term)
+                ->orWhereHas('city', fn ($c) => $c->where('name', $operator, $term));
+        });
+    }
+
+    /**
+     * Scope: case-insensitive title-only search.
+     *
+     * Kept for admin search (needs to find drafts) and backward compatibility.
+     * For public search, prefer scopeSearch() which covers multiple columns.
      *
      * @param  Builder<Property>  $query
      * @return Builder<Property>

@@ -314,9 +314,7 @@ const pageDescription = computed(
                         </template>
 
                         <SimilarPropertiesCarousel
-                            v-if="
-                                similarProperties && similarProperties.length
-                            "
+                            v-if="similarProperties && similarProperties.length"
                             :properties="similarProperties"
                         />
 

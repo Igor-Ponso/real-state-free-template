@@ -6,11 +6,11 @@ import {
     BedDouble,
     EyeOff,
     Heart,
+    Loader2,
     Maximize,
 } from 'lucide-vue-next';
 
 import PropertyCard from '@/components/landing/PropertyCard.vue';
-import PropertyPagination from '@/components/landing/PropertyPagination.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { FeaturedProperty, PaginatedResponse } from '@/types/landing';
@@ -20,6 +20,8 @@ defineProps<{
     selectedProperty: FeaturedProperty | null;
     isFavorite: (id: number) => boolean;
     isDismissed: (id: number) => boolean;
+    hasMorePages: boolean;
+    isLoading: boolean;
 }>();
 
 const hoveredPropertyId = defineModel<number | null>('hoveredPropertyId', {
@@ -30,7 +32,7 @@ const emit = defineEmits<{
     clearSelection: [];
     toggleFavorite: [id: number];
     toggleDismissed: [id: number];
-    pageChange: [page: number];
+    loadMore: [];
 }>();
 </script>
 
@@ -140,10 +142,7 @@ const emit = defineEmits<{
                 as-child
                 class="mt-2 w-full bg-landing-gold font-body text-landing-gold-foreground hover:bg-landing-gold/90"
             >
-                <Link
-                    :href="`/properties/${selectedProperty.slug}`"
-                    prefetch
-                >
+                <Link :href="`/properties/${selectedProperty.slug}`" prefetch>
                     View Property Details
                 </Link>
             </Button>
@@ -167,11 +166,31 @@ const emit = defineEmits<{
                     <PropertyCard :property="property" variant="sidebar" />
                 </Link>
             </div>
-            <PropertyPagination
-                :meta="properties.meta"
-                variant="compact"
-                @page-change="emit('pageChange', $event)"
-            />
+
+            <!-- Load more -->
+            <div v-if="hasMorePages" class="mt-4">
+                <Button
+                    variant="outline"
+                    class="w-full border-white/10 text-white/50 hover:bg-white/10 hover:text-white"
+                    :disabled="isLoading"
+                    @click="emit('loadMore')"
+                >
+                    <Loader2
+                        v-if="isLoading"
+                        class="mr-2 size-4 animate-spin"
+                    />
+                    {{ isLoading ? 'Loading...' : 'Load more properties' }}
+                </Button>
+            </div>
+
+            <!-- Results count -->
+            <p
+                v-if="properties.data.length"
+                class="mt-3 text-center font-body text-2xs text-white/30"
+            >
+                Showing {{ properties.data.length }} of
+                {{ properties.meta.total }}
+            </p>
         </template>
     </div>
 </template>

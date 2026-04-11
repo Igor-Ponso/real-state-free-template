@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Deferred, Head, Link } from '@inertiajs/vue3';
+import { Deferred, Head, InfiniteScroll, Link } from '@inertiajs/vue3';
 import { defineAsyncComponent, onMounted, ref } from 'vue';
 
 import CookieConsent from '@/components/CookieConsent.vue';
@@ -9,7 +9,6 @@ import PropertyCard from '@/components/landing/PropertyCard.vue';
 import PropertyCardSkeleton from '@/components/landing/PropertyCardSkeleton.vue';
 import PropertyFilters from '@/components/landing/PropertyFilters.vue';
 import PropertyMapSidebar from '@/components/landing/PropertyMapSidebar.vue';
-import PropertyPagination from '@/components/landing/PropertyPagination.vue';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePropertyFilters } from '@/composables/usePropertyFilters';
@@ -37,7 +36,6 @@ const {
     viewMode,
     hoveredPropertyId,
     isLoading,
-    perPage,
     selectedTypes,
     selectedCities,
     selectedListings,
@@ -56,7 +54,7 @@ const {
     hasActiveFilters,
     applyFilters,
     clearFilters,
-    goToPage,
+    loadMore,
     selectedMapProperty,
     onMapSelect,
     clearMapSelection,
@@ -144,37 +142,58 @@ onMounted(() => {
             </div>
         </section>
 
-        <!-- Grid view — v-show keeps DOM stable, avoids insertBefore crash on toggle -->
+        <!-- Grid view with infinite scroll -->
         <section
             v-show="viewMode === 'grid'"
             class="min-h-[70vh] bg-linear-to-b from-landing-charcoal to-landing-deep-teal px-6 py-10"
         >
             <div class="mx-auto max-w-7xl">
-                <!-- Loading skeleton -->
+                <!-- Loading skeleton (initial load only) -->
                 <div
-                    v-if="isLoading"
+                    v-if="isLoading && !properties.data.length"
                     class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 >
                     <PropertyCardSkeleton v-for="n in 12" :key="n" />
                 </div>
 
-                <!-- Grid -->
-                <TransitionGroup
-                    v-else-if="properties.data.length"
-                    name="card"
-                    tag="div"
-                    class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                >
-                    <Link
-                        v-for="property in properties.data"
-                        :key="property.id"
-                        :href="`/properties/${property.slug}`"
-                        prefetch
-                        class="group"
-                    >
-                        <PropertyCard :property="property" variant="grid" />
-                    </Link>
-                </TransitionGroup>
+                <!-- Infinite scroll grid -->
+                <template v-else-if="properties.data.length">
+                    <InfiniteScroll data="properties" only-next preserve-url>
+                        <template #next="{ loading }">
+                            <div
+                                v-if="loading"
+                                class="mt-8 flex justify-center"
+                            >
+                                <div
+                                    class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent"
+                                />
+                            </div>
+                        </template>
+
+                        <div
+                            class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                        >
+                            <Link
+                                v-for="property in properties.data"
+                                :key="property.id"
+                                :href="`/properties/${property.slug}`"
+                                prefetch
+                                class="group"
+                            >
+                                <PropertyCard
+                                    :property="property"
+                                    variant="grid"
+                                />
+                            </Link>
+                        </div>
+                    </InfiniteScroll>
+
+                    <!-- Results counter -->
+                    <p class="mt-8 text-center font-body text-sm text-white/40">
+                        Showing {{ properties.data.length }} of
+                        {{ properties.meta.total }} properties
+                    </p>
+                </template>
 
                 <!-- Empty state -->
                 <div v-else class="py-20 text-center">
@@ -189,20 +208,6 @@ onMounted(() => {
                         Clear filters
                     </Button>
                 </div>
-
-                <PropertyPagination
-                    :meta="properties.meta"
-                    variant="full"
-                    :per-page="perPage"
-                    show-results
-                    @page-change="goToPage"
-                    @update:per-page="
-                        (v: string) => {
-                            perPage = v;
-                            applyFilters();
-                        }
-                    "
-                />
             </div>
         </section>
 
@@ -218,10 +223,14 @@ onMounted(() => {
                     :selected-property="selectedMapProperty"
                     :is-favorite="isFavorite"
                     :is-dismissed="isDismissed"
+                    :has-more-pages="
+                        properties.meta.current_page < properties.meta.last_page
+                    "
+                    :is-loading="isLoading"
                     @clear-selection="clearMapSelection"
                     @toggle-favorite="toggleFavorite"
                     @toggle-dismissed="toggleDismissed"
-                    @page-change="goToPage"
+                    @load-more="loadMore"
                 />
                 <div class="hidden flex-1 sm:block">
                     <Suspense>
@@ -253,23 +262,3 @@ onMounted(() => {
         <CookieConsent v-if="isMounted" />
     </div>
 </template>
-
-<style scoped>
-.card-enter-active {
-    transition: all 0.4s ease;
-}
-.card-leave-active {
-    transition: all 0.2s ease;
-}
-.card-enter-from {
-    opacity: 0;
-    transform: translateY(16px);
-}
-.card-leave-to {
-    opacity: 0;
-    transform: scale(0.95);
-}
-.card-move {
-    transition: transform 0.4s ease;
-}
-</style>

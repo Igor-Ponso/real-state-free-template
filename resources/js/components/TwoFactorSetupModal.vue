@@ -42,8 +42,8 @@ const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
  */
 const qrCodeDataUrl = computed(() => {
     if (!qrCodeSvg.value) {
-return null;
-}
+        return null;
+    }
 
     return `data:image/svg+xml;utf8,${encodeURIComponent(qrCodeSvg.value)}`;
 });

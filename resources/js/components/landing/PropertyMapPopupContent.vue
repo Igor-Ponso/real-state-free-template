@@ -53,14 +53,10 @@ const emit = defineEmits<{
                 {{ isFavorite ? 'Saved' : 'Save' }}
             </button>
             <button
-                :aria-label="
-                    isDismissed ? 'Show property' : 'Hide property'
-                "
+                :aria-label="isDismissed ? 'Show property' : 'Hide property'"
                 class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
                 :class="
-                    isDismissed
-                        ? 'text-orange-500'
-                        : 'text-muted-foreground'
+                    isDismissed ? 'text-orange-500' : 'text-muted-foreground'
                 "
                 @click.stop="emit('toggleDismissed')"
             >
