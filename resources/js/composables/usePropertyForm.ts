@@ -1,11 +1,38 @@
 import { useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import {
     store,
     update,
 } from '@/actions/App/Http/Controllers/Admin/PropertyController';
 import type { AdminProperty, LookupOption } from '@/types/admin';
+
+/**
+ * Convert cents (minor units) from the backend to formatted dollars for display.
+ */
+const centsToDisplay = (cents: number | null | undefined): string => {
+    if (!cents) {
+        return '';
+    }
+
+    const dollars = Math.floor(cents / 100);
+
+    return dollars > 0
+        ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
+              dollars,
+          )
+        : '';
+};
+
+/**
+ * Convert formatted dollar input (e.g., "1,234,567") to cents for the API.
+ */
+const displayToCents = (dollars: string): number => {
+    const cleaned = dollars.replace(/[^0-9]/g, '');
+    const parsed = parseInt(cleaned, 10);
+
+    return isNaN(parsed) ? 0 : parsed * 100;
+};
 
 interface UsePropertyFormOptions {
     property?: AdminProperty | null;
@@ -19,6 +46,10 @@ interface UsePropertyFormOptions {
 
 export const usePropertyForm = (options: UsePropertyFormOptions) => {
     const isEditing = computed(() => !!options.property);
+
+    // Price display ref — shows formatted dollars in the UI.
+    // The form stores cents internally; this ref syncs via watchers.
+    const priceDisplay = ref(centsToDisplay(options.property?.price_raw));
 
     const form = useForm({
         title: options.property?.title ?? '',
@@ -64,7 +95,15 @@ export const usePropertyForm = (options: UsePropertyFormOptions) => {
         meta_description: options.property?.meta_description ?? '',
     });
 
+    // Sync priceDisplay (dollars) → form.price (cents) on every change
+    watch(priceDisplay, (val) => {
+        form.price = displayToCents(val);
+    });
+
     const submit = () => {
+        // Ensure price is in cents before submission
+        form.price = displayToCents(priceDisplay.value);
+
         if (isEditing.value && options.property) {
             form.put(update.url({ property: options.property.slug }));
         } else {
@@ -75,6 +114,7 @@ export const usePropertyForm = (options: UsePropertyFormOptions) => {
     return {
         form,
         isEditing,
+        priceDisplay,
         submit,
         propertyTypes: options.propertyTypes,
         cities: options.cities,

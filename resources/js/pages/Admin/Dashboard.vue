@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Deferred, Head, Link } from '@inertiajs/vue3';
+import { Deferred, Head, Link, usePoll } from '@inertiajs/vue3';
 import { Building2, Inbox, TrendingUp, Users } from 'lucide-vue-next';
 
 import { show as inquiryShow } from '@/actions/App/Http/Controllers/Admin/InquiryController';
@@ -19,6 +19,10 @@ defineProps<{
     stats: AdminDashboardStats;
     recentInquiries?: AdminInquiry[];
 }>();
+
+// Auto-refresh dashboard stats every 30 seconds.
+// Throttles to 90% slower when the browser tab is in the background.
+usePoll(30000);
 
 const statCards = (stats: AdminDashboardStats) => [
     {

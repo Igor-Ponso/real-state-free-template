@@ -20,6 +20,7 @@ const props = defineProps<{
 
 const {
     form,
+    priceDisplay,
     submit,
     propertyTypes,
     cities,
@@ -46,6 +47,7 @@ const {
 
                 <TabsContent value="basic" class="mt-6">
                     <PropertyBasicInfoTab
+                        v-model:price-display="priceDisplay"
                         :form="form"
                         :property-types="propertyTypes"
                         :listing-types="listingTypes"

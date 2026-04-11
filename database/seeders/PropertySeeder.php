@@ -85,8 +85,11 @@ class PropertySeeder extends Seeder
         }
 
         // Create properties (general, across all cities)
+        // Coordinates are derived from the assigned city + small random offset
+        // so properties cluster near their city on the map.
         $properties = collect();
         for ($i = 0; $i < 30; $i++) {
+            $city = $cities->random();
             $property = Property::factory()
                 ->when($i < 4, fn ($f) => $f->featured())
                 ->when($i >= 25, fn ($f) => $f->draft())
@@ -94,7 +97,9 @@ class PropertySeeder extends Seeder
                 ->create([
                     'user_id' => $agents->random()->id,
                     'property_type_id' => $propertyTypes->random()->id,
-                    'city_id' => $cities->random()->id,
+                    'city_id' => $city->id,
+                    'latitude' => $city->latitude + fake()->randomFloat(4, -0.05, 0.05),
+                    'longitude' => $city->longitude + fake()->randomFloat(4, -0.05, 0.05),
                 ]);
             $properties->push($property);
         }

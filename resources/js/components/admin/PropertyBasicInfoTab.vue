@@ -1,5 +1,7 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-mutating-props -- Inertia useForm() reactive proxy is designed for child mutation */
+import { vMaska } from 'maska/vue';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -19,6 +21,8 @@ defineProps<{
     listingTypes: LookupOption[];
     propertyStatuses: LookupOption[];
 }>();
+
+const priceDisplay = defineModel<string>('priceDisplay', { required: true });
 </script>
 
 <template>
@@ -94,11 +98,20 @@ defineProps<{
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-                <Label for="price">Price (cents)</Label>
+                <Label for="price">Price ($)</Label>
                 <Input
                     id="price"
-                    v-model="form.price"
-                    type="number"
+                    v-model="priceDisplay"
+                    v-maska="{
+                        number: {
+                            locale: 'en-US',
+                            fraction: 0,
+                            unsigned: true,
+                        },
+                    }"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="$0"
                     class="mt-1"
                 />
                 <p

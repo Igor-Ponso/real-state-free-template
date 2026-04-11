@@ -176,11 +176,23 @@ class Property extends Model implements HasMedia
      * Register responsive image conversions for property photos.
      *
      * Generates thumbnail (400px), card (800px), and gallery (1400px) sizes
-     * for optimal loading across grid cards, detail pages, and galleries.
+     * in both original format and WebP for optimal loading. Each conversion
+     * also generates responsive images (srcset) for right-sized delivery
+     * per device viewport.
      */
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
+            ->width(400)
+            ->height(250)
+            ->sharpen(10)
+            ->withResponsiveImages()
+            ->performOnCollections('images')
+            ->nonQueued();
+
+        $this->addMediaConversion('thumb-webp')
+            ->format('webp')
+            ->quality(80)
             ->width(400)
             ->height(250)
             ->sharpen(10)
@@ -190,10 +202,28 @@ class Property extends Model implements HasMedia
         $this->addMediaConversion('card')
             ->width(800)
             ->height(500)
+            ->withResponsiveImages()
+            ->performOnCollections('images')
+            ->nonQueued();
+
+        $this->addMediaConversion('card-webp')
+            ->format('webp')
+            ->quality(80)
+            ->width(800)
+            ->height(500)
             ->performOnCollections('images')
             ->nonQueued();
 
         $this->addMediaConversion('gallery')
+            ->width(1400)
+            ->height(875)
+            ->withResponsiveImages()
+            ->performOnCollections('images')
+            ->nonQueued();
+
+        $this->addMediaConversion('gallery-webp')
+            ->format('webp')
+            ->quality(80)
             ->width(1400)
             ->height(875)
             ->performOnCollections('images')
