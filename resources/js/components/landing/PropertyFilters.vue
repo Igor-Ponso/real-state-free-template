@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Grid3x3, Map, Search, X } from 'lucide-vue-next';
+import { vMaska } from 'maska/vue';
 import { computed } from 'vue';
 
 import BedBathFilter from '@/components/landing/BedBathFilter.vue';
@@ -213,9 +214,11 @@ const activeFilterCount = computed(
                     <label :class="LABEL">Min Rent</label>
                     <Input
                         v-model="minPrice"
-                        type="number"
+                        v-maska="{ number: { locale: 'en-US', fraction: 0, unsigned: true } }"
+                        type="text"
+                        inputmode="numeric"
                         placeholder="$0"
-                        class="h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        class="h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30"
                     />
                 </div>
                 <div class="w-32 shrink-0">
@@ -224,9 +227,11 @@ const activeFilterCount = computed(
                     }}</label>
                     <Input
                         v-model="maxPrice"
-                        type="number"
+                        v-maska="{ number: { locale: 'en-US', fraction: 0, unsigned: true } }"
+                        type="text"
+                        inputmode="numeric"
                         :placeholder="isRental ? '$10,000' : '$10,000,000'"
-                        class="h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        class="h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-white/30"
                     />
                 </div>
 

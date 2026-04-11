@@ -65,6 +65,35 @@ const toArr = (val: unknown): string[] => {
     return [];
 };
 
+/**
+ * Convert cents (minor units) from the backend to formatted dollars for display.
+ * The DB stores prices in cents via MoneyCast, and the API accepts/returns cents.
+ * The user interacts with dollar amounts in the UI, formatted with maska
+ * (e.g., "1,234,567").
+ */
+const centsToDisplay = (cents: string | undefined): string => {
+    if (!cents) {
+        return '';
+    }
+
+    const dollars = Math.floor(parseInt(cents, 10) / 100);
+
+    return dollars > 0
+        ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(dollars)
+        : '';
+};
+
+/**
+ * Convert formatted dollar input (e.g., "1,234,567") to cents for the API.
+ * Strips any non-digit characters (commas, spaces) before converting.
+ */
+const displayToCents = (dollars: string): string => {
+    const cleaned = dollars.replace(/[^0-9]/g, '');
+    const parsed = parseInt(cleaned, 10);
+
+    return isNaN(parsed) || parsed === 0 ? '' : String(parsed * 100);
+};
+
 export const usePropertyFilters = (
     options: UsePropertyFiltersOptions,
 ): UsePropertyFiltersReturn => {
@@ -89,8 +118,8 @@ export const usePropertyFilters = (
         toArr(applied.building_amenities),
     );
     const selectedSort = ref(applied.sort ?? 'newest');
-    const minPrice = ref(applied.min_price ?? '');
-    const maxPrice = ref(applied.max_price ?? '');
+    const minPrice = ref(centsToDisplay(applied.min_price));
+    const maxPrice = ref(centsToDisplay(applied.max_price));
 
     // --- Computed ---
     const citySearch = ref('');
@@ -216,11 +245,11 @@ export const usePropertyFilters = (
         }
 
         if (minPrice.value) {
-            params.min_price = minPrice.value;
+            params.min_price = displayToCents(minPrice.value);
         }
 
         if (maxPrice.value) {
-            params.max_price = maxPrice.value;
+            params.max_price = displayToCents(maxPrice.value);
         }
 
         if (selectedSort.value !== 'newest') {

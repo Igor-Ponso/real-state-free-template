@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PropertyIndexRequest extends FormRequest
 {
@@ -47,7 +48,7 @@ class PropertyIndexRequest extends FormRequest
             // Filter bounds in minor units (cents) — matches the raw DB column.
             // Not using ValidMoney here because it parses integers as major units.
             'min_price' => ['sometimes', 'integer', 'min:0', 'max:100000000000'],
-            'max_price' => ['sometimes', 'integer', 'min:0', 'max:100000000000', 'gte:min_price'],
+            'max_price' => ['sometimes', 'integer', 'min:0', 'max:100000000000', Rule::when($this->filled('min_price'), 'gte:min_price')],
             'sort' => ['sometimes', 'string', 'in:newest,oldest,price_asc,price_desc'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:48'],
         ];
