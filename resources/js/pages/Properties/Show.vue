@@ -3,27 +3,19 @@ import { Deferred, Head, Link } from '@inertiajs/vue3';
 import { ArrowLeft, Building2, ChevronRight, MapPin } from 'lucide-vue-next';
 import { computed, defineAsyncComponent } from 'vue';
 
-import { show } from '@/actions/App/Http/Controllers/PropertyController';
 import LandingFooter from '@/components/landing/LandingFooter.vue';
 import LandingHeader from '@/components/landing/LandingHeader.vue';
 import PropertyAgentCard from '@/components/landing/PropertyAgentCard.vue';
 import PropertyAmenities from '@/components/landing/PropertyAmenities.vue';
-import PropertyCard from '@/components/landing/PropertyCard.vue';
 import PropertyFeatures from '@/components/landing/PropertyFeatures.vue';
 import PropertyImageGallery from '@/components/landing/PropertyImageGallery.vue';
 import PropertyInquiryForm from '@/components/landing/PropertyInquiryForm.vue';
 import PropertyRentalDetails from '@/components/landing/PropertyRentalDetails.vue';
 import PropertySpecsBar from '@/components/landing/PropertySpecsBar.vue';
+import SimilarPropertiesCarousel from '@/components/landing/SimilarPropertiesCarousel.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
@@ -321,36 +313,12 @@ const pageDescription = computed(
                             </div>
                         </template>
 
-                        <div
-                            v-if="similarProperties && similarProperties.length"
-                        >
-                            <Carousel class="w-full" :opts="{ align: 'start' }">
-                                <CarouselContent class="-ml-4">
-                                    <CarouselItem
-                                        v-for="similar in similarProperties"
-                                        :key="similar.id"
-                                        class="basis-full pl-4 sm:basis-1/2 lg:basis-1/4"
-                                    >
-                                        <Link
-                                            :href="show.url(similar.slug)"
-                                            prefetch
-                                            class="group"
-                                        >
-                                            <PropertyCard
-                                                :property="similar"
-                                                variant="compact"
-                                            />
-                                        </Link>
-                                    </CarouselItem>
-                                </CarouselContent>
-                                <CarouselPrevious
-                                    class="-left-4 border-white/20 bg-landing-charcoal text-white hover:bg-landing-deep-teal"
-                                />
-                                <CarouselNext
-                                    class="-right-4 border-white/20 bg-landing-charcoal text-white hover:bg-landing-deep-teal"
-                                />
-                            </Carousel>
-                        </div>
+                        <SimilarPropertiesCarousel
+                            v-if="
+                                similarProperties && similarProperties.length
+                            "
+                            :properties="similarProperties"
+                        />
 
                         <div v-else class="py-10 text-center">
                             <p class="font-body text-sm text-white/40">

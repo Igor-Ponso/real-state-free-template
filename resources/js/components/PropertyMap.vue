@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import 'leaflet/dist/leaflet.css';
 import { LMap, LMarker, LPopup, LTileLayer } from '@vue-leaflet/vue-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
-import * as L from 'leaflet';
-import { EyeOff, Heart } from 'lucide-vue-next';
+import 'leaflet/dist/leaflet.css';
 import type { ComponentPublicInstance } from 'vue';
 import {
     computed,
@@ -14,6 +12,8 @@ import {
     watch,
 } from 'vue';
 
+import PropertyMapPopupContent from '@/components/landing/PropertyMapPopupContent.vue';
+import { useMapMarkers } from '@/composables/useMapMarkers';
 import type { FeaturedProperty } from '@/types/landing';
 
 const props = defineProps<{
@@ -36,67 +36,16 @@ const mapCenter = ref<[number, number]>([49.2827, -123.1207]);
 const mapZoom = ref(12);
 let fitBoundsTimer: ReturnType<typeof setTimeout>;
 
+const hoveredIdRef = computed(() => props.hoveredId);
+const { markerIcon, markerState, markerOpacity } = useMapMarkers(
+    props.isFavorite,
+    props.isDismissed,
+    hoveredIdRef,
+);
+
 const geoProperties = computed(() =>
     props.properties.filter((p) => p.latitude && p.longitude),
 );
-
-const pinSvg = (color: string, symbol: string) => `
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
-        <defs><filter id="s"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.3"/></filter></defs>
-        <path d="M16 2C8.8 2 3 7.8 3 15c0 10 13 22 13 22s13-12 13-22C29 7.8 23.2 2 16 2z" fill="${color}" stroke="white" stroke-width="2" filter="url(#s)"/>
-        <text x="16" y="19" text-anchor="middle" font-size="13" font-weight="bold" fill="white">${symbol}</text>
-    </svg>`;
-
-const createIcon = (color: string, symbol: string) =>
-    L.divIcon({
-        html: pinSvg(color, symbol),
-        className: '',
-        iconSize: [32, 40],
-        iconAnchor: [16, 40],
-        popupAnchor: [0, -40],
-    });
-
-const icons = {
-    default: createIcon('#c5944a', ''),
-    favorite: createIcon('#ef4444', '♥'),
-    dismissed: createIcon('#9ca3af', '—'),
-};
-
-const markerIcon = (propertyId: number) => {
-    if (props.isFavorite?.(propertyId)) {
-        return icons.favorite;
-    }
-
-    if (props.isDismissed?.(propertyId)) {
-        return icons.dismissed;
-    }
-
-    return icons.default;
-};
-
-const markerState = (propertyId: number): string => {
-    if (props.isFavorite?.(propertyId)) {
-        return 'fav';
-    }
-
-    if (props.isDismissed?.(propertyId)) {
-        return 'dis';
-    }
-
-    return 'def';
-};
-
-const markerOpacity = (propertyId: number): number => {
-    if (props.isDismissed?.(propertyId)) {
-        return 0.6;
-    }
-
-    if (props.hoveredId !== null && props.hoveredId !== propertyId) {
-        return 0.5;
-    }
-
-    return 1;
-};
 
 const hasPropertyCoords = (): boolean =>
     props.properties.some((p) => p.latitude && p.longitude);
@@ -264,79 +213,19 @@ const onMarkerMouseLeave = (propertyId: number) => {
                     maxWidth: 220,
                 }"
             >
-                <div class="min-w-44 font-body">
-                    <img
-                        v-if="property.images[0]"
-                        :src="property.images[0]"
-                        :alt="property.title"
-                        class="mb-2 h-24 w-full rounded object-cover"
-                    />
-                    <p class="font-serif text-sm font-semibold">
-                        {{ property.title }}
-                    </p>
-                    <p class="text-xs text-muted-foreground">
-                        {{ property.location }}
-                    </p>
-                    <p class="mt-1 font-serif font-bold text-landing-gold">
-                        {{ property.price }}
-                    </p>
-                    <p
-                        v-if="property.description"
-                        class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground"
-                    >
-                        {{ property.description }}
-                    </p>
-                    <!-- Favorite / Dismiss actions -->
-                    <div class="mt-2 flex gap-1 border-t pt-2">
-                        <button
-                            :aria-label="
-                                isFavorite?.(property.id)
-                                    ? 'Remove from saved'
-                                    : 'Save property'
-                            "
-                            class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
-                            :class="
-                                isFavorite?.(property.id)
-                                    ? 'text-red-500'
-                                    : 'text-muted-foreground'
-                            "
-                            @click.stop="
-                                emit('toggle-favorite', property.id);
-                                animateMarker(property.id);
-                            "
-                        >
-                            <Heart
-                                class="size-3.5"
-                                :fill="
-                                    isFavorite?.(property.id)
-                                        ? 'currentColor'
-                                        : 'none'
-                                "
-                            />
-                            {{ isFavorite?.(property.id) ? 'Saved' : 'Save' }}
-                        </button>
-                        <button
-                            :aria-label="
-                                isDismissed?.(property.id)
-                                    ? 'Show property'
-                                    : 'Hide property'
-                            "
-                            class="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-xs transition-colors hover:bg-muted"
-                            :class="
-                                isDismissed?.(property.id)
-                                    ? 'text-orange-500'
-                                    : 'text-muted-foreground'
-                            "
-                            @click.stop="
-                                emit('toggle-dismissed', property.id);
-                                animateMarker(property.id);
-                            "
-                        >
-                            <EyeOff class="size-3.5" />
-                            {{ isDismissed?.(property.id) ? 'Hidden' : 'Hide' }}
-                        </button>
-                    </div>
-                </div>
+                <PropertyMapPopupContent
+                    :property="property"
+                    :is-favorite="isFavorite?.(property.id) ?? false"
+                    :is-dismissed="isDismissed?.(property.id) ?? false"
+                    @toggle-favorite="
+                        emit('toggle-favorite', property.id);
+                        animateMarker(property.id);
+                    "
+                    @toggle-dismissed="
+                        emit('toggle-dismissed', property.id);
+                        animateMarker(property.id);
+                    "
+                />
             </LPopup>
         </LMarker>
     </LMap>
