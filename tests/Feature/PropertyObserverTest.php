@@ -32,20 +32,23 @@ it('flushes properties cache tag on property create', function () {
     ]);
 });
 
-it('flushes properties and property-specific cache tags on property update', function () {
-    // Create without the observer interfering with our mock setup
+it('flushes display-relevant caches when title changes on update', function () {
     $property = Property::factory()->active()->create([
         'user_id' => $this->agent->id,
         'city_id' => $this->city->id,
         'property_type_id' => $this->type->id,
     ]);
 
-    Cache::shouldReceive('tags')->with(["property:{$property->slug}"])->once()->andReturnSelf();
-    Cache::shouldReceive('tags')->with(['properties'])->once()->andReturnSelf();
-    Cache::shouldReceive('flush')->twice();
-    Cache::shouldReceive('forget')->with('home_stats')->once();
+    // Spy allows calls without pre-declaring expectations
+    Cache::spy();
 
     $property->update(['title' => 'Updated Title']);
+
+    // property-specific cache always flushed
+    Cache::shouldHaveReceived('tags')->with(["property:{$property->slug}"]);
+    // display fields changed → properties listing cache flushed
+    Cache::shouldHaveReceived('tags')->with(['properties']);
+    Cache::shouldHaveReceived('forget')->with('home_stats');
 });
 
 it('flushes filter-options cache when FK fields change on update', function () {
@@ -57,29 +60,32 @@ it('flushes filter-options cache when FK fields change on update', function () {
         'property_type_id' => $this->type->id,
     ]);
 
-    Cache::shouldReceive('tags')->with(["property:{$property->slug}"])->once()->andReturnSelf();
-    Cache::shouldReceive('tags')->with(['properties'])->once()->andReturnSelf();
-    Cache::shouldReceive('tags')->with(['filter-options'])->once()->andReturnSelf();
-    Cache::shouldReceive('flush')->times(3);
-    Cache::shouldReceive('forget')->with('home_stats')->once();
+    Cache::spy();
 
     $property->update(['city_id' => $newCity->id]);
+
+    Cache::shouldHaveReceived('tags')->with(["property:{$property->slug}"]);
+    Cache::shouldHaveReceived('tags')->with(['properties']);
+    Cache::shouldHaveReceived('tags')->with(['filter-options']);
+    Cache::shouldHaveReceived('forget')->with('home_stats');
 });
 
-it('does not flush filter-options cache when non-FK fields change on update', function () {
+it('only flushes property-specific cache when only meta fields change', function () {
     $property = Property::factory()->active()->create([
         'user_id' => $this->agent->id,
         'city_id' => $this->city->id,
         'property_type_id' => $this->type->id,
     ]);
 
-    Cache::shouldReceive('tags')->with(["property:{$property->slug}"])->once()->andReturnSelf();
-    Cache::shouldReceive('tags')->with(['properties'])->once()->andReturnSelf();
-    Cache::shouldReceive('flush')->twice();
-    Cache::shouldReceive('forget')->with('home_stats')->once();
+    Cache::spy();
 
-    // filter-options should NOT be flushed for title changes
-    $property->update(['title' => 'New Title']);
+    $property->update(['meta_description' => 'Updated SEO description']);
+
+    // property-specific always flushed
+    Cache::shouldHaveReceived('tags')->with(["property:{$property->slug}"]);
+    // non-display field → should NOT flush listing caches
+    Cache::shouldNotHaveReceived('tags', [['properties']]);
+    Cache::shouldNotHaveReceived('forget', ['home_stats']);
 });
 
 it('flushes all cache tags on property delete', function () {
@@ -89,11 +95,12 @@ it('flushes all cache tags on property delete', function () {
         'property_type_id' => $this->type->id,
     ]);
 
-    Cache::shouldReceive('tags')->with(["property:{$property->slug}"])->once()->andReturnSelf();
-    Cache::shouldReceive('tags')->with(['properties'])->once()->andReturnSelf();
-    Cache::shouldReceive('tags')->with(['filter-options'])->once()->andReturnSelf();
-    Cache::shouldReceive('flush')->times(3);
-    Cache::shouldReceive('forget')->with('home_stats')->once();
+    Cache::spy();
 
     $property->delete();
+
+    Cache::shouldHaveReceived('tags')->with(["property:{$property->slug}"]);
+    Cache::shouldHaveReceived('tags')->with(['properties']);
+    Cache::shouldHaveReceived('tags')->with(['filter-options']);
+    Cache::shouldHaveReceived('forget')->with('home_stats');
 });

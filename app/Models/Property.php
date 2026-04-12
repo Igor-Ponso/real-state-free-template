@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Scopes\PublishedScope;
 use Brick\Money\Money;
 use Database\Factories\PropertyFactory;
 use Elegantly\Money\MoneyCast;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -81,6 +83,7 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read Collection<int, PropertyView> $views
  * @property-read MediaCollection<int, Media> $media
  */
+#[ScopedBy(PublishedScope::class)]
 #[Fillable([
     'property_type_id', 'title', 'slug', 'description',
     'listing_type_id', 'property_status_id', 'price', 'currency', 'price_min', 'price_max',
@@ -129,6 +132,25 @@ class Property extends Model implements HasMedia
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * Customize route model binding to bypass PublishedScope for admin routes.
+     *
+     * Without this, admin routes cannot resolve draft/unpublished properties
+     * because the global PublishedScope filters them out before the controller
+     * method runs.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function resolveRouteBindingQuery($query, $value, $field = null)
+    {
+        if (request()?->routeIs('admin.*')) {
+            $query->withoutGlobalScope(PublishedScope::class);
+        }
+
+        return parent::resolveRouteBindingQuery($query, $value, $field);
     }
 
     /**

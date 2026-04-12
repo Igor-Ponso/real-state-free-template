@@ -38,9 +38,8 @@ class PropertyController extends Controller
             'properties' => Inertia::scroll(fn () => FeaturedPropertyResource::collection(
                 $this->queryService->filteredListing($filters, (int) ($filters['per_page'] ?? 12)),
             )),
-            'filters' => Inertia::defer(fn () => Cache::tags(['filter-options'])->remember(
+            'filters' => Inertia::defer(fn () => Cache::tags(['filter-options'])->rememberForever(
                 'property_filter_options',
-                3600,
                 fn () => [
                     'propertyTypes' => PropertyType::active()->ordered()->get(['name', 'slug'])->toArray(),
                     'cities' => City::ordered()->get(['name', 'slug', 'latitude', 'longitude'])->toArray(),

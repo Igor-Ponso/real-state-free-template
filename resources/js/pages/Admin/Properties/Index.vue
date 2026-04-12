@@ -46,8 +46,9 @@ const props = defineProps<{
     filters: { status?: string; search?: string };
 }>();
 
+const ALL_STATUSES = 'all';
 const searchQuery = ref(props.filters.search ?? '');
-const statusFilter = ref(props.filters.status ?? '');
+const statusFilter = ref(props.filters.status ?? ALL_STATUSES);
 
 const applyFilters = () => {
     const params: Record<string, string> = {};
@@ -56,7 +57,7 @@ const applyFilters = () => {
         params.search = searchQuery.value;
     }
 
-    if (statusFilter.value) {
+    if (statusFilter.value && statusFilter.value !== ALL_STATUSES) {
         params.status = statusFilter.value;
     }
 
@@ -99,7 +100,7 @@ const deleteProperty = (slug: string) => {
                     <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem :value="ALL_STATUSES">All Statuses</SelectItem>
                     <SelectItem
                         v-for="s in statuses"
                         :key="s.slug"

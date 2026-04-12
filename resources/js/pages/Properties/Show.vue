@@ -31,6 +31,10 @@ const props = defineProps<{
     canRegister?: boolean;
 }>();
 
+const canonicalUrl = computed(
+    () => `${window.location.origin}/properties/${props.property.slug}`,
+);
+
 const { target: descriptionRef, isVisible: descriptionVisible } =
     useFadeInOnScroll();
 
@@ -72,11 +76,29 @@ const pageDescription = computed(
     <div class="min-h-screen scroll-smooth font-body">
         <Head :title="pageTitle">
             <meta name="description" :content="pageDescription" />
+            <!-- Open Graph -->
+            <meta property="og:type" content="website" />
             <meta property="og:title" :content="pageTitle" />
             <meta property="og:description" :content="pageDescription" />
+            <meta property="og:site_name" content="Sovereign Estates" />
+            <meta property="og:url" :content="canonicalUrl" />
             <meta
                 v-if="property.images.length"
                 property="og:image"
+                :content="property.images[0]"
+            />
+            <meta
+                v-if="property.images.length"
+                property="og:image:alt"
+                :content="property.title"
+            />
+            <!-- Twitter Card -->
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" :content="pageTitle" />
+            <meta name="twitter:description" :content="pageDescription" />
+            <meta
+                v-if="property.images.length"
+                name="twitter:image"
                 :content="property.images[0]"
             />
         </Head>

@@ -139,7 +139,7 @@ const imageSizes = computed(() => {
     </div>
 
     <!-- Card variants: featured, grid, compact -->
-    <Card v-else :class="styles.card">
+    <Card v-else :class="['@container', styles.card]">
         <!-- No image fallback — shadcn Empty fills card, no overlays -->
         <Empty
             v-if="!hasImages"

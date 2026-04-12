@@ -13,6 +13,7 @@ use App\Models\PropertyType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Concurrency;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -61,21 +62,29 @@ class WelcomeController extends Controller
                     ->featured()
                     ->get(),
             )->resolve(),
-            'searchOptions' => fn () => Cache::tags(['filter-options'])->remember(
+            'searchOptions' => fn () => Cache::tags(['filter-options'])->rememberForever(
                 'home_search_options',
-                3600,
                 fn () => [
                     'propertyTypes' => PropertyType::active()->ordered()->get(['name', 'slug'])->toArray(),
                     'listingTypes' => ListingType::active()->ordered()->get(['name', 'slug'])->toArray(),
                     'cities' => City::ordered()->get(['name', 'slug'])->toArray(),
                 ],
             ),
-            'stats' => fn () => Cache::flexible('home_stats', [1800, 3600], fn () => [
-                'properties_sold' => Property::whereHas('propertyStatus', fn ($q) => $q->where('slug', 'sold'))->count(),
-                'clients' => User::whereHas('roles', fn ($q) => $q->where('name', 'client'))->count(),
-                'agents' => AgentProfile::count(),
-                'cities' => City::featured()->count(),
-            ]),
+            'stats' => fn () => Cache::flexible('home_stats', [1800, 3600], function () {
+                [$sold, $clients, $agents, $cities] = Concurrency::run([
+                    fn () => Property::whereHas('propertyStatus', fn ($q) => $q->where('slug', 'sold'))->count(),
+                    fn () => User::whereHas('roles', fn ($q) => $q->where('name', 'client'))->count(),
+                    fn () => AgentProfile::count(),
+                    fn () => City::featured()->count(),
+                ]);
+
+                return [
+                    'properties_sold' => $sold,
+                    'clients' => $clients,
+                    'agents' => $agents,
+                    'cities' => $cities,
+                ];
+            }),
         ]);
     }
 }

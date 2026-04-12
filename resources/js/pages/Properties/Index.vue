@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Deferred, Head, InfiniteScroll, Link } from '@inertiajs/vue3';
+import { ChevronDown } from 'lucide-vue-next';
 import { defineAsyncComponent, onMounted, ref } from 'vue';
 
 import CookieConsent from '@/components/CookieConsent.vue';
@@ -158,19 +159,49 @@ onMounted(() => {
 
                 <!-- Infinite scroll grid -->
                 <template v-else-if="properties.data.length">
-                    <InfiniteScroll data="properties" only-next preserve-url>
-                        <template #next="{ loading }">
+                    <InfiniteScroll
+                        data="properties"
+                        only-next
+                        preserve-url
+                        manual
+                    >
+                        <template #next="{ loading, fetch, hasMore }">
                             <div
-                                v-if="loading"
-                                class="mt-8 flex justify-center"
+                                v-if="hasMore"
+                                class="mt-10 flex flex-col items-center gap-3"
                             >
-                                <div
-                                    class="size-8 animate-spin rounded-full border-2 border-landing-gold border-t-transparent"
-                                />
+                                <Button
+                                    size="lg"
+                                    class="bg-landing-gold px-8 font-body text-landing-gold-foreground hover:bg-landing-gold/90"
+                                    :disabled="loading"
+                                    @click="fetch"
+                                >
+                                    <div
+                                        v-if="loading"
+                                        class="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                    />
+                                    <ChevronDown
+                                        v-else
+                                        class="mr-1.5 size-4"
+                                    />
+                                    {{
+                                        loading
+                                            ? 'Loading...'
+                                            : 'Load More Properties'
+                                    }}
+                                </Button>
+                                <p
+                                    class="font-body text-xs text-white/30"
+                                >
+                                    Showing
+                                    {{ properties.data.length }} of
+                                    {{ properties.meta.total }}
+                                </p>
                             </div>
                         </template>
 
                         <div
+                            v-memo="[properties.data.length]"
                             class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                         >
                             <Link
@@ -188,10 +219,15 @@ onMounted(() => {
                         </div>
                     </InfiniteScroll>
 
-                    <!-- Results counter -->
-                    <p class="mt-8 text-center font-body text-sm text-white/40">
-                        Showing {{ properties.data.length }} of
-                        {{ properties.meta.total }} properties
+                    <!-- All loaded indicator -->
+                    <p
+                        v-if="
+                            properties.meta.current_page >=
+                            properties.meta.last_page
+                        "
+                        class="mt-10 text-center font-body text-sm text-white/30"
+                    >
+                        All {{ properties.meta.total }} properties loaded
                     </p>
                 </template>
 

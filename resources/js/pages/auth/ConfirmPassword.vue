@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { dashboard } from '@/routes';
 import { store } from '@/routes/password/confirm';
 
 defineOptions({
@@ -40,9 +41,16 @@ defineOptions({
                 <InputError :message="errors.password" />
             </div>
 
-            <div class="flex items-center">
+            <div class="flex gap-3">
                 <Button
-                    class="w-full"
+                    as-child
+                    variant="outline"
+                    class="flex-1"
+                >
+                    <Link :href="dashboard()">Cancel</Link>
+                </Button>
+                <Button
+                    class="flex-1"
                     :disabled="processing"
                     data-test="confirm-password-button"
                 >

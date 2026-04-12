@@ -100,6 +100,18 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
+        // Log queries exceeding 500ms in non-production environments.
+        // Catches N+1 regressions and missing indexes during development.
+        if (! app()->isProduction()) {
+            DB::whenQueryingForLongerThan(500, function ($connection, $event) {
+                logger()->warning('Slow query detected', [
+                    'sql' => $event->toRawSql(),
+                    'time' => $event->time.'ms',
+                    'connection' => $connection->getName(),
+                ]);
+            });
+        }
+
         Password::defaults(fn (): Password => Password::min(12)
             ->mixedCase()
             ->letters()

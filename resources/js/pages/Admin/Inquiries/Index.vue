@@ -28,12 +28,13 @@ const props = defineProps<{
     filters: { status?: string };
 }>();
 
-const statusFilter = ref(props.filters.status ?? '');
+const ALL_STATUSES = 'all';
+const statusFilter = ref(props.filters.status ?? ALL_STATUSES);
 
 const applyFilters = () => {
     const params: Record<string, string> = {};
 
-    if (statusFilter.value) {
+    if (statusFilter.value && statusFilter.value !== ALL_STATUSES) {
         params.status = statusFilter.value;
     }
 
@@ -65,7 +66,7 @@ const statusClass = (slug: string | null) => ({
                     <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem :value="ALL_STATUSES">All Statuses</SelectItem>
                     <SelectItem
                         v-for="s in statuses"
                         :key="s.slug"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { Menu } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, nextTick } from 'vue';
 
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import CommandPalette from '@/components/landing/CommandPalette.vue';
@@ -35,7 +35,24 @@ const navItems = [
 ];
 
 const scrollTo = (href: string) => {
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    const el = document.querySelector(href);
+
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+
+        return;
+    }
+
+    // Section doesn't exist on current page — navigate home, then scroll
+    router.visit('/', {
+        onFinish: () => {
+            nextTick(() => {
+                document.querySelector(href)?.scrollIntoView({
+                    behavior: 'smooth',
+                });
+            });
+        },
+    });
 };
 </script>
 

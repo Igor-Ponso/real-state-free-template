@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { Mail, MapPin, Phone } from 'lucide-vue-next';
+import { Github, Mail, MapPin, Phone } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 import AppLogoIcon from '@/components/AppLogoIcon.vue';

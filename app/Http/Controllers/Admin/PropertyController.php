@@ -13,8 +13,11 @@ use App\Models\ListingType;
 use App\Models\Property;
 use App\Models\PropertyStatus;
 use App\Models\PropertyType;
+use App\Scopes\PublishedScope;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,15 +25,25 @@ use Inertia\Response;
  * Admin CRUD for property listings.
  *
  * Agents see only their own properties. Admins see all.
- * Uses policies for authorization and actions for business logic.
+ * Uses policies for authorization, actions for business logic,
+ * and PHP attributes for middleware declaration.
+ *
+ * Bypasses PublishedScope so admins/agents can manage drafts.
  */
-class PropertyController extends Controller
+class PropertyController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:viewAny,App\Models\Property', only: ['index']),
+            new Middleware('can:create,App\Models\Property', only: ['create', 'store']),
+        ];
+    }
+
     public function index(Request $request): Response
     {
-        $this->authorize('viewAny', Property::class);
-
-        $query = Property::with(['city', 'propertyType', 'propertyStatus', 'listingType'])
+        $query = Property::withoutGlobalScope(PublishedScope::class)
+            ->with(['city', 'propertyType', 'propertyStatus', 'listingType'])
             ->withCount('inquiries')
             ->when($request->user()->hasRole('agent'), fn ($q) => $q->where('user_id', $request->user()->id))
             ->when($request->query('status'), fn ($q, $s) => $q->whereHas('propertyStatus', fn ($q) => $q->where('slug', $s)))
@@ -48,8 +61,6 @@ class PropertyController extends Controller
 
     public function create(): Response
     {
-        $this->authorize('create', Property::class);
-
         return Inertia::render('Admin/Properties/Create', $this->formOptions());
     }
 
