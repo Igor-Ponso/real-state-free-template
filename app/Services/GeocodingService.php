@@ -41,7 +41,7 @@ class GeocodingService
 
         return Cache::remember(
             $this->cacheKey($query),
-            config()->integer('services.nominatim.cache_ttl', 2592000),
+            (int) config('services.nominatim.cache_ttl', 2592000),
             fn () => $this->request($query),
         );
     }
@@ -54,10 +54,10 @@ class GeocodingService
     private function request(string $query): ?array
     {
         try {
-            $response = Http::withUserAgent(config()->string('services.nominatim.user_agent'))
-                ->timeout(config()->integer('services.nominatim.timeout', 5))
+            $response = Http::withUserAgent((string) config('services.nominatim.user_agent'))
+                ->timeout((int) config('services.nominatim.timeout', 5))
                 ->retry(2, 500, throw: false)
-                ->get(config()->string('services.nominatim.base_url').'/search', [
+                ->get(config('services.nominatim.base_url').'/search', [
                     'q' => $query,
                     'format' => 'jsonv2',
                     'limit' => 1,
