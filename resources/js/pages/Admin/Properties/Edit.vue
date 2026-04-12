@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 import PropertyAmenitiesTab from '@/components/admin/PropertyAmenitiesTab.vue';
 import PropertyBasicInfoTab from '@/components/admin/PropertyBasicInfoTab.vue';
@@ -36,6 +37,13 @@ const {
     unitAmenities,
     buildingAmenities,
 } = usePropertyForm(props);
+
+const page = usePage();
+const initialTab = computed(() => {
+    const url = new URL(page.url, window.location.origin);
+
+    return url.searchParams.get('tab') ?? 'basic';
+});
 </script>
 
 <template>
@@ -45,7 +53,7 @@ const {
         <h1 class="text-2xl font-bold tracking-tight">Edit Property</h1>
 
         <form @submit.prevent="submit">
-            <Tabs default-value="basic" class="w-full">
+            <Tabs :default-value="initialTab" class="w-full">
                 <TabsList>
                     <TabsTrigger value="basic">Basic Info</TabsTrigger>
                     <TabsTrigger value="location">Location</TabsTrigger>

@@ -68,8 +68,8 @@ class PropertyController extends Controller implements HasMiddleware
     {
         $property = $action->execute($request->user(), $request->validated());
 
-        return redirect()->route('admin.properties.edit', $property)
-            ->with('success', 'Property created successfully.');
+        return redirect()->route('admin.properties.edit', ['property' => $property, 'tab' => 'media'])
+            ->with('success', 'Property created! Now add photos.');
     }
 
     public function edit(Property $property): Response
@@ -80,11 +80,12 @@ class PropertyController extends Controller implements HasMiddleware
 
         return Inertia::render('Admin/Properties/Edit', [
             'property' => (new PropertyResource($property))->resolve(),
-            'media' => $property->getMedia('images')->map(fn ($m) => [
+            'media' => $property->getMedia('images')->sortBy('order_column')->values()->map(fn ($m) => [
                 'id' => $m->id,
                 'url' => $m->getUrl(),
                 'name' => $m->file_name,
                 'size' => $m->size,
+                'is_primary' => (bool) $m->getCustomProperty('is_primary', false),
             ]),
             ...$this->formOptions(),
         ]);

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-mutating-props -- Inertia useForm() reactive proxy is designed for child mutation */
+import { defineAsyncComponent, onMounted, ref } from 'vue';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -15,6 +17,17 @@ defineProps<{
     form: Record<string, unknown>;
     cities: LookupOption[];
 }>();
+
+// Lazy-load map picker — Leaflet requires browser APIs (SSR-unsafe)
+const LocationMapPicker = defineAsyncComponent(
+    () => import('@/components/admin/LocationMapPicker.vue'),
+);
+
+const isMounted = ref(false);
+
+onMounted(() => {
+    isMounted.value = true;
+});
 </script>
 
 <template>
@@ -70,28 +83,25 @@ defineProps<{
             <Input id="neighborhood" v-model="form.neighborhood" class="mt-1" />
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-                <Label for="lat">Latitude</Label>
-                <Input
-                    id="lat"
-                    v-model="form.latitude"
-                    type="number"
-                    step="0.0000001"
-                    class="mt-1"
-                />
-            </div>
-            <div>
-                <Label for="lng">Longitude</Label>
-                <Input
-                    id="lng"
-                    v-model="form.longitude"
-                    type="number"
-                    step="0.0000001"
-                    class="mt-1"
-                />
-            </div>
-        </div>
+        <!-- Map picker replaces raw lat/lng inputs -->
+        <Suspense v-if="isMounted">
+            <LocationMapPicker
+                v-model:latitude="form.latitude"
+                v-model:longitude="form.longitude"
+                :address="String(form.address ?? '')"
+                :city-id="String(form.city_id ?? '')"
+                :state="String(form.state ?? '')"
+            />
+            <template #fallback>
+                <div
+                    class="flex h-64 items-center justify-center rounded-lg border bg-muted"
+                >
+                    <p class="text-sm text-muted-foreground">
+                        Loading map...
+                    </p>
+                </div>
+            </template>
+        </Suspense>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>

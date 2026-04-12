@@ -31,7 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'role:admin|agent', 'throttle:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('properties', Admin\PropertyController::class);
+    Route::post('geocode', Admin\GeocodingController::class)->name('geocode')->middleware('throttle:10,1');
     Route::post('properties/{property}/media', [Admin\MediaController::class, 'store'])->name('properties.media.store');
+    Route::post('properties/{property}/media/reorder', [Admin\MediaController::class, 'reorder'])->name('properties.media.reorder');
+    Route::post('media/{media}/set-primary', [Admin\MediaController::class, 'setPrimary'])->name('media.setPrimary');
     Route::delete('media/{media}', [Admin\MediaController::class, 'destroy'])->name('media.destroy');
     Route::resource('inquiries', Admin\InquiryController::class)->only(['index', 'show', 'update']);
 });

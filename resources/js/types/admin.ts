@@ -75,6 +75,7 @@ export interface AdminMediaItem {
     url: string;
     name: string;
     size: number;
+    is_primary?: boolean;
 }
 
 export interface LookupOption {
