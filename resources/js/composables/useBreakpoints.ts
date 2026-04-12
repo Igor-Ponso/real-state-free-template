@@ -13,19 +13,14 @@ export function useBreakpoints(): {
     isDesktop: ComputedRef<boolean>;
     isWide: ComputedRef<boolean>;
 } {
-    const sm = useMediaQuery('(min-width: 640px)');
-    const md = useMediaQuery('(min-width: 768px)');
-    const lg = useMediaQuery('(min-width: 1024px)');
-    const xl = useMediaQuery('(min-width: 1280px)');
-
     return {
         /** Below sm (< 640px) */
         isMobile: useMediaQuery('(max-width: 639px)'),
         /** Between sm and lg (640px–1023px) */
         isTablet: useMediaQuery('(min-width: 640px) and (max-width: 1023px)'),
         /** lg and above (>= 1024px) */
-        isDesktop: lg,
+        isDesktop: useMediaQuery('(min-width: 1024px)'),
         /** xl and above (>= 1280px) */
-        isWide: xl,
+        isWide: useMediaQuery('(min-width: 1280px)'),
     };
 }

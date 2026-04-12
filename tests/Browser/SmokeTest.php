@@ -10,6 +10,10 @@ use Spatie\Permission\Models\Role;
 
 use function Pest\Browser\visit;
 
+// Excluded from CI via --exclude-group=browser (Playwright not installed in CI).
+// Run locally: php artisan test tests/Browser
+// Requires: npx playwright install chromium
+
 beforeEach(function () {
     PropertyStatus::create(['name' => 'Active', 'slug' => 'active', 'sort_order' => 1, 'is_active' => true]);
     ListingType::create(['name' => 'For Sale', 'slug' => 'sale', 'sort_order' => 1, 'is_active' => true]);
@@ -33,7 +37,7 @@ test('public pages load without JS errors', function () {
         '/properties',
         "/properties/{$this->property->slug}",
     ])->assertNoSmoke();
-});
+})->group('browser');
 
 test('auth pages load without JS errors', function () {
     visit([
@@ -41,7 +45,7 @@ test('auth pages load without JS errors', function () {
         '/register',
         '/forgot-password',
     ])->assertNoSmoke();
-});
+})->group('browser');
 
 test('admin pages load without JS errors', function () {
     Role::create(['name' => 'admin', 'guard_name' => 'web']);
@@ -57,7 +61,7 @@ test('admin pages load without JS errors', function () {
         "/admin/properties/{$this->property->slug}/edit",
         '/admin/inquiries',
     ])->assertNoSmoke();
-});
+})->group('browser');
 
 test('settings pages load without JS errors', function () {
     Role::create(['name' => 'client', 'guard_name' => 'web']);
@@ -72,4 +76,4 @@ test('settings pages load without JS errors', function () {
         '/settings/profile',
         '/settings/appearance',
     ])->assertNoSmoke();
-});
+})->group('browser');

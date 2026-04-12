@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import Sortable from 'sortablejs';
 import { GripVertical, Star, Trash2, Upload } from 'lucide-vue-next';
+import Sortable from 'sortablejs';
 import { nextTick, onMounted, ref, watch } from 'vue';
 
 import { destroy as mediaDestroy } from '@/actions/App/Http/Controllers/Admin/MediaController';
