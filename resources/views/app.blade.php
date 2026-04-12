@@ -25,7 +25,7 @@
         <meta name="twitter:description" content="Open-source luxury real estate template built with Laravel 13, Vue 3, Inertia.js v3, and shadcn-vue.">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
-        <script>
+        <script @if(app()->bound(\Illuminate\Support\Facades\Vite::class)) nonce="{{ Vite::cspNonce() }}" @endif>
             (function() {
                 const appearance = '{{ $appearance ?? "system" }}';
 
@@ -40,7 +40,7 @@
         </script>
 
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
-        <style>
+        <style @if(app()->bound(\Illuminate\Support\Facades\Vite::class)) nonce="{{ Vite::cspNonce() }}" @endif>
             html {
                 background-color: oklch(1 0 0);
             }

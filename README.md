@@ -53,7 +53,8 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 | Encryption    | spatie/laravel-ciphersweet (PII encrypted at rest)          |
 | Routes        | Laravel Wayfinder (typed route generation)                 |
 | Maps          | Leaflet + vue-leaflet (CartoDB Positron tiles, no API key)  |
-| Testing       | Pest PHP 4 + Vitest                                        |
+| Search        | Laravel Scout (database driver + pg_trgm indexes)           |
+| Testing       | Pest PHP 4 (177 tests, browser smoke tests via Playwright)  |
 | Code Style    | Laravel Pint + ESLint + Prettier                           |
 | AI Dev        | Laravel Boost (MCP server + guidelines)                    |
 
@@ -94,26 +95,22 @@ This project was bootstrapped using the official **Laravel Installer** with the 
 - **API Resources** — `FeaturedPropertyResource`, `CityResource`, `TeamMemberResource` with `whenLoaded()` and `whenCounted()`
 - **Property Listings** — `/properties` page with:
     - Grid view and map view (split layout: scrollable cards sidebar + interactive Leaflet map)
-    - Multi-select filters: city, type, bedrooms, amenities (Popover + Checkbox pattern from shadcn-vue)
-    - Unit amenities vs building amenities split (JSONB columns with GIN indexes for fast containment queries)
-    - `pg_trgm` extension for fast `ILIKE` search on property titles/descriptions
-    - Pagination with Inertia
-    - Form Request validation with `prepareForValidation` for query param normalization
-    - Rate limiting on public routes (`throttle:120,1`)
-- **PropertyObserver** — Cache invalidation (`home_stats`) on property create/update/delete
+    - Infinite scroll with manual "Load More" button (Inertia `scroll()` + `<InfiniteScroll>`)
+    - Multi-column search via Laravel Scout (title, description, address) + city filter
+    - Multi-select filters: city, type, listing, bedrooms, bathrooms, amenities
+    - Currency input masks (`maska`) with dollar/cents conversion
+    - `pg_trgm` extension with GIN indexes for fast `ILIKE` on text columns
+    - Geolocation: map centers on user's location when allowed
+- **Property Detail** — `/properties/{slug}` with image gallery, agent card, inquiry form, location map, similar properties carousel, full OG + Twitter Card meta tags
+- **Admin Panel** — Role-based dashboard (admin/agent), property CRUD with tabbed forms, media upload, inquiry management with status workflow
+- **Search** — Laravel Scout (database driver), command palette (Cmd+K), debounced search (`watchDebounced` from VueUse)
+- **Caching** — `Cache::tags` for granular invalidation, `Cache::flexible` (stale-while-revalidate), `rememberForever` for lookup data, `Cache::touch` for hot pages. `PropertyObserver` with `wasChanged()` for conditional invalidation.
+- **Security** — SecurityHeaders middleware (CSP with Vite nonce, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy), named rate limiters per role (`public`, `search`, `inquiry`, `admin`)
+- **Performance** — `PublishedScope` global scope via `#[ScopedBy]`, `Concurrency::run()` for parallel queries, `v-memo` on infinite scroll grid, `@container` queries on PropertyCard, `DB::whenQueryingForLongerThan()` for slow query logging
 - **Strict Mode** — `Model::shouldBeStrict()` in dev (catches N+1, lazy loading, missing attributes, silently discarded attributes)
-- **Test Suite** — 54 passing Pest tests covering auth, social login, and settings
+- **Test Suite** — 177 Pest tests (615 assertions) + browser smoke tests via Playwright (`assertNoSmoke`)
 - **Dev Tools** — Vue DevTools (Vite plugin) + [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) (queries, N+1 detection, cache, request time — dev only, disable via `DEBUGBAR_ENABLED=false`)
 - **Code Style** — Laravel Pint + ESLint + Prettier preconfigured
-
-### Planned
-
-- Property detail pages with image gallery
-- Contact form with email notifications
-- Admin panel with dashboard, CRUD, image upload, and user management
-- Input masks for currency, phone, and ZIP code fields (`maska` already installed)
-- Repository pattern with Redis caching (`Cache::tags`, `Cache::flexible`)
-- Spatie MediaLibrary image uploads (installed, not yet wired to UI)
 
 ## Requirements
 
@@ -285,52 +282,44 @@ This project encrypts personally identifiable information (PII) in the database 
 ```
 app/
 ├── Actions/
-│   ├── Auth/           # Social login action (HandleSocialLoginAction)
-│   └── Fortify/        # Auth actions (CreateNewUser, ResetUserPassword...)
+│   ├── Auth/           # Social login (HandleSocialLoginAction)
+│   ├── Fortify/        # Auth actions (CreateNewUser, ResetUserPassword)
+│   ├── Inquiry/        # StoreInquiryAction, UpdateInquiryStatusAction
+│   └── Property/       # CreatePropertyAction, UpdatePropertyAction, ResolvePropertyCoordinatesAction
 ├── Auth/               # Custom auth provider (CipherSweet)
+├── Console/Commands/   # Artisan commands (ExportPropertiesCommand)
 ├── Concerns/           # Shared validation traits
 ├── Http/
-│   ├── Controllers/    # Thin controllers
+│   ├── Controllers/
+│   │   ├── Admin/      # Dashboard, Property CRUD, Inquiry management, Media upload
 │   │   ├── Auth/       # Social auth controller
-│   │   └── Settings/   # User settings controllers
-│   ├── Middleware/      # Custom middleware
-│   └── Requests/       # Form Request validation
-├── Models/             # Eloquent models
-│   ├── Property.php    # Core: belongs to agent, type, city, status
-│   ├── PropertyType.php    # Lookup: House, Apartment, Villa...
-│   ├── PropertyStatus.php  # Lookup: Draft, Active, Sold...
-│   ├── ListingType.php     # Lookup: For Sale, For Rent
-│   ├── City.php            # Canadian cities with coordinates
-│   ├── AgentProfile.php    # Agent bio, phone (encrypted), license
-│   ├── Inquiry.php         # Contact form (PII encrypted)
-│   ├── InquiryStatus.php   # Lookup: New, Read, Replied...
-│   ├── Favorite.php        # User favorites a property
-│   ├── PropertyView.php    # View analytics
-│   ├── User.php            # Auth + roles + encrypted PII
-│   └── SocialAccount.php   # OAuth provider links
-├── Providers/          # Service providers
-└── Rules/              # Custom validation (UniqueEncryptedEmail)
-resources/
-├── js/
-│   ├── components/     # Reusable Vue components
-│   │   ├── landing/    # Landing page sections (Hero, Team, Search...)
-│   │   └── ui/         # shadcn-vue components (button, card, carousel...)
-│   ├── composables/    # Vue composables (scroll, fade, password validation)
-│   ├── layouts/        # Page layouts (app, auth, settings)
-│   ├── lib/            # Utilities and configuration
-│   ├── pages/          # Inertia pages
-│   └── types/          # TypeScript interfaces
-├── css/                # Tailwind CSS entry point
-└── views/              # Blade template (app.blade.php)
-database/
-├── factories/          # Model factories
-├── migrations/         # Database migrations
-└── seeders/            # Data seeders
+│   │   └── Settings/   # Profile, Security controllers
+│   ├── Middleware/      # SecurityHeaders, HandleAppearance, HandleInertiaRequests
+│   ├── Requests/       # Form Request validation (admin, settings, public)
+│   └── Resources/      # API Resources (FeaturedProperty, PropertyDetail, City, Team, Admin)
+├── Models/             # Eloquent models (12 models)
+├── Observers/          # PropertyObserver (wasChanged), FilterOptionObserver
+├── Policies/           # PropertyPolicy, InquiryPolicy
+├── Providers/          # AppServiceProvider (rate limiters, strict mode, DB monitoring)
+├── Rules/              # UniqueEncryptedEmail
+├── Scopes/             # PublishedScope (global scope via #[ScopedBy])
+└── Services/           # PropertyQueryService, GeocodingService
+resources/js/
+├── components/
+│   ├── admin/          # Property form tabs (BasicInfo, Location, Amenities, Media)
+│   ├── landing/        # Landing sections + PropertyCard, PropertyMap, Filters, Sidebar
+│   └── ui/             # 30+ shadcn-vue components
+├── composables/        # 13 composables (filters, map markers, breakpoints, command palette...)
+├── layouts/            # App, Auth (card/split/simple), Settings
+├── pages/              # Inertia pages (Welcome, Properties, Admin, Auth, Settings, Error)
+└── types/              # TypeScript interfaces (landing, admin, auth, navigation, ui)
 tests/
-├── Feature/            # Feature tests (Pest)
-│   ├── Auth/           # Authentication tests
-│   └── Settings/       # Settings tests
-└── Unit/               # Unit tests (Pest)
+├── Browser/            # Smoke tests (Playwright + assertNoSmoke)
+├── Feature/
+│   ├── Admin/          # Dashboard, Property CRUD, Inquiry management
+│   ├── Auth/           # Login, register, 2FA, social auth, password reset
+│   └── Settings/       # Profile, security
+└── Unit/
 ```
 
 ## Key Architectural Decisions
@@ -349,24 +338,33 @@ tests/
 - **Wayfinder**: Auto-generated TypeScript functions for routes.
 - **SSR**: Server-side rendering via Inertia for SEO.
 - **Model::shouldBeStrict()**: Enabled in dev — catches N+1 (lazy loading), access to missing attributes, and silently discarded mass-assignment. Replaces standalone `preventLazyLoading()`.
-- **PropertyObserver**: Flushes `home_stats` cache on property create/update/delete.
-- **pg_trgm Extension**: PostgreSQL trigram indexes for fast `ILIKE` search on property text fields.
-- **Rate Limiting**: Public listing routes use `throttle:120,1` middleware.
-- **Unit vs Building Amenities**: Two JSONB columns (`unit_amenities`, `building_amenities`) with GIN indexes. Constants defined on `Property` model, used by controller and factory.
-- **Form Request Normalization**: `ListPropertyRequest` uses `prepareForValidation()` to normalize multi-value query string params (string to array) before validation.
+- **PublishedScope**: Global scope via `#[ScopedBy]` auto-filters unpublished properties on all queries. Admin bypasses with `withoutGlobalScope()`. Route model binding aware via `resolveRouteBindingQuery`.
+- **PropertyObserver**: Uses `wasChanged()` with field-group constants (`DISPLAY_FIELDS`, `FILTER_FIELDS`) for conditional cache invalidation — avoids unnecessary flushes when non-display fields change.
+- **Laravel Scout**: Database driver for multi-column search (title, description, address). Command palette uses Scout's `search()` with `query()` callback. Custom `scopeSearch()` for ILIKE on PostgreSQL.
+- **Concurrency::run()**: Parallel stats queries in WelcomeController (sold, clients, agents, cities). `CONCURRENCY_DRIVER=sync` in tests for SQLite compatibility.
+- **SecurityHeaders Middleware**: CSP with Vite nonce (`Vite::useCspNonce()`), HSTS (production only), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
+- **Named Rate Limiters**: `public`, `search`, `inquiry`, `admin` defined in AppServiceProvider. Admins bypass inquiry limits; role-aware limits.
+- **pg_trgm Extension**: PostgreSQL trigram GIN indexes on title, description, address for fast `ILIKE` search.
+- **Partial Indexes**: `properties_published_partial` + `idx_featured_published` for faster queries on frequently-accessed subsets.
+- **Unit vs Building Amenities**: Two JSONB columns with GIN indexes. Constants on `Property` model.
+- **PHP Attributes**: `#[ScopedBy]`, `#[Fillable]`, `#[Middleware]` via `HasMiddleware` on admin controllers.
+- **Typed Config**: `config()->string()`, `config()->integer()` for type-safe configuration access.
+- **Export Command**: `php artisan properties:export` demonstrates `lazy()` for memory-efficient streaming. Inline docs compare `chunk`/`lazy`/`cursor`/`upsert`.
 
 ### Frontend (Vue 3 + TypeScript)
 
 - **Composition API**: All components use `<script setup lang="ts">`.
 - **TypeScript Strict**: No `any` types, full type safety. Shared interfaces in `types/landing.ts`.
 - **shadcn-vue**: UI foundation (Button, Card, Carousel, Select, Input, Sheet, Dialog, etc.).
-- **Composables**: Shared logic (useScrollHeader, useFadeInOnScroll, usePasswordValidation).
-- **Separation of Concerns**: All dynamic data comes from backend via Inertia props. Frontend only handles presentation.
-- **Scroll Animations**: CSS transitions + `useIntersectionObserver` from VueUse. No heavy animation libs.
-- **`defineAsyncComponent`**: Heavy components (Leaflet map) are lazy-loaded for SSR safety and smaller initial bundles.
-- **`<Suspense>`**: Used with async components to show loading states (spinner) while the component loads.
-- **Multi-select Filters**: Popover + Checkbox pattern from shadcn-vue for city, type, bedrooms, and amenities filters.
-- **Map View**: Split layout with scrollable property cards sidebar + interactive Leaflet map (reuses lazy-loading pattern from landing page).
+- **Composables**: 13 composables (usePropertyFilters, useMapMarkers, useCommandPalette, useBreakpoints, useScrollHeader, useFadeInOnScroll, etc.).
+- **Separation of Concerns**: All dynamic data from backend via Inertia props. Frontend only handles presentation.
+- **Infinite Scroll**: `Inertia::scroll()` + `<InfiniteScroll manual>` with "Load More" button. `reset: ['properties']` on filter change.
+- **Input Masks**: `maska` v3 for currency (dollar formatting with thousands separators) and phone inputs. `unsigned: true` prevents negative values.
+- **`v-memo`**: Skips re-rendering unchanged property cards during infinite scroll.
+- **Container Queries**: `@container` on PropertyCard for width-adaptive layout across grid, sidebar, and carousel contexts.
+- **VueUse**: `watchDebounced` (search), `useMediaQuery` (breakpoints), `useIntersectionObserver` (scroll animations), `useLocalStorage` (favorites).
+- **`defineAsyncComponent`**: Leaflet maps lazy-loaded for SSR safety and smaller initial bundles.
+- **OG + Twitter Cards**: Full Open Graph and Twitter Card meta tags on property detail pages.
 
 ### Maps — Why Leaflet, Not Google Maps
 
@@ -397,18 +395,15 @@ Three-color luxury palette inspired by high-end real estate brands:
 
 All colors have light + dark mode variants defined in `resources/css/app.css`.
 
-### Planned (as the project evolves)
-
-- Repository pattern for data access with Redis caching
-- Admin panel with CRUD, image upload, user management
-- Property detail pages with image gallery
-- Spatie MediaLibrary for actual image uploads
-
 ## Testing
 
 ```bash
-# Run PHP tests
+# Run all PHP tests (177 tests, 615 assertions)
 php artisan test --compact
+
+# Run browser smoke tests (requires Playwright)
+npx playwright install chromium   # first time only
+php artisan test --compact tests/Browser
 
 # Run with coverage
 php artisan test --coverage
@@ -416,9 +411,11 @@ php artisan test --coverage
 # Run specific test
 php artisan test --compact --filter=testName
 
-# Run JS tests
-npm run test
+# TypeScript type checking
+npm run types:check
 ```
+
+Tests use SQLite in-memory (`phpunit.xml`), Scout collection driver, and Concurrency sync driver for compatibility.
 
 ## Code Style
 
