@@ -37,7 +37,6 @@ const {
     unitAmenities,
     buildingAmenities,
 } = usePropertyForm(props);
-
 </script>
 
 <template>

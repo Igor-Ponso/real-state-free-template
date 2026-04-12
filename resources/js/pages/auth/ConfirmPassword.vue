@@ -42,11 +42,7 @@ defineOptions({
             </div>
 
             <div class="flex gap-3">
-                <Button
-                    as-child
-                    variant="outline"
-                    class="flex-1"
-                >
+                <Button as-child variant="outline" class="flex-1">
                     <Link :href="dashboard()">Cancel</Link>
                 </Button>
                 <Button
