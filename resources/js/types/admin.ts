@@ -61,6 +61,7 @@ export interface AdminInquiry {
     email: string;
     phone: string | null;
     message: string;
+    reply: string | null;
     status: string | null;
     status_slug: string | null;
     inquiry_status_id: number;

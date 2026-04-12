@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified', 'role:admin|agent', 'throttle:admin'])->p
     Route::post('media/{media}/set-primary', [Admin\MediaController::class, 'setPrimary'])->name('media.setPrimary');
     Route::delete('media/{media}', [Admin\MediaController::class, 'destroy'])->name('media.destroy');
     Route::resource('inquiries', Admin\InquiryController::class)->only(['index', 'show', 'update']);
+    Route::post('inquiries/{inquiry}/reply', [Admin\InquiryController::class, 'reply'])->name('inquiries.reply');
 });
 
 require __DIR__.'/settings.php';

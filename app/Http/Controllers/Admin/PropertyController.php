@@ -72,7 +72,7 @@ class PropertyController extends Controller implements HasMiddleware
             ->with('success', 'Property created! Now add photos.');
     }
 
-    public function edit(Property $property): Response
+    public function edit(Request $request, Property $property): Response
     {
         $this->authorize('update', $property);
 
@@ -87,6 +87,7 @@ class PropertyController extends Controller implements HasMiddleware
                 'size' => $m->size,
                 'is_primary' => (bool) $m->getCustomProperty('is_primary', false),
             ]),
+            'initialTab' => $request->query('tab', 'basic'),
             ...$this->formOptions(),
         ]);
     }

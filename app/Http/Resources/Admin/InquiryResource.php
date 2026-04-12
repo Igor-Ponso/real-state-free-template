@@ -26,6 +26,7 @@ class InquiryResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'message' => $this->message,
+            'reply' => $this->reply,
             'status' => $this->whenLoaded('inquiryStatus', fn () => $this->inquiryStatus->name),
             'status_slug' => $this->whenLoaded('inquiryStatus', fn () => $this->inquiryStatus->slug),
             'inquiry_status_id' => $this->inquiry_status_id,

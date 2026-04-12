@@ -37,7 +37,7 @@ use Spatie\LaravelCipherSweet\Contracts\CipherSweetEncrypted;
  * @property-read User|null $user
  * @property-read InquiryStatus $inquiryStatus
  */
-#[Fillable(['property_id', 'user_id', 'name', 'email', 'phone', 'message', 'inquiry_status_id', 'replied_at'])]
+#[Fillable(['property_id', 'user_id', 'name', 'email', 'phone', 'message', 'reply', 'inquiry_status_id', 'replied_at'])]
 class Inquiry extends Model implements CipherSweetEncrypted
 {
     /** @use HasFactory<InquiryFactory> */

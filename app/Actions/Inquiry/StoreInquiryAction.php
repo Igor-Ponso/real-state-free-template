@@ -4,12 +4,14 @@ namespace App\Actions\Inquiry;
 
 use App\Models\Inquiry;
 use App\Models\InquiryStatus;
+use App\Notifications\InquiryReceived;
 
 /**
  * Creates a new property inquiry with the default "new" status.
  *
  * Handles honeypot detection to silently reject spam submissions
  * while returning a successful-looking response to the bot.
+ * Notifies the property agent via email on successful creation.
  */
 class StoreInquiryAction
 {
@@ -27,7 +29,7 @@ class StoreInquiryAction
 
         $newStatus = InquiryStatus::where('slug', 'new')->firstOrFail();
 
-        Inquiry::create([
+        $inquiry = Inquiry::create([
             'property_id' => $data['property_id'],
             'user_id' => $userId,
             'name' => $data['name'],
@@ -36,6 +38,14 @@ class StoreInquiryAction
             'message' => $data['message'],
             'inquiry_status_id' => $newStatus->id,
         ]);
+
+        // Notify the property agent via email
+        $agent = $inquiry->property?->agent;
+
+        if ($agent) {
+            $inquiry->load('property');
+            $agent->notify(new InquiryReceived($inquiry));
+        }
 
         return ['created' => true, 'message' => 'Thank you for your inquiry. We will get back to you shortly.'];
     }

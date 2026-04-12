@@ -1,11 +1,23 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ArrowLeft, Calendar, Mail, Phone, User } from 'lucide-vue-next';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import {
+    ArrowLeft,
+    Calendar,
+    Mail,
+    Phone,
+    Send,
+    User,
+} from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
 import { update } from '@/actions/App/Http/Controllers/Admin/InquiryController';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import {
     Select,
     SelectContent,
@@ -13,6 +25,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import type { AdminInquiry, LookupOption } from '@/types/admin';
 
 const props = defineProps<{
@@ -23,15 +37,26 @@ const props = defineProps<{
 const updateStatus = (statusId: string) => {
     router.put(
         update.url({ inquiry: props.inquiry.id }),
-        {
-            inquiry_status_id: Number(statusId),
-        },
+        { inquiry_status_id: Number(statusId) },
         {
             onSuccess: () => {
                 toast.success('Inquiry status updated.');
             },
         },
     );
+};
+
+const replyForm = useForm({
+    reply: '',
+});
+
+const sendReply = () => {
+    replyForm.post(`/admin/inquiries/${props.inquiry.id}/reply`, {
+        onSuccess: () => {
+            toast.success('Reply sent successfully.');
+            replyForm.reset();
+        },
+    });
 };
 </script>
 
@@ -50,7 +75,7 @@ const updateStatus = (statusId: string) => {
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Main content -->
-            <div class="lg:col-span-2">
+            <div class="space-y-6 lg:col-span-2">
                 <Card>
                     <CardHeader>
                         <CardTitle>Message</CardTitle>
@@ -61,6 +86,72 @@ const updateStatus = (statusId: string) => {
                         >
                             {{ inquiry.message }}
                         </p>
+                    </CardContent>
+                </Card>
+
+                <!-- Previous reply (if exists) -->
+                <Card v-if="inquiry.reply">
+                    <CardHeader>
+                        <CardTitle>Your Reply</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p
+                            class="leading-relaxed whitespace-pre-line text-muted-foreground"
+                        >
+                            {{ inquiry.reply }}
+                        </p>
+                        <p
+                            v-if="inquiry.replied_at"
+                            class="mt-3 text-xs text-muted-foreground"
+                        >
+                            Replied
+                            {{ new Date(inquiry.replied_at).toLocaleString() }}
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <!-- Reply form -->
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{{
+                            inquiry.reply ? 'Send Another Reply' : 'Reply'
+                        }}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form @submit.prevent="sendReply" class="space-y-4">
+                            <Textarea
+                                v-model="replyForm.reply"
+                                placeholder="Type your reply to the inquirer..."
+                                rows="5"
+                                class="resize-none"
+                            />
+                            <p
+                                v-if="replyForm.errors.reply"
+                                class="text-sm text-destructive"
+                            >
+                                {{ replyForm.errors.reply }}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs text-muted-foreground">
+                                    Reply will be emailed to
+                                    {{ inquiry.email }}
+                                </p>
+                                <Button
+                                    type="submit"
+                                    :disabled="
+                                        replyForm.processing ||
+                                        !replyForm.reply.trim()
+                                    "
+                                >
+                                    <Send class="mr-1.5 size-4" />
+                                    {{
+                                        replyForm.processing
+                                            ? 'Sending...'
+                                            : 'Send Reply'
+                                    }}
+                                </Button>
+                            </div>
+                        </form>
                     </CardContent>
                 </Card>
             </div>
@@ -92,11 +183,16 @@ const updateStatus = (statusId: string) => {
                             <Phone class="size-4 text-muted-foreground" />
                             <span>{{ inquiry.phone }}</span>
                         </div>
+                        <Separator />
                         <div class="flex items-center gap-2">
                             <Calendar class="size-4 text-muted-foreground" />
-                            <span class="text-muted-foreground">{{
-                                new Date(inquiry.created_at).toLocaleString()
-                            }}</span>
+                            <span class="text-sm text-muted-foreground">
+                                {{
+                                    new Date(
+                                        inquiry.created_at,
+                                    ).toLocaleString()
+                                }}
+                            </span>
                         </div>
                     </CardContent>
                 </Card>
@@ -116,8 +212,9 @@ const updateStatus = (statusId: string) => {
                                     v-for="s in statuses"
                                     :key="s.id"
                                     :value="String(s.id)"
-                                    >{{ s.name }}</SelectItem
                                 >
+                                    {{ s.name }}
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </CardContent>

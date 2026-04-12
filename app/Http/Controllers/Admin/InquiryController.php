@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Inquiry\ReplyToInquiryAction;
 use App\Actions\Inquiry\UpdateInquiryStatusAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateInquiryStatusRequest;
@@ -14,7 +15,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Admin inquiry management — view and update inquiry statuses.
+ * Admin inquiry management — view, update status, and reply to inquiries.
  *
  * Agents see only inquiries on their own properties.
  */
@@ -65,5 +66,22 @@ class InquiryController extends Controller
 
         return redirect()->route('admin.inquiries.show', $inquiry)
             ->with('success', 'Inquiry status updated.');
+    }
+
+    /**
+     * Reply to an inquiry and notify the inquirer via email.
+     */
+    public function reply(Request $request, Inquiry $inquiry, ReplyToInquiryAction $action): RedirectResponse
+    {
+        $this->authorize('update', $inquiry);
+
+        $validated = $request->validate([
+            'reply' => ['required', 'string', 'min:10', 'max:5000'],
+        ]);
+
+        $action->execute($inquiry, $validated['reply'], $request->user());
+
+        return redirect()->route('admin.inquiries.show', $inquiry)
+            ->with('success', 'Reply sent successfully.');
     }
 }
