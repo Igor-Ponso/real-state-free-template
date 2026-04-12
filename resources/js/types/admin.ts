@@ -84,3 +84,46 @@ export interface LookupOption {
     name: string;
     slug: string;
 }
+
+/**
+ * Form data shape matching usePropertyForm's useForm() fields.
+ * Used to type admin form tab props instead of Record<string, unknown>.
+ *
+ * Uses `number | null | undefined` for optional numeric fields because:
+ * - useForm() initializes with `null` for empty values
+ * - shadcn Input v-model expects `string | number | undefined` (not null)
+ */
+export interface PropertyFormData {
+    title: string;
+    description: string;
+    property_type_id: number | string;
+    listing_type_id: number | string;
+    property_status_id: number | string;
+    price: number;
+    currency: string;
+    address: string;
+    city_id: number | string;
+    neighborhood: string;
+    state: string;
+    zip_code: string;
+    latitude: string | number | null | undefined;
+    longitude: string | number | null | undefined;
+    bedrooms: number;
+    bathrooms: number;
+    area_sqft: number;
+    lot_size_sqft: number | undefined;
+    year_built: number | undefined;
+    parking_spaces: number;
+    floor: number | undefined;
+    total_floors: number | undefined;
+    unit_amenities: string[];
+    building_amenities: string[];
+    deposit: number | undefined;
+    lease_length_months: number | undefined;
+    available_from: string;
+    pets_allowed: boolean;
+    is_published: boolean;
+    is_featured: boolean;
+    meta_title: string;
+    meta_description: string;
+}

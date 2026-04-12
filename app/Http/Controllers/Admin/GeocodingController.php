@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\GeocodingRequest;
 use App\Models\City;
 use App\Services\GeocodingService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * Provides geocoding for the admin property location form.
@@ -17,14 +17,8 @@ use Illuminate\Http\Request;
  */
 class GeocodingController extends Controller
 {
-    public function __invoke(Request $request, GeocodingService $geocoder): JsonResponse
+    public function __invoke(GeocodingRequest $request, GeocodingService $geocoder): JsonResponse
     {
-        $request->validate([
-            'address' => ['required', 'string', 'max:255'],
-            'city_id' => ['nullable', 'integer'],
-            'state' => ['nullable', 'string', 'max:10'],
-        ]);
-
         $cityName = $request->city_id
             ? City::whereKey($request->city_id)->value('name')
             : null;

@@ -3,6 +3,7 @@ import { watchDebounced } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 
+import { index as propertiesIndex } from '@/routes/properties';
 import type {
     AppliedFilters,
     FeaturedProperty,
@@ -268,7 +269,7 @@ export const usePropertyFilters = (
      */
     const applyFilters = () => {
         isLoading.value = true;
-        router.visit('/properties', {
+        router.visit(propertiesIndex.url(), {
             data: buildParams(),
             only: ['properties', 'appliedFilters', 'mapCenter'],
             reset: ['properties'],

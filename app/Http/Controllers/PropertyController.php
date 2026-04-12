@@ -73,6 +73,7 @@ class PropertyController extends Controller
         Cache::touch($cacheKey, 1800);
 
         return Inertia::render('Properties/Show', [
+            'canonicalUrl' => url("/properties/{$property->slug}"),
             'property' => fn () => Cache::tags(['properties', "property:{$property->slug}"])->remember(
                 $cacheKey,
                 1800,

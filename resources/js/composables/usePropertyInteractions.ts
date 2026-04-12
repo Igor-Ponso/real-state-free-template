@@ -7,6 +7,7 @@
  * @see https://vueuse.org/core/useLocalStorage/
  */
 import { useLocalStorage } from '@vueuse/core';
+import type { ComputedRef } from 'vue';
 import { computed } from 'vue';
 
 interface PropertyInteractions {
@@ -16,8 +17,8 @@ interface PropertyInteractions {
     isDismissed: (id: number) => boolean;
     toggleFavorite: (id: number) => void;
     toggleDismissed: (id: number) => void;
-    favoriteCount: ReturnType<typeof computed<number>>;
-    dismissedCount: ReturnType<typeof computed<number>>;
+    favoriteCount: ComputedRef<number>;
+    dismissedCount: ComputedRef<number>;
     clearDismissed: () => void;
 }
 

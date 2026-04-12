@@ -1,5 +1,6 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-mutating-props -- Inertia useForm() reactive proxy is designed for child mutation */
+import type { InertiaForm } from '@inertiajs/vue3';
 import { vMaska } from 'maska/vue';
 
 import { Input } from '@/components/ui/input';
@@ -13,10 +14,11 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import type { LookupOption } from '@/types/admin';
+
+import type { LookupOption, PropertyFormData } from '@/types/admin';
 
 defineProps<{
-    form: Record<string, unknown>;
+    form: InertiaForm<PropertyFormData>;
     propertyTypes: LookupOption[];
     listingTypes: LookupOption[];
     propertyStatuses: LookupOption[];

@@ -37,6 +37,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { index as adminPropertiesIndex } from '@/routes/admin/properties';
 import type { AdminProperty, LookupOption } from '@/types/admin';
 import type { PaginatedResponse } from '@/types/landing';
 
@@ -61,7 +62,10 @@ const applyFilters = () => {
         params.status = statusFilter.value;
     }
 
-    router.visit('/admin/properties', { data: params, preserveState: true });
+    router.visit(adminPropertiesIndex.url(), {
+        data: params,
+        preserveState: true,
+    });
 };
 
 const deleteProperty = (slug: string) => {

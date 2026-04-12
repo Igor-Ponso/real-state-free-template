@@ -5,7 +5,11 @@ import {
     store,
     update,
 } from '@/actions/App/Http/Controllers/Admin/PropertyController';
-import type { AdminProperty, LookupOption } from '@/types/admin';
+import type {
+    AdminProperty,
+    LookupOption,
+    PropertyFormData,
+} from '@/types/admin';
 
 /**
  * Convert cents (minor units) from the backend to formatted dollars for display.
@@ -51,7 +55,7 @@ export const usePropertyForm = (options: UsePropertyFormOptions) => {
     // The form stores cents internally; this ref syncs via watchers.
     const priceDisplay = ref(centsToDisplay(options.property?.price_raw));
 
-    const form = useForm({
+    const form = useForm<PropertyFormData>({
         title: options.property?.title ?? '',
         description: options.property?.description ?? '',
         property_type_id:
@@ -78,15 +82,15 @@ export const usePropertyForm = (options: UsePropertyFormOptions) => {
         bedrooms: options.property?.bedrooms ?? 1,
         bathrooms: options.property?.bathrooms ?? 1,
         area_sqft: options.property?.area_sqft ?? 500,
-        lot_size_sqft: options.property?.lot_size_sqft ?? null,
-        year_built: options.property?.year_built ?? null,
+        lot_size_sqft: options.property?.lot_size_sqft ?? undefined,
+        year_built: options.property?.year_built ?? undefined,
         parking_spaces: options.property?.parking_spaces ?? 0,
-        floor: options.property?.floor ?? null,
-        total_floors: options.property?.total_floors ?? null,
+        floor: options.property?.floor ?? undefined,
+        total_floors: options.property?.total_floors ?? undefined,
         unit_amenities: options.property?.unit_amenities ?? [],
         building_amenities: options.property?.building_amenities ?? [],
-        deposit: options.property?.deposit ?? null,
-        lease_length_months: options.property?.lease_length_months ?? null,
+        deposit: options.property?.deposit ?? undefined,
+        lease_length_months: options.property?.lease_length_months ?? undefined,
         available_from: options.property?.available_from ?? '',
         pets_allowed: options.property?.pets_allowed ?? false,
         is_published: options.property?.is_published ?? false,

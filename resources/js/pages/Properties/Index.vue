@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePropertyFilters } from '@/composables/usePropertyFilters';
 import { usePropertyInteractions } from '@/composables/usePropertyInteractions';
+import { show as propertiesShow } from '@/routes/properties';
 import type {
     AppliedFilters,
     FeaturedProperty,
@@ -180,19 +181,14 @@ onMounted(() => {
                                         v-if="loading"
                                         class="mr-2 size-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                                     />
-                                    <ChevronDown
-                                        v-else
-                                        class="mr-1.5 size-4"
-                                    />
+                                    <ChevronDown v-else class="mr-1.5 size-4" />
                                     {{
                                         loading
                                             ? 'Loading...'
                                             : 'Load More Properties'
                                     }}
                                 </Button>
-                                <p
-                                    class="font-body text-xs text-white/30"
-                                >
+                                <p class="font-body text-xs text-white/30">
                                     Showing
                                     {{ properties.data.length }} of
                                     {{ properties.meta.total }}
@@ -207,7 +203,7 @@ onMounted(() => {
                             <Link
                                 v-for="property in properties.data"
                                 :key="property.id"
-                                :href="`/properties/${property.slug}`"
+                                :href="propertiesShow.url(property.slug)"
                                 prefetch
                                 class="group"
                             >

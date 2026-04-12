@@ -1,11 +1,14 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-mutating-props -- Inertia useForm() reactive proxy is designed for child mutation */
+import type { InertiaForm } from '@inertiajs/vue3';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useAmenityIcons } from '@/composables/useAmenityIcons';
 
+import type { PropertyFormData } from '@/types/admin';
+
 defineProps<{
-    form: Record<string, unknown>;
+    form: InertiaForm<PropertyFormData>;
     unitAmenities: string[];
     buildingAmenities: string[];
 }>();

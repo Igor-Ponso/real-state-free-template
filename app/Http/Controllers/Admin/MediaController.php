@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ReorderMediaRequest;
 use App\Http\Requests\Admin\StoreMediaRequest;
 use App\Models\Property;
 use App\Scopes\PublishedScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -40,16 +40,9 @@ class MediaController extends Controller
      * submitted array order. Spatie MediaLibrary uses this column
      * for default ordering.
      */
-    public function reorder(Request $request, Property $property): JsonResponse
+    public function reorder(ReorderMediaRequest $request, Property $property): JsonResponse
     {
-        $this->authorize('update', $property);
-
-        $validated = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer'],
-        ]);
-
-        foreach ($validated['ids'] as $order => $mediaId) {
+        foreach ($request->validated('ids') as $order => $mediaId) {
             Media::where('id', $mediaId)
                 ->where('model_id', $property->id)
                 ->update(['order_column' => $order + 1]);

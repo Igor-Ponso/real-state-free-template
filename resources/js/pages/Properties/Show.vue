@@ -19,6 +19,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
+import { index as propertiesIndex } from '@/routes/properties';
 import type { FeaturedProperty, PropertyDetail } from '@/types/landing';
 
 const LeafletMap = defineAsyncComponent(
@@ -29,11 +30,8 @@ const props = defineProps<{
     property: PropertyDetail;
     similarProperties?: FeaturedProperty[];
     canRegister?: boolean;
+    canonicalUrl: string;
 }>();
-
-const canonicalUrl = computed(
-    () => `${window.location.origin}/properties/${props.property.slug}`,
-);
 
 const { target: descriptionRef, isVisible: descriptionVisible } =
     useFadeInOnScroll();
@@ -114,7 +112,7 @@ const pageDescription = computed(
                     class="mb-4 flex items-center gap-1 font-body text-sm text-white/40"
                 >
                     <Link
-                        href="/properties"
+                        :href="propertiesIndex.url()"
                         class="transition-colors hover:text-landing-gold"
                         >Properties</Link
                     >
@@ -355,7 +353,7 @@ const pageDescription = computed(
                         variant="outline"
                         class="border-white/20 text-white hover:bg-white/10"
                     >
-                        <Link href="/properties">
+                        <Link :href="propertiesIndex.url()">
                             <ArrowLeft class="mr-2 size-4" />
                             Back to All Properties
                         </Link>

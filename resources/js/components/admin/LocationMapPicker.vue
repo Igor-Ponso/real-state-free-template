@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
+import { useHttp } from '@inertiajs/vue3';
 import { LMap, LMarker, LTileLayer } from '@vue-leaflet/vue-leaflet';
-import type { LatLngExpression } from 'leaflet';
 import { MapPin } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
@@ -17,15 +17,21 @@ const props = defineProps<{
 const latitude = defineModel<string | number | null>('latitude');
 const longitude = defineModel<string | number | null>('longitude');
 
-const isLocating = ref(false);
+const geocodeHttp = useHttp<
+    { address: string; city_id: string | number | null; state: string | null },
+    { lat: number; lng: number }
+>({
+    address: '',
+    city_id: null,
+    state: null,
+});
+
 const error = ref('');
 const zoom = ref(13);
 
-const hasCoordinates = computed(
-    () => latitude.value && longitude.value,
-);
+const hasCoordinates = computed(() => latitude.value && longitude.value);
 
-const center = computed<LatLngExpression>(() => {
+const center = computed<[number, number]>(() => {
     if (hasCoordinates.value) {
         return [Number(latitude.value), Number(longitude.value)];
     }
@@ -33,7 +39,9 @@ const center = computed<LatLngExpression>(() => {
     return [49.2827, -123.1207]; // Vancouver default
 });
 
-const onMarkerDragEnd = (event: { target: { getLatLng: () => { lat: number; lng: number } } }) => {
+const onMarkerDragEnd = (event: {
+    target: { getLatLng: () => { lat: number; lng: number } };
+}) => {
     const { lat, lng } = event.target.getLatLng();
     latitude.value = lat.toFixed(7);
     longitude.value = lng.toFixed(7);
@@ -44,48 +52,29 @@ const onMapClick = (event: { latlng: { lat: number; lng: number } }) => {
     longitude.value = event.latlng.lng.toFixed(7);
 };
 
-const geocode = async () => {
+const geocode = () => {
     if (!props.address) {
         error.value = 'Enter an address first';
 
         return;
     }
 
-    isLocating.value = true;
     error.value = '';
+    geocodeHttp.address = props.address;
+    geocodeHttp.city_id = props.cityId || null;
+    geocodeHttp.state = props.state || null;
 
-    try {
-        const csrfToken = document.querySelector<HTMLMetaElement>(
-            'meta[name="csrf-token"]',
-        )?.content;
-
-        const response = await fetch('/admin/geocode', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken ?? '',
-                Accept: 'application/json',
-            },
-            body: JSON.stringify({
-                address: props.address,
-                city_id: props.cityId || null,
-                state: props.state || null,
-            }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
+    geocodeHttp.post('/admin/geocode', {
+        onSuccess: (data: { lat: number; lng: number }) => {
             latitude.value = data.lat.toFixed(7);
             longitude.value = data.lng.toFixed(7);
             zoom.value = 15;
-        } else {
-            error.value = 'Could not locate address. Try adjusting it or place the pin manually.';
-        }
-    } catch {
-        error.value = 'Geocoding service unavailable.';
-    } finally {
-        isLocating.value = false;
-    }
+        },
+        onError: () => {
+            error.value =
+                'Could not locate address. Try adjusting it or place the pin manually.';
+        },
+    });
 };
 
 // Auto-geocode when address changes (debounced via parent)
@@ -105,10 +94,10 @@ watch(
                 type="button"
                 variant="outline"
                 size="sm"
-                :disabled="isLocating || !address"
+                :disabled="geocodeHttp.processing || !address"
                 @click="geocode"
             >
-                <Spinner v-if="isLocating" class="mr-1.5" />
+                <Spinner v-if="geocodeHttp.processing" class="mr-1.5" />
                 <MapPin v-else class="mr-1.5 size-4" />
                 Locate on Map
             </Button>
@@ -142,7 +131,8 @@ watch(
 
         <p v-if="error" class="text-xs text-destructive">{{ error }}</p>
         <p v-else-if="hasCoordinates" class="text-xs text-muted-foreground">
-            {{ Number(latitude).toFixed(5) }}, {{ Number(longitude).toFixed(5) }}
+            {{ Number(latitude).toFixed(5) }},
+            {{ Number(longitude).toFixed(5) }}
             — drag pin or click map to adjust
         </p>
         <p v-else class="text-xs text-muted-foreground">

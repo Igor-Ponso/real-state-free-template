@@ -13,6 +13,7 @@ import {
 import PropertyCard from '@/components/landing/PropertyCard.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { show as propertiesShow } from '@/routes/properties';
 import type { FeaturedProperty, PaginatedResponse } from '@/types/landing';
 
 defineProps<{
@@ -142,7 +143,10 @@ const emit = defineEmits<{
                 as-child
                 class="mt-2 w-full bg-landing-gold font-body text-landing-gold-foreground hover:bg-landing-gold/90"
             >
-                <Link :href="`/properties/${selectedProperty.slug}`" prefetch>
+                <Link
+                    :href="propertiesShow.url(selectedProperty.slug)"
+                    prefetch
+                >
                     View Property Details
                 </Link>
             </Button>
@@ -157,7 +161,7 @@ const emit = defineEmits<{
                 <Link
                     v-for="property in properties.data"
                     :key="property.id"
-                    :href="`/properties/${property.slug}`"
+                    :href="propertiesShow.url(property.slug)"
                     prefetch
                     class="group block"
                     @mouseenter="hoveredPropertyId = property.id"

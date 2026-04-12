@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import PropertyCard from '@/components/landing/PropertyCard.vue';
 import { Button } from '@/components/ui/button';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
+import { index as propertiesIndex } from '@/routes/properties';
 import type { FeaturedProperty } from '@/types/landing';
 
 const { target: sectionRef, isVisible } = useFadeInOnScroll();
@@ -121,7 +122,9 @@ const hoveredImage = ref<string | null>(null);
                     size="lg"
                     class="bg-landing-gold font-body text-landing-gold-foreground transition-all duration-300 hover:bg-landing-gold/90"
                 >
-                    <Link href="/properties" prefetch>View All Properties</Link>
+                    <Link :href="propertiesIndex.url()" prefetch
+                        >View All Properties</Link
+                    >
                 </Button>
             </div>
         </div>

@@ -4,6 +4,8 @@ import { computed } from 'vue';
 
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Button } from '@/components/ui/button';
+import { home } from '@/routes';
+import { index as propertiesIndex } from '@/routes/properties';
 
 const props = defineProps<{
     status: number;
@@ -77,7 +79,7 @@ const config = computed(() => {
 
         <div class="relative z-10 max-w-lg px-6 text-center">
             <!-- Logo -->
-            <Link href="/" class="mb-8 inline-block">
+            <Link :href="home.url()" class="mb-8 inline-block">
                 <AppLogoIcon class="mx-auto size-12 text-landing-gold" />
             </Link>
 
@@ -107,7 +109,7 @@ const config = computed(() => {
                     size="lg"
                     class="bg-landing-gold font-body text-landing-gold-foreground hover:bg-landing-gold/90"
                 >
-                    <Link href="/">Back to Home</Link>
+                    <Link :href="home.url()">Back to Home</Link>
                 </Button>
                 <Button
                     as-child
@@ -115,7 +117,7 @@ const config = computed(() => {
                     size="lg"
                     class="border-white/20 font-body text-white hover:bg-white/10"
                 >
-                    <Link href="/properties">Browse Properties</Link>
+                    <Link :href="propertiesIndex.url()">Browse Properties</Link>
                 </Button>
             </div>
         </div>

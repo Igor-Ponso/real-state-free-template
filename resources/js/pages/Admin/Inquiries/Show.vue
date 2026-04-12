@@ -1,23 +1,11 @@
 <script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import {
-    ArrowLeft,
-    Calendar,
-    Mail,
-    Phone,
-    Send,
-    User,
-} from 'lucide-vue-next';
+import { ArrowLeft, Calendar, Mail, Phone, Send, User } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
 import { update } from '@/actions/App/Http/Controllers/Admin/InquiryController';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Select,
     SelectContent,
@@ -27,6 +15,11 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    index as adminInquiriesIndex,
+    reply as adminInquiryReply,
+} from '@/routes/admin/inquiries';
+import { show as propertiesShow } from '@/routes/properties';
 import type { AdminInquiry, LookupOption } from '@/types/admin';
 
 const props = defineProps<{
@@ -34,7 +27,7 @@ const props = defineProps<{
     statuses: LookupOption[];
 }>();
 
-const updateStatus = (statusId: string) => {
+const updateStatus = (statusId: unknown) => {
     router.put(
         update.url({ inquiry: props.inquiry.id }),
         { inquiry_status_id: Number(statusId) },
@@ -51,7 +44,7 @@ const replyForm = useForm({
 });
 
 const sendReply = () => {
-    replyForm.post(`/admin/inquiries/${props.inquiry.id}/reply`, {
+    replyForm.post(adminInquiryReply.url(props.inquiry.id), {
         onSuccess: () => {
             toast.success('Reply sent successfully.');
             replyForm.reset();
@@ -66,7 +59,7 @@ const sendReply = () => {
     <div class="space-y-6 p-6">
         <div class="flex items-center gap-3">
             <Button variant="ghost" size="sm" as-child>
-                <Link href="/admin/inquiries">
+                <Link :href="adminInquiriesIndex.url()">
                     <ArrowLeft class="mr-1 size-4" /> Back
                 </Link>
             </Button>
@@ -226,7 +219,7 @@ const sendReply = () => {
                     </CardHeader>
                     <CardContent>
                         <Link
-                            :href="`/properties/${inquiry.property_slug}`"
+                            :href="propertiesShow.url(inquiry.property_slug!)"
                             class="text-primary hover:underline"
                         >
                             {{ inquiry.property_title }}

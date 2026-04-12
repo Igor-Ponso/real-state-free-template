@@ -19,8 +19,8 @@ export type UseCurrentUrlReturn = {
     whenCurrentUrl: <T, F = null>(
         urlToCheck: NonNullable<InertiaLinkProps['href']>,
         ifTrue: T,
-        ifFalse?: F,
-    ) => T | F;
+        ifFalse?: F | null,
+    ) => T | F | null;
 };
 
 const page = usePage();

@@ -19,6 +19,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { index as adminInquiriesIndex } from '@/routes/admin/inquiries';
+import { show as propertiesShow } from '@/routes/properties';
 import type { AdminInquiry, LookupOption } from '@/types/admin';
 import type { PaginatedResponse } from '@/types/landing';
 
@@ -38,7 +40,10 @@ const applyFilters = () => {
         params.status = statusFilter.value;
     }
 
-    router.visit('/admin/inquiries', { data: params, preserveState: true });
+    router.visit(adminInquiriesIndex.url(), {
+        data: params,
+        preserveState: true,
+    });
 };
 
 const statusClass = (slug: string | null) => ({
@@ -108,7 +113,7 @@ const statusClass = (slug: string | null) => ({
                     <TableCell>
                         <Link
                             v-if="inquiry.property_slug"
-                            :href="`/properties/${inquiry.property_slug}`"
+                            :href="propertiesShow.url(inquiry.property_slug!)"
                             class="text-sm text-muted-foreground hover:underline"
                         >
                             {{ inquiry.property_title }}

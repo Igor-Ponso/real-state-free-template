@@ -1,5 +1,6 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-mutating-props -- Inertia useForm() reactive proxy is designed for child mutation */
+import type { InertiaForm } from '@inertiajs/vue3';
 import { defineAsyncComponent, onMounted, ref } from 'vue';
 
 import { Input } from '@/components/ui/input';
@@ -11,10 +12,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { LookupOption } from '@/types/admin';
+
+import type { LookupOption, PropertyFormData } from '@/types/admin';
 
 defineProps<{
-    form: Record<string, unknown>;
+    form: InertiaForm<PropertyFormData>;
     cities: LookupOption[];
 }>();
 
@@ -96,9 +98,7 @@ onMounted(() => {
                 <div
                     class="flex h-64 items-center justify-center rounded-lg border bg-muted"
                 >
-                    <p class="text-sm text-muted-foreground">
-                        Loading map...
-                    </p>
+                    <p class="text-sm text-muted-foreground">Loading map...</p>
                 </div>
             </template>
         </Suspense>

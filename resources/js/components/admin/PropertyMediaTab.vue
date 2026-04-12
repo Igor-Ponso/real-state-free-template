@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { router, useHttp } from '@inertiajs/vue3';
 import { GripVertical, Star, Trash2, Upload } from 'lucide-vue-next';
 import Sortable from 'sortablejs';
 import { nextTick, onMounted, ref, watch } from 'vue';
@@ -65,44 +65,26 @@ const deleteMedia = (mediaId: number) => {
     router.delete(mediaDestroy.url({ media: mediaId }));
 };
 
-const isPrimary = (item: AdminMediaItem): boolean =>
-    !!(item as Record<string, unknown>).is_primary;
+const isPrimary = (item: AdminMediaItem): boolean => !!item.is_primary;
 
-const saveOrder = async (ids: number[]) => {
-    const csrfToken = document.querySelector<HTMLMetaElement>(
-        'meta[name="csrf-token"]',
-    )?.content;
+// Standalone HTTP requests via useHttp — auto-handles CSRF, SSR-safe
+const reorderHttp = useHttp({ ids: [] as number[] });
+const primaryHttp = useHttp({});
 
-    await fetch(`/admin/properties/${props.propertySlug}/media/reorder`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken ?? '',
-            Accept: 'application/json',
-        },
-        body: JSON.stringify({ ids }),
-    });
+const saveOrder = (ids: number[]) => {
+    reorderHttp.ids = ids;
+    reorderHttp.post(`/admin/properties/${props.propertySlug}/media/reorder`);
 };
 
-const setPrimary = async (mediaId: number) => {
-    const csrfToken = document.querySelector<HTMLMetaElement>(
-        'meta[name="csrf-token"]',
-    )?.content;
-
-    await fetch(`/admin/media/${mediaId}/set-primary`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken ?? '',
-            Accept: 'application/json',
+const setPrimary = (mediaId: number) => {
+    primaryHttp.post(`/admin/media/${mediaId}/set-primary`, {
+        onSuccess: () => {
+            localMedia.value = localMedia.value.map((m) => ({
+                ...m,
+                is_primary: m.id === mediaId,
+            }));
         },
     });
-
-    // Update local state
-    localMedia.value = localMedia.value.map((m) => ({
-        ...m,
-        is_primary: m.id === mediaId,
-    })) as AdminMediaItem[];
 };
 
 // Initialize SortableJS on the grid
@@ -141,7 +123,7 @@ watch(
         <!-- Upload zone -->
         <button
             type="button"
-            class="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 transition-colors hover:border-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            class="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 transition-colors hover:border-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             @click="fileInput?.click()"
         >
             <Upload class="mb-2 size-8 text-muted-foreground" />
@@ -177,11 +159,7 @@ watch(
                     :key="item.id"
                     :data-id="item.id"
                     class="group relative overflow-hidden rounded-lg border"
-                    :class="
-                        isPrimary(item)
-                            ? 'ring-2 ring-yellow-500'
-                            : ''
-                    "
+                    :class="isPrimary(item) ? 'ring-2 ring-yellow-500' : ''"
                 >
                     <!-- Drag handle -->
                     <div
@@ -242,8 +220,7 @@ watch(
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                    @click="deleteMedia(item.id)"
+                                <AlertDialogAction @click="deleteMedia(item.id)"
                                     >Delete</AlertDialogAction
                                 >
                             </AlertDialogFooter>

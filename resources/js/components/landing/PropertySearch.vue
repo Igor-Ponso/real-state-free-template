@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useFadeInOnScroll } from '@/composables/useFadeInOnScroll';
+import { index as propertiesIndex } from '@/routes/properties';
 import type { FilterOption } from '@/types/landing';
 
 defineProps<{
@@ -76,7 +77,7 @@ const handleSearch = () => {
         params.max_price = maxPrice.value;
     }
 
-    router.visit('/properties', { data: params });
+    router.visit(propertiesIndex.url(), { data: params });
 };
 </script>
 

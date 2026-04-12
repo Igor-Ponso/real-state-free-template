@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sheet';
 import { useScrollHeader } from '@/composables/useScrollHeader';
 import { dashboard, home, login, register } from '@/routes';
+import { index as propertiesIndex } from '@/routes/properties';
 
 defineProps<{
     canRegister: boolean;
@@ -28,8 +29,8 @@ const auth = computed(() => page.props.auth as { user: unknown });
 const { isScrolled } = useScrollHeader();
 
 const navItems = [
-    { label: 'Home', href: '/', isRoute: true },
-    { label: 'Properties', href: '/properties', isRoute: true },
+    { label: 'Home', href: home.url(), isRoute: true },
+    { label: 'Properties', href: propertiesIndex.url(), isRoute: true },
     { label: 'About', href: '#about' },
     { label: 'Contact', href: '#contact' },
 ];
@@ -44,7 +45,7 @@ const scrollTo = (href: string) => {
     }
 
     // Section doesn't exist on current page — navigate home, then scroll
-    router.visit('/', {
+    router.visit(home.url(), {
         onFinish: () => {
             nextTick(() => {
                 document.querySelector(href)?.scrollIntoView({
