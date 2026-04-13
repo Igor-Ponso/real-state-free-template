@@ -47,7 +47,7 @@ const filteredCities = computed(() => {
     return props.cities.filter((c) => c.state === String(props.form.state));
 });
 
-// Clear city when province changes (city might not exist in new province)
+// When province changes: keep city if valid, otherwise auto-select first available
 watch(
     () => props.form.state,
     () => {
@@ -56,7 +56,10 @@ watch(
         );
 
         if (!currentCityValid) {
-            props.form.city_id = '' as unknown as number;
+            const first = filteredCities.value[0];
+            props.form.city_id = first
+                ? (String(first.id) as unknown as number)
+                : ('' as unknown as number);
         }
     },
 );
@@ -130,7 +133,7 @@ onMounted(() => {
             </div>
             <div>
                 <Label>City</Label>
-                <Select v-model="form.city_id">
+                <Select v-model="form.city_id" :disabled="!form.state">
                     <SelectTrigger class="mt-1">
                         <SelectValue placeholder="Select city" />
                     </SelectTrigger>

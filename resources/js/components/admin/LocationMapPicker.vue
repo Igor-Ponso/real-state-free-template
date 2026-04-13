@@ -46,25 +46,24 @@ const center = computed<[number, number]>(() => {
     return [56.1304, -106.3468]; // Canada center
 });
 
-// When city changes, center map on the city and clear previous pin
+// When city coordinates change, center map on the city and clear previous pin
 watch(
-    () => props.cityId,
-    () => {
-        if (props.cityLat && props.cityLng) {
-            const coords: [number, number] = [
-                Number(props.cityLat),
-                Number(props.cityLng),
-            ];
-
-            // Clear previous coordinates — force fresh geocode from new city
-            latitude.value = undefined;
-            longitude.value = undefined;
-            zoom.value = 12;
-
-            nextTick(() => {
-                mapRef.value?.leafletObject?.setView(coords, 12);
-            });
+    () => [props.cityLat, props.cityLng] as const,
+    ([lat, lng]) => {
+        if (!lat || !lng) {
+            return;
         }
+
+        const coords: [number, number] = [Number(lat), Number(lng)];
+
+        // Clear previous coordinates — force fresh geocode from new city
+        latitude.value = undefined;
+        longitude.value = undefined;
+        zoom.value = 12;
+
+        nextTick(() => {
+            mapRef.value?.leafletObject?.setView(coords, 12);
+        });
     },
 );
 
