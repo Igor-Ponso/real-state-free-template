@@ -13,6 +13,8 @@ import {
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
+const showRecoveryInput = ref<boolean>(false);
+
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
@@ -37,8 +39,6 @@ watchEffect(() => {
         description: authConfigContent.value.description,
     });
 });
-
-const showRecoveryInput = ref<boolean>(false);
 
 const toggleRecoveryMode = (clearErrors: () => void): void => {
     showRecoveryInput.value = !showRecoveryInput.value;

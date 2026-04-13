@@ -2,42 +2,71 @@
 import 'leaflet/dist/leaflet.css';
 import { useHttp } from '@inertiajs/vue3';
 import { LMap, LMarker, LTileLayer } from '@vue-leaflet/vue-leaflet';
-import { MapPin } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { watchDebounced } from '@vueuse/core';
+import { Loader2, MapPin } from 'lucide-vue-next';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 
 const props = defineProps<{
     address: string;
     cityId: string | number;
+    cityLat?: string | number | null;
+    cityLng?: string | number | null;
     state: string;
 }>();
 
-const latitude = defineModel<string | number | null>('latitude');
-const longitude = defineModel<string | number | null>('longitude');
+const latitude = defineModel<string | number | null | undefined>('latitude');
+const longitude = defineModel<string | number | null | undefined>('longitude');
 
-const geocodeHttp = useHttp<
-    { address: string; city_id: string | number | null; state: string | null },
-    { lat: number; lng: number }
->({
+const geocodeHttp = useHttp({
     address: '',
-    city_id: null,
-    state: null,
+    city_id: null as string | number | null,
+    state: null as string | null,
 });
 
+const mapRef = ref<InstanceType<typeof LMap> | null>(null);
 const error = ref('');
-const zoom = ref(13);
+const zoom = ref(4);
 
-const hasCoordinates = computed(() => latitude.value && longitude.value);
+const hasCoordinates = computed(
+    () => latitude.value != null && longitude.value != null,
+);
 
+// Default: Canada center. Updates to city → then to geocoded address.
 const center = computed<[number, number]>(() => {
     if (hasCoordinates.value) {
         return [Number(latitude.value), Number(longitude.value)];
     }
 
-    return [49.2827, -123.1207]; // Vancouver default
+    if (props.cityLat && props.cityLng) {
+        return [Number(props.cityLat), Number(props.cityLng)];
+    }
+
+    return [56.1304, -106.3468]; // Canada center
 });
+
+// When city changes, center map on the city and clear previous pin
+watch(
+    () => props.cityId,
+    () => {
+        if (props.cityLat && props.cityLng) {
+            const coords: [number, number] = [
+                Number(props.cityLat),
+                Number(props.cityLng),
+            ];
+
+            // Clear previous coordinates — force fresh geocode from new city
+            latitude.value = undefined;
+            longitude.value = undefined;
+            zoom.value = 12;
+
+            nextTick(() => {
+                mapRef.value?.leafletObject?.setView(coords, 12);
+            });
+        }
+    },
+);
 
 const onMarkerDragEnd = (event: {
     target: { getLatLng: () => { lat: number; lng: number } };
@@ -50,12 +79,11 @@ const onMarkerDragEnd = (event: {
 const onMapClick = (event: { latlng: { lat: number; lng: number } }) => {
     latitude.value = event.latlng.lat.toFixed(7);
     longitude.value = event.latlng.lng.toFixed(7);
+    zoom.value = 15;
 };
 
 const geocode = () => {
-    if (!props.address) {
-        error.value = 'Enter an address first';
-
+    if (!props.address || props.address.length < 5) {
         return;
     }
 
@@ -65,54 +93,68 @@ const geocode = () => {
     geocodeHttp.state = props.state || null;
 
     geocodeHttp.post('/admin/geocode', {
-        onSuccess: (data: { lat: number; lng: number }) => {
-            latitude.value = data.lat.toFixed(7);
-            longitude.value = data.lng.toFixed(7);
-            zoom.value = 15;
+        onSuccess: (data: unknown) => {
+            const result = data as { lat: number; lng: number };
+            latitude.value = result.lat.toFixed(7);
+            longitude.value = result.lng.toFixed(7);
+            zoom.value = 16;
+
+            nextTick(() => {
+                mapRef.value?.leafletObject?.setView(
+                    [result.lat, result.lng],
+                    16,
+                );
+            });
         },
         onError: () => {
-            error.value =
-                'Could not locate address. Try adjusting it or place the pin manually.';
+            error.value = 'Could not locate this address.';
         },
     });
 };
 
-// Auto-geocode when address changes (debounced via parent)
-watch(
-    () => props.address,
-    () => {
-        error.value = '';
-    },
+// Auto-geocode when address/city/state changes (debounced 1s)
+watchDebounced(
+    () => `${props.address}|${props.cityId}|${props.state}`,
+    () => geocode(),
+    { debounce: 1000 },
 );
+
+// Invalidate map size after mount — fixes tiles not loading inside tabs
+onMounted(() => {
+    setTimeout(() => {
+        mapRef.value?.leafletObject?.invalidateSize();
+    }, 200);
+});
 </script>
 
 <template>
-    <div class="space-y-3">
+    <div class="space-y-2">
         <div class="flex items-center justify-between">
-            <label class="text-sm font-medium">Property Location</label>
+            <label class="text-sm font-medium">Map Preview</label>
             <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 :disabled="geocodeHttp.processing || !address"
                 @click="geocode"
             >
-                <Spinner v-if="geocodeHttp.processing" class="mr-1.5" />
+                <Loader2
+                    v-if="geocodeHttp.processing"
+                    class="mr-1.5 size-4 animate-spin"
+                />
                 <MapPin v-else class="mr-1.5 size-4" />
-                Locate on Map
+                Locate
             </Button>
         </div>
 
-        <div
-            class="overflow-hidden rounded-lg border"
-            :class="error ? 'border-destructive' : ''"
-        >
+        <div class="h-56 overflow-hidden rounded-lg border">
             <LMap
+                ref="mapRef"
                 :zoom="zoom"
                 :center="center"
                 :use-global-leaflet="false"
                 :options="{ zoomControl: true, attributionControl: false }"
-                class="h-64 w-full"
+                class="h-full w-full"
                 @click="onMapClick"
             >
                 <LTileLayer
@@ -130,13 +172,11 @@ watch(
         </div>
 
         <p v-if="error" class="text-xs text-destructive">{{ error }}</p>
-        <p v-else-if="hasCoordinates" class="text-xs text-muted-foreground">
-            {{ Number(latitude).toFixed(5) }},
-            {{ Number(longitude).toFixed(5) }}
-            — drag pin or click map to adjust
+        <p v-else-if="geocodeHttp.processing" class="text-xs text-muted-foreground">
+            Locating address...
         </p>
-        <p v-else class="text-xs text-muted-foreground">
-            Click "Locate on Map" or click the map to set the property location
+        <p v-else-if="!hasCoordinates" class="text-xs text-muted-foreground">
+            Fill in the address above — the map will update automatically
         </p>
     </div>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-mutating-props -- Inertia useForm() reactive proxy is designed for child mutation */
 import type { InertiaForm } from '@inertiajs/vue3';
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { vMaska } from 'maska/vue';
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,15 +16,75 @@ import {
 
 import type { LookupOption, PropertyFormData } from '@/types/admin';
 
-defineProps<{
+const props = defineProps<{
     form: InertiaForm<PropertyFormData>;
     cities: LookupOption[];
 }>();
 
-// Lazy-load map picker — Leaflet requires browser APIs (SSR-unsafe)
-const LocationMapPicker = defineAsyncComponent(
-    () => import('@/components/admin/LocationMapPicker.vue'),
+/** Canadian provinces and territories */
+const PROVINCES = [
+    { value: 'AB', label: 'Alberta' },
+    { value: 'BC', label: 'British Columbia' },
+    { value: 'MB', label: 'Manitoba' },
+    { value: 'NB', label: 'New Brunswick' },
+    { value: 'NL', label: 'Newfoundland and Labrador' },
+    { value: 'NS', label: 'Nova Scotia' },
+    { value: 'NT', label: 'Northwest Territories' },
+    { value: 'NU', label: 'Nunavut' },
+    { value: 'ON', label: 'Ontario' },
+    { value: 'PE', label: 'Prince Edward Island' },
+    { value: 'QC', label: 'Quebec' },
+    { value: 'SK', label: 'Saskatchewan' },
+    { value: 'YT', label: 'Yukon' },
+] as const;
+
+/** Province → city mapping: filter cities by selected province code */
+const PROVINCE_CITY_MAP: Record<string, string[]> = {
+    BC: ['vancouver'],
+    AB: ['calgary', 'edmonton'],
+    ON: ['toronto', 'ottawa'],
+    QC: ['montreal', 'quebec-city'],
+    NS: ['halifax'],
+    MB: ['winnipeg'],
+};
+
+const filteredCities = computed(() => {
+    if (!props.form.state) {
+        return props.cities;
+    }
+
+    const slugs = PROVINCE_CITY_MAP[String(props.form.state)];
+
+    if (!slugs) {
+        return props.cities;
+    }
+
+    return props.cities.filter((c) => slugs.includes(c.slug));
+});
+
+// Clear city when province changes (city might not exist in new province)
+watch(
+    () => props.form.state,
+    () => {
+        const currentCityValid = filteredCities.value.some(
+            (c) => String(c.id) === String(props.form.city_id),
+        );
+
+        if (!currentCityValid) {
+            props.form.city_id = '' as unknown as number;
+        }
+    },
 );
+
+const selectedCity = computed(() =>
+    props.cities.find((c) => String(c.id) === String(props.form.city_id)),
+);
+
+// Lazy-load map — Leaflet requires browser APIs (SSR-unsafe)
+const LocationMapPicker = defineAsyncComponent({
+    loader: () => import('@/components/admin/LocationMapPicker.vue'),
+    suspensible: false,
+});
 
 const isMounted = ref(false);
 
@@ -34,9 +95,15 @@ onMounted(() => {
 
 <template>
     <div class="space-y-6">
+        <!-- Row 1: Street Address -->
         <div>
-            <Label for="address">Address</Label>
-            <Input id="address" v-model="form.address" class="mt-1" />
+            <Label for="address">Street Address</Label>
+            <Input
+                id="address"
+                v-model="form.address"
+                placeholder="123 Main Street"
+                class="mt-1"
+            />
             <p
                 v-if="form.errors?.address"
                 class="mt-1 text-sm text-destructive"
@@ -45,64 +112,68 @@ onMounted(() => {
             </p>
         </div>
 
+        <!-- Row 2: Postal Code → Province → City -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-                <Label>City</Label>
-                <Select v-model="form.city_id">
-                    <SelectTrigger class="mt-1"><SelectValue /></SelectTrigger>
+                <Label for="zip">Postal Code</Label>
+                <Input
+                    id="zip"
+                    v-model="form.zip_code"
+                    v-maska="'A#A #A#'"
+                    type="text"
+                    placeholder="V6B 1A1"
+                    class="mt-1 uppercase"
+                    maxlength="7"
+                />
+            </div>
+            <div>
+                <Label>Province</Label>
+                <Select v-model="form.state">
+                    <SelectTrigger class="mt-1">
+                        <SelectValue placeholder="Select province" />
+                    </SelectTrigger>
                     <SelectContent>
                         <SelectItem
-                            v-for="c in cities"
-                            :key="c.id"
-                            :value="String(c.id)"
-                            >{{ c.name }}</SelectItem
+                            v-for="p in PROVINCES"
+                            :key="p.value"
+                            :value="p.value"
                         >
+                            {{ p.label }}
+                        </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             <div>
-                <Label for="state">State/Province</Label>
-                <Input
-                    id="state"
-                    v-model="form.state"
-                    maxlength="10"
-                    class="mt-1"
-                />
-            </div>
-            <div>
-                <Label for="zip">ZIP/Postal Code</Label>
-                <Input
-                    id="zip"
-                    v-model="form.zip_code"
-                    maxlength="10"
-                    class="mt-1"
-                />
+                <Label>City</Label>
+                <Select v-model="form.city_id">
+                    <SelectTrigger class="mt-1">
+                        <SelectValue placeholder="Select city" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem
+                            v-for="c in filteredCities"
+                            :key="c.id"
+                            :value="String(c.id)"
+                        >
+                            {{ c.name }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
         </div>
 
+        <!-- Row 3: Neighborhood -->
         <div>
             <Label for="neighborhood">Neighborhood</Label>
-            <Input id="neighborhood" v-model="form.neighborhood" class="mt-1" />
+            <Input
+                id="neighborhood"
+                v-model="form.neighborhood"
+                placeholder="Kitsilano, Downtown, etc."
+                class="mt-1"
+            />
         </div>
 
-        <!-- Map picker replaces raw lat/lng inputs -->
-        <Suspense v-if="isMounted">
-            <LocationMapPicker
-                v-model:latitude="form.latitude"
-                v-model:longitude="form.longitude"
-                :address="String(form.address ?? '')"
-                :city-id="String(form.city_id ?? '')"
-                :state="String(form.state ?? '')"
-            />
-            <template #fallback>
-                <div
-                    class="flex h-64 items-center justify-center rounded-lg border bg-muted"
-                >
-                    <p class="text-sm text-muted-foreground">Loading map...</p>
-                </div>
-            </template>
-        </Suspense>
-
+        <!-- Row 4: Lot Size, Floor, Total Floors -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
                 <Label for="lot">Lot Size (sqft)</Label>
@@ -132,5 +203,17 @@ onMounted(() => {
                 />
             </div>
         </div>
+
+        <!-- Row 5: Map preview — LAST, after all fields -->
+        <LocationMapPicker
+            v-if="isMounted"
+            v-model:latitude="form.latitude"
+            v-model:longitude="form.longitude"
+            :address="String(form.address ?? '')"
+            :city-id="String(form.city_id ?? '')"
+            :city-lat="selectedCity?.latitude"
+            :city-lng="selectedCity?.longitude"
+            :state="String(form.state ?? '')"
+        />
     </div>
 </template>

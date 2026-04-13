@@ -83,6 +83,8 @@ export interface LookupOption {
     id: number;
     name: string;
     slug: string;
+    latitude?: string;
+    longitude?: string;
 }
 
 /**
