@@ -38,28 +38,13 @@ const PROVINCES = [
     { value: 'YT', label: 'Yukon' },
 ] as const;
 
-/** Province → city mapping: filter cities by selected province code */
-const PROVINCE_CITY_MAP: Record<string, string[]> = {
-    BC: ['vancouver'],
-    AB: ['calgary', 'edmonton'],
-    ON: ['toronto', 'ottawa'],
-    QC: ['montreal', 'quebec-city'],
-    NS: ['halifax'],
-    MB: ['winnipeg'],
-};
-
+/** Filter cities by selected province code (dynamic from DB `state` field) */
 const filteredCities = computed(() => {
     if (!props.form.state) {
         return props.cities;
     }
 
-    const slugs = PROVINCE_CITY_MAP[String(props.form.state)];
-
-    if (!slugs) {
-        return props.cities;
-    }
-
-    return props.cities.filter((c) => slugs.includes(c.slug));
+    return props.cities.filter((c) => c.state === String(props.form.state));
 });
 
 // Clear city when province changes (city might not exist in new province)

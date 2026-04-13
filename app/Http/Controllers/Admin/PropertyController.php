@@ -119,7 +119,7 @@ class PropertyController extends Controller implements HasMiddleware
     {
         return [
             'propertyTypes' => PropertyType::active()->ordered()->get(['id', 'name', 'slug']),
-            'cities' => City::ordered()->get(['id', 'name', 'slug', 'latitude', 'longitude']),
+            'cities' => City::ordered()->get(['id', 'name', 'slug', 'state', 'latitude', 'longitude']),
             'listingTypes' => ListingType::active()->ordered()->get(['id', 'name', 'slug']),
             'propertyStatuses' => PropertyStatus::active()->ordered()->get(['id', 'name', 'slug']),
             'unitAmenities' => Property::UNIT_AMENITIES,
