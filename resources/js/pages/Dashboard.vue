@@ -12,7 +12,6 @@ import {
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 
-import { show as inquiryShow } from '@/actions/App/Http/Controllers/Admin/InquiryController';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
