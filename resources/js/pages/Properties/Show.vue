@@ -12,6 +12,7 @@ import PropertyImageGallery from '@/components/landing/PropertyImageGallery.vue'
 import PropertyInquiryForm from '@/components/landing/PropertyInquiryForm.vue';
 import PropertyRentalDetails from '@/components/landing/PropertyRentalDetails.vue';
 import PropertySpecsBar from '@/components/landing/PropertySpecsBar.vue';
+import ShareDropdown from '@/components/landing/ShareDropdown.vue';
 import SimilarPropertiesCarousel from '@/components/landing/SimilarPropertiesCarousel.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -164,11 +165,20 @@ const pageDescription = computed(
                         <MapPin class="size-4 text-landing-gold/60" />
                         {{ fullAddress }}
                     </p>
-                    <p
-                        class="mt-4 font-serif text-3xl font-bold text-landing-gold"
+                    <div
+                        class="mt-4 flex flex-wrap items-center justify-between gap-3"
                     >
-                        {{ property.price }}
-                    </p>
+                        <p
+                            class="font-serif text-3xl font-bold text-landing-gold"
+                        >
+                            {{ property.price }}
+                        </p>
+                        <ShareDropdown
+                            :url="canonicalUrl"
+                            :title="property.title"
+                            variant="outline"
+                        />
+                    </div>
                 </div>
 
                 <!-- Specs bar -->

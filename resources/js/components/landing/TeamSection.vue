@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Mail } from 'lucide-vue-next';
+import { Link } from '@inertiajs/vue3';
+import { ExternalLink, Mail } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 import {
@@ -200,7 +201,15 @@ const openBio = (member: TeamMember) => {
                             </p>
                         </div>
 
-                        <div class="mt-6 flex gap-3">
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <Link
+                                v-if="selectedMember.slug"
+                                :href="`/agents/${selectedMember.slug}`"
+                                class="flex items-center gap-2 rounded-md bg-landing-gold px-4 py-2 font-body text-xs font-semibold text-landing-gold-foreground transition-colors hover:bg-landing-gold/90"
+                            >
+                                <ExternalLink class="size-3.5" />
+                                View full profile
+                            </Link>
                             <a
                                 :href="`mailto:${selectedMember.email}`"
                                 class="flex items-center gap-2 rounded-md border px-4 py-2 font-body text-xs font-medium transition-colors hover:border-landing-gold hover:text-landing-gold"

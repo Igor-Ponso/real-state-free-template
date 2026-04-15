@@ -69,7 +69,11 @@ onBeforeUnmount(clearTimer);
             type="button"
             class="shrink-0 text-muted-foreground transition-colors hover:text-landing-gold focus-visible:ring-2 focus-visible:ring-landing-gold focus-visible:outline-none"
             :aria-label="revealed ? 'Hide value' : 'Reveal value'"
-            :title="revealed ? `Hide (auto-hides in ${Math.round(duration / 1000)}s)` : 'Reveal'"
+            :title="
+                revealed
+                    ? `Hide (auto-hides in ${Math.round(duration / 1000)}s)`
+                    : 'Reveal'
+            "
             @click="toggle"
         >
             <component :is="revealed ? EyeOff : Eye" class="size-4" />

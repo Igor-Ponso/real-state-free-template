@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InquiryController;
@@ -14,6 +15,7 @@ Route::get('/', WelcomeController::class)->name('home')->middleware('throttle:pu
 Route::get('properties', [PropertyController::class, 'index'])->name('properties.index')->middleware('throttle:public');
 Route::get('properties/search', PropertySearchController::class)->name('properties.search')->middleware('throttle:search');
 Route::get('properties/{property}', [PropertyController::class, 'show'])->name('properties.show')->middleware('throttle:public');
+Route::get('agents/{agentProfile}', [AgentController::class, 'show'])->name('agents.show')->middleware('throttle:public');
 Route::post('inquiries', [InquiryController::class, 'store'])->name('inquiries.store')->middleware('throttle:inquiry');
 
 // Newsletter — public signup with double opt-in confirmation.

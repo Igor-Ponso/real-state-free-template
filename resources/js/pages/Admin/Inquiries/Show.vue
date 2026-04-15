@@ -128,7 +128,9 @@ const sendReply = () => {
                                 {{ replyForm.errors.reply }}
                             </p>
                             <div class="flex items-center justify-between">
-                                <p class="flex items-center gap-1 text-xs text-muted-foreground">
+                                <p
+                                    class="flex items-center gap-1 text-xs text-muted-foreground"
+                                >
                                     Reply will be emailed to
                                     <RevealablePII :value="inquiry.email" />
                                 </p>
@@ -160,14 +162,19 @@ const sendReply = () => {
                     </CardHeader>
                     <CardContent class="space-y-3">
                         <p class="text-xs text-muted-foreground">
-                            Contact details are blurred by default. Click the eye icon to reveal — auto-hides after 15 seconds.
+                            Contact details are blurred by default. Click the
+                            eye icon to reveal — auto-hides after 15 seconds.
                         </p>
                         <div class="flex items-center gap-2">
-                            <User class="size-4 shrink-0 text-muted-foreground" />
+                            <User
+                                class="size-4 shrink-0 text-muted-foreground"
+                            />
                             <RevealablePII :value="inquiry.name" />
                         </div>
                         <div class="flex items-center gap-2">
-                            <Mail class="size-4 shrink-0 text-muted-foreground" />
+                            <Mail
+                                class="size-4 shrink-0 text-muted-foreground"
+                            />
                             <RevealablePII
                                 :value="inquiry.email"
                                 :href="`mailto:${inquiry.email}`"
@@ -177,7 +184,9 @@ const sendReply = () => {
                             v-if="inquiry.phone"
                             class="flex items-center gap-2"
                         >
-                            <Phone class="size-4 shrink-0 text-muted-foreground" />
+                            <Phone
+                                class="size-4 shrink-0 text-muted-foreground"
+                            />
                             <RevealablePII :value="inquiry.phone" />
                         </div>
                         <Separator />

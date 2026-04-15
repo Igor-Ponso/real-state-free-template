@@ -26,10 +26,12 @@ export interface Neighborhood {
 
 export interface TeamMember {
     id: number;
+    slug: string;
     name: string;
     role: string;
     bio: string;
     image: string;
+    image_is_placeholder: boolean;
     email: string;
     social_links: Record<string, string> | null;
 }
