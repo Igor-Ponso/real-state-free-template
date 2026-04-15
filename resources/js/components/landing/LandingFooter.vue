@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
-import { Github, Mail, MapPin, Phone } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { CheckCircle2, Github, Mail, MapPin, Phone } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,22 @@ const navLinks = [
     { label: 'About', href: '/#about' },
     { label: 'Contact', href: '/#contact' },
 ];
+
+const submitted = ref(false);
+const newsletter = useForm({
+    email: '',
+    website: '', // honeypot
+});
+
+const subscribe = () => {
+    newsletter.post('/newsletter/subscribe', {
+        preserveScroll: true,
+        onSuccess: () => {
+            submitted.value = true;
+            newsletter.reset();
+        },
+    });
+};
 </script>
 
 <template>
@@ -94,19 +110,62 @@ const navLinks = [
                     <p class="mt-4 font-body text-sm text-white/60">
                         Stay updated with new listings and market insights.
                     </p>
-                    <div class="mt-4 flex gap-2">
-                        <Input
-                            type="email"
-                            placeholder="Your email"
-                            class="border-white/20 bg-white/10 text-white placeholder:text-white/40"
+
+                    <div
+                        v-if="submitted"
+                        class="mt-4 flex items-start gap-2 rounded-md border border-landing-gold/30 bg-landing-gold/5 p-3 text-sm"
+                    >
+                        <CheckCircle2
+                            class="mt-0.5 size-4 shrink-0 text-landing-gold"
                         />
-                        <Button
-                            size="default"
-                            class="shrink-0 bg-landing-gold text-landing-gold-foreground hover:bg-landing-gold/90"
-                        >
-                            Subscribe
-                        </Button>
+                        <p class="text-white/80">
+                            Check your inbox to confirm your subscription.
+                        </p>
                     </div>
+
+                    <form
+                        v-else
+                        class="mt-4 space-y-2"
+                        @submit.prevent="subscribe"
+                    >
+                        <div class="flex gap-2">
+                            <Input
+                                v-model="newsletter.email"
+                                type="email"
+                                required
+                                placeholder="Your email"
+                                class="border-white/20 bg-white/10 text-white placeholder:text-white/40"
+                            />
+                            <Button
+                                type="submit"
+                                size="default"
+                                :disabled="newsletter.processing"
+                                class="shrink-0 bg-landing-gold text-landing-gold-foreground hover:bg-landing-gold/90"
+                            >
+                                {{
+                                    newsletter.processing
+                                        ? 'Sending...'
+                                        : 'Subscribe'
+                                }}
+                            </Button>
+                        </div>
+                        <!-- Honeypot: humans never see this. Bots fill it and get rejected. -->
+                        <input
+                            v-model="newsletter.website"
+                            type="text"
+                            name="website"
+                            tabindex="-1"
+                            autocomplete="off"
+                            class="sr-only"
+                            aria-hidden="true"
+                        />
+                        <p
+                            v-if="newsletter.errors.email"
+                            class="text-xs text-red-400"
+                        >
+                            {{ newsletter.errors.email }}
+                        </p>
+                    </form>
                 </div>
             </div>
 

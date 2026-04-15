@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PropertySearchController;
 use App\Http\Controllers\WelcomeController;
@@ -14,6 +15,11 @@ Route::get('properties', [PropertyController::class, 'index'])->name('properties
 Route::get('properties/search', PropertySearchController::class)->name('properties.search')->middleware('throttle:search');
 Route::get('properties/{property}', [PropertyController::class, 'show'])->name('properties.show')->middleware('throttle:public');
 Route::post('inquiries', [InquiryController::class, 'store'])->name('inquiries.store')->middleware('throttle:inquiry');
+
+// Newsletter — public signup with double opt-in confirmation.
+Route::post('newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe')->middleware('throttle:inquiry');
+Route::get('newsletter/confirm/{token}', [NewsletterController::class, 'confirm'])->name('newsletter.confirm')->middleware('throttle:public');
+Route::get('newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe')->middleware('throttle:public');
 
 Route::middleware('guest')->group(function () {
     Route::get('auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
