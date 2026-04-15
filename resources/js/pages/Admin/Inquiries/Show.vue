@@ -63,7 +63,9 @@ const sendReply = () => {
                     <ArrowLeft class="mr-1 size-4" /> Back
                 </Link>
             </Button>
-            <h1 class="text-2xl font-bold tracking-tight">Inquiry Details</h1>
+            <h1 class="font-serif text-3xl font-semibold tracking-tight">
+                Inquiry Details
+            </h1>
         </div>
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">

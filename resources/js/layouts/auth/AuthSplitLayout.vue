@@ -25,12 +25,11 @@ defineProps<{
                 video-webm-src="/videos/auth/luxury-real-estate.webm"
                 video-mp4-src="/videos/auth/luxury-real-estate.mp4"
             />
-            <Link
-                :href="home()"
-                class="relative z-20 flex items-center text-lg font-medium"
-            >
-                <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
-                {{ name }}
+            <Link :href="home()" class="relative z-20 flex items-center gap-2">
+                <AppLogoIcon class="size-8 fill-current text-landing-gold" />
+                <span class="font-serif text-xl font-semibold tracking-tight">{{
+                    name
+                }}</span>
             </Link>
         </div>
         <div class="lg:p-8">
@@ -38,10 +37,13 @@ defineProps<{
                 class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-87.5"
             >
                 <div class="flex flex-col space-y-2 text-center">
-                    <h1 class="text-xl font-medium tracking-tight" v-if="title">
+                    <h1
+                        v-if="title"
+                        class="font-serif text-2xl font-semibold tracking-tight"
+                    >
                         {{ title }}
                     </h1>
-                    <p class="text-sm text-muted-foreground" v-if="description">
+                    <p v-if="description" class="text-sm text-muted-foreground">
                         {{ description }}
                     </p>
                 </div>

@@ -78,7 +78,9 @@ const deleteProperty = (slug: string) => {
 
     <div class="space-y-6 p-6">
         <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold tracking-tight">Properties</h1>
+            <h1 class="font-serif text-3xl font-semibold tracking-tight">
+                Properties
+            </h1>
             <Button as-child>
                 <Link :href="create.url()">
                     <Plus class="mr-2 size-4" /> New Property

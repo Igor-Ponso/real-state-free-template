@@ -26,9 +26,11 @@ defineProps<{
                 :href="home()"
                 class="flex items-center gap-2 self-center font-medium"
             >
-                <div class="flex h-9 w-9 items-center justify-center">
+                <div
+                    class="flex h-10 w-10 items-center justify-center rounded-md bg-gradient-to-br from-landing-deep-teal to-landing-charcoal"
+                >
                     <AppLogoIcon
-                        class="size-9 fill-current text-black dark:text-white"
+                        class="size-6 fill-current text-landing-gold"
                     />
                 </div>
             </Link>
@@ -36,7 +38,10 @@ defineProps<{
             <div class="flex flex-col gap-6">
                 <Card class="rounded-xl">
                     <CardHeader class="px-10 pt-8 pb-0 text-center">
-                        <CardTitle class="text-xl">{{ title }}</CardTitle>
+                        <CardTitle
+                            class="font-serif text-2xl font-semibold tracking-tight"
+                            >{{ title }}</CardTitle
+                        >
                         <CardDescription>
                             {{ description }}
                         </CardDescription>

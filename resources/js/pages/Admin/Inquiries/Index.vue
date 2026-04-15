@@ -62,7 +62,9 @@ const statusClass = (slug: string | null) => ({
     <Head title="Inquiries" />
 
     <div class="space-y-6 p-6">
-        <h1 class="text-2xl font-bold tracking-tight">Inquiries</h1>
+        <h1 class="font-serif text-3xl font-semibold tracking-tight">
+            Inquiries
+        </h1>
 
         <!-- Filters -->
         <div class="flex items-center gap-3">

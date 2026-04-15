@@ -22,16 +22,20 @@ defineProps<{
                         class="flex flex-col items-center gap-2 font-medium"
                     >
                         <div
-                            class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
+                            class="mb-1 flex h-10 w-10 items-center justify-center rounded-md bg-gradient-to-br from-landing-deep-teal to-landing-charcoal"
                         >
                             <AppLogoIcon
-                                class="size-9 fill-current text-[var(--foreground)] dark:text-white"
+                                class="size-6 fill-current text-landing-gold"
                             />
                         </div>
                         <span class="sr-only">{{ title }}</span>
                     </Link>
                     <div class="space-y-2 text-center">
-                        <h1 class="text-xl font-medium">{{ title }}</h1>
+                        <h1
+                            class="font-serif text-2xl font-semibold tracking-tight"
+                        >
+                            {{ title }}
+                        </h1>
                         <p class="text-center text-sm text-muted-foreground">
                             {{ description }}
                         </p>

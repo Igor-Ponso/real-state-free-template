@@ -48,7 +48,9 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                         variant="ghost"
                         :class="[
                             'w-full justify-start',
-                            { 'bg-muted': isCurrentOrParentUrl(item.href) },
+                            isCurrentOrParentUrl(item.href)
+                                ? 'bg-landing-gold/10 text-landing-gold hover:bg-landing-gold/15 hover:text-landing-gold'
+                                : '',
                         ]"
                         as-child
                     >
