@@ -115,4 +115,24 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Theme
+    |--------------------------------------------------------------------------
+    |
+    | Selects the theme used when rendering Markdown emails. Laravel looks
+    | for a CSS file at `resources/views/vendor/mail/html/themes/<theme>.css`.
+    |
+    | Our custom `sovereign` theme applies the landing palette
+    | (gold, deep teal, charcoal) to buttons, headers, and panels.
+    |
+    */
+
+    'markdown' => [
+        'theme' => env('MAIL_THEME', 'sovereign'),
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

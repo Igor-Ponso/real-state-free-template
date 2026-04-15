@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
+use App\Notifications\Security\PasswordChanged;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -46,13 +47,17 @@ class SecurityController extends Controller implements HasMiddleware
     }
 
     /**
-     * Update the user's password.
+     * Update the user's password and send a security confirmation email.
      */
     public function update(PasswordUpdateRequest $request): RedirectResponse
     {
-        $request->user()->update([
-            'password' => $request->password,
-        ]);
+        $user = $request->user();
+
+        $user->update(['password' => $request->password]);
+
+        // Post-change security alert — so the user is notified even if someone
+        // else changed their password (social engineering, compromised session).
+        $user->notify(new PasswordChanged);
 
         return back();
     }

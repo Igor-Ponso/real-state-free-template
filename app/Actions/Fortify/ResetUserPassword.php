@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Concerns\PasswordValidationRules;
 use App\Models\User;
+use App\Notifications\Security\PasswordChanged;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
@@ -25,5 +26,9 @@ class ResetUserPassword implements ResetsUserPasswords
         $user->forceFill([
             'password' => $input['password'],
         ])->save();
+
+        // Confirmation + intrusion alert: if the user sees this email without
+        // initiating the reset themselves, they know the account is compromised.
+        $user->notify(new PasswordChanged);
     }
 }
