@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, usePoll } from '@inertiajs/vue3';
-import { Building2, Inbox, TrendingUp, Users } from 'lucide-vue-next';
+import {
+    Building2,
+    CheckCircle2,
+    Eye,
+    FileText,
+    Inbox,
+    TrendingUp,
+    Users,
+} from 'lucide-vue-next';
+import { computed } from 'vue';
 
 import { show as inquiryShow } from '@/actions/App/Http/Controllers/Admin/InquiryController';
+import InquiriesTrendChart from '@/components/admin/InquiriesTrendChart.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -13,54 +23,165 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import type { AdminDashboardStats, AdminInquiry } from '@/types/admin';
+import type {
+    AdminDashboardStats,
+    AdminInquiry,
+    DashboardChartData,
+} from '@/types/admin';
 
-defineProps<{
+const props = defineProps<{
+    role: 'admin' | 'agent';
     stats: AdminDashboardStats;
+    chart: DashboardChartData;
     recentInquiries?: AdminInquiry[];
 }>();
 
-// Auto-refresh dashboard stats every 30 seconds.
-// Throttles to 90% slower when the browser tab is in the background.
-usePoll(30000);
+// Auto-refresh dashboard every 30s. Throttles when tab is hidden.
+usePoll(30000, { only: ['stats', 'chart', 'recentInquiries'] });
 
-const statCards = (stats: AdminDashboardStats) => [
-    {
-        label: 'Total Properties',
-        value: stats.total_properties,
-        icon: Building2,
-        color: 'text-landing-gold',
-    },
-    {
-        label: 'Active Listings',
-        value: stats.active_properties,
-        icon: TrendingUp,
-        color: 'text-green-500',
-    },
-    {
-        label: 'Unread Inquiries',
-        value: stats.unread_inquiries,
-        icon: Inbox,
-        color: 'text-blue-500',
-    },
-    {
-        label: 'Total Agents',
-        value: stats.total_agents,
-        icon: Users,
-        color: 'text-purple-500',
-    },
-];
+type StatCard = {
+    label: string;
+    value: number | string;
+    icon: typeof Building2;
+    color: string;
+};
+
+const statCards = computed<StatCard[]>(() => {
+    if (props.role === 'agent') {
+        return [
+            {
+                label: 'My Listings',
+                value: props.stats.total_properties,
+                icon: Building2,
+                color: 'text-landing-gold',
+            },
+            {
+                label: 'Active',
+                value: props.stats.active_properties,
+                icon: TrendingUp,
+                color: 'text-green-500',
+            },
+            {
+                label: 'Unread Inquiries',
+                value: props.stats.unread_inquiries,
+                icon: Inbox,
+                color: 'text-blue-500',
+            },
+            {
+                label: 'Response Rate',
+                value: `${props.stats.response_rate ?? 0}%`,
+                icon: CheckCircle2,
+                color: 'text-landing-deep-teal',
+            },
+        ];
+    }
+
+    return [
+        {
+            label: 'Total Properties',
+            value: props.stats.total_properties,
+            icon: Building2,
+            color: 'text-landing-gold',
+        },
+        {
+            label: 'Active Listings',
+            value: props.stats.active_properties,
+            icon: TrendingUp,
+            color: 'text-green-500',
+        },
+        {
+            label: 'Unread Inquiries',
+            value: props.stats.unread_inquiries,
+            icon: Inbox,
+            color: 'text-blue-500',
+        },
+        {
+            label: 'Total Agents',
+            value: props.stats.total_agents ?? 0,
+            icon: Users,
+            color: 'text-landing-deep-teal',
+        },
+    ];
+});
+
+const secondaryCards = computed(() => {
+    if (props.role === 'agent') {
+        return [
+            {
+                label: 'Draft',
+                value: props.stats.draft_properties,
+                icon: FileText,
+            },
+            {
+                label: 'Sold',
+                value: props.stats.sold_properties,
+                icon: CheckCircle2,
+            },
+            {
+                label: 'Total Views',
+                value: props.stats.total_views ?? 0,
+                icon: Eye,
+            },
+            {
+                label: 'Total Inquiries',
+                value: props.stats.total_inquiries,
+                icon: Inbox,
+            },
+        ];
+    }
+
+    return [
+        {
+            label: 'Draft Properties',
+            value: props.stats.draft_properties,
+            icon: FileText,
+        },
+        {
+            label: 'Sold Properties',
+            value: props.stats.sold_properties,
+            icon: CheckCircle2,
+        },
+        {
+            label: 'Total Inquiries',
+            value: props.stats.total_inquiries,
+            icon: Inbox,
+        },
+        {
+            label: 'Total Clients',
+            value: props.stats.total_clients ?? 0,
+            icon: Users,
+        },
+    ];
+});
+
+const pageTitle = computed(() =>
+    props.role === 'agent' ? 'Agent Dashboard' : 'Admin Dashboard',
+);
+const pageSubtitle = computed(() =>
+    props.role === 'agent'
+        ? 'Your listings, inquiries, and response performance'
+        : 'Platform-wide performance across properties, inquiries, and users',
+);
 </script>
 
 <template>
-    <Head title="Admin Dashboard" />
+    <Head :title="pageTitle" />
 
-    <div class="space-y-6 p-6">
-        <h1 class="text-2xl font-bold tracking-tight">Dashboard</h1>
+    <div class="space-y-8 p-6">
+        <div>
+            <h1 class="font-serif text-3xl font-semibold tracking-tight">
+                {{ pageTitle }}
+            </h1>
+            <p class="mt-1 text-sm text-muted-foreground">{{ pageSubtitle }}</p>
+        </div>
 
-        <!-- Stats grid -->
+        <!-- Primary stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Card v-for="stat in statCards(stats)" :key="stat.label">
+            <Card
+                v-for="stat in statCards"
+                :key="stat.label"
+                class="overflow-hidden"
+            >
                 <CardHeader
                     class="flex flex-row items-center justify-between pb-2"
                 >
@@ -75,45 +196,54 @@ const statCards = (stats: AdminDashboardStats) => [
                     />
                 </CardHeader>
                 <CardContent>
-                    <p class="text-3xl font-bold">{{ stat.value }}</p>
+                    <p class="font-serif text-3xl font-semibold tabular-nums">
+                        {{ stat.value }}
+                    </p>
                 </CardContent>
             </Card>
         </div>
 
-        <!-- Secondary stats -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Card>
-                <CardContent class="pt-6">
-                    <p class="text-sm text-muted-foreground">
-                        Draft Properties
-                    </p>
-                    <p class="text-2xl font-bold">
-                        {{ stats.draft_properties }}
-                    </p>
+        <!-- Chart + secondary stats -->
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <Card class="lg:col-span-2">
+                <CardHeader>
+                    <CardTitle class="text-base font-semibold"
+                        >Inquiries — last 30 days</CardTitle
+                    >
+                </CardHeader>
+                <CardContent>
+                    <InquiriesTrendChart :chart="chart" label="Inquiries" />
                 </CardContent>
             </Card>
-            <Card>
-                <CardContent class="pt-6">
-                    <p class="text-sm text-muted-foreground">Sold Properties</p>
-                    <p class="text-2xl font-bold">
-                        {{ stats.sold_properties }}
-                    </p>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardContent class="pt-6">
-                    <p class="text-sm text-muted-foreground">Total Inquiries</p>
-                    <p class="text-2xl font-bold">
-                        {{ stats.total_inquiries }}
-                    </p>
-                </CardContent>
-            </Card>
+
+            <div class="grid grid-cols-2 gap-4 lg:grid-cols-1">
+                <Card v-for="stat in secondaryCards" :key="stat.label">
+                    <CardContent class="flex items-center gap-3 pt-6">
+                        <component
+                            :is="stat.icon"
+                            class="size-5 text-muted-foreground"
+                        />
+                        <div>
+                            <p class="text-xs text-muted-foreground">
+                                {{ stat.label }}
+                            </p>
+                            <p
+                                class="font-serif text-xl font-semibold tabular-nums"
+                            >
+                                {{ stat.value }}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
 
         <!-- Recent inquiries -->
         <Card>
             <CardHeader>
-                <CardTitle>Recent Inquiries</CardTitle>
+                <CardTitle class="text-base font-semibold"
+                    >Recent Inquiries</CardTitle
+                >
             </CardHeader>
             <CardContent>
                 <Deferred data="recentInquiries">
@@ -145,7 +275,7 @@ const statCards = (stats: AdminDashboardStats) => [
                                 <TableCell>
                                     <Link
                                         :href="inquiryShow.url(inquiry.id)"
-                                        class="font-medium hover:underline"
+                                        class="font-medium hover:text-landing-gold hover:underline"
                                     >
                                         {{ inquiry.name }}
                                     </Link>
