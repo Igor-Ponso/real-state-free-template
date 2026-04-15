@@ -5,8 +5,17 @@ export interface AdminDashboardStats {
     sold_properties: number;
     total_inquiries: number;
     unread_inquiries: number;
-    total_agents: number;
-    total_clients: number;
+    // Admin-only
+    total_agents?: number;
+    total_clients?: number;
+    // Agent-only
+    response_rate?: number;
+    total_views?: number;
+}
+
+export interface DashboardChartData {
+    labels: string[];
+    data: number[];
 }
 
 export interface AdminProperty {
@@ -76,6 +85,7 @@ export interface AdminMediaItem {
     url: string;
     name: string;
     size: number;
+    mime_type?: string;
     is_primary?: boolean;
 }
 

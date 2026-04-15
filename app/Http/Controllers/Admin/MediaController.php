@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Media\StripExifAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ReorderMediaRequest;
 use App\Http\Requests\Admin\StoreMediaRequest;
@@ -21,13 +22,20 @@ class MediaController extends Controller
 {
     /**
      * Upload media files to a property's collection.
+     *
+     * After each upload, strips EXIF metadata from the original file to
+     * prevent leaking GPS coordinates embedded by phone cameras.
      */
-    public function store(StoreMediaRequest $request, Property $property): RedirectResponse
-    {
+    public function store(
+        StoreMediaRequest $request,
+        Property $property,
+        StripExifAction $stripExif,
+    ): RedirectResponse {
         $collection = $request->validated('collection', 'images');
 
         foreach ($request->file('files') as $file) {
-            $property->addMedia($file)->toMediaCollection($collection);
+            $media = $property->addMedia($file)->toMediaCollection($collection);
+            $stripExif->execute($media);
         }
 
         return back()->with('success', 'Media uploaded successfully.');

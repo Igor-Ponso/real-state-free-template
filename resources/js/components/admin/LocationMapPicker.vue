@@ -171,7 +171,10 @@ onMounted(() => {
         </div>
 
         <p v-if="error" class="text-xs text-destructive">{{ error }}</p>
-        <p v-else-if="geocodeHttp.processing" class="text-xs text-muted-foreground">
+        <p
+            v-else-if="geocodeHttp.processing"
+            class="text-xs text-muted-foreground"
+        >
             Locating address...
         </p>
         <p v-else-if="!hasCoordinates" class="text-xs text-muted-foreground">

@@ -277,6 +277,73 @@ This project encrypts personally identifiable information (PII) in the database 
 
 > **A note on this approach:** I implemented PII encryption because it makes sense for a project handling user data, and it showcases a powerful but underused Laravel ecosystem feature. That said, I'm not a security expert, and this may not be the optimal approach for every use case. If you have expertise in data protection and see room for improvement, I'd love a PR — please follow the [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Media Uploads & Storage
+
+Property images and floor plans are handled by [spatie/laravel-medialibrary v11](https://spatie.be/docs/laravel-medialibrary/v11) with automatic conversions (thumb, card, gallery + WebP variants) and responsive images (`srcset`).
+
+### Validation
+
+Tight defaults in `StoreMediaRequest`:
+
+| | Images | Floor plans |
+|---|---|---|
+| Formats | JPEG, PNG, WebP | JPEG, PNG, WebP, PDF |
+| Max file size | 8 MB | 15 MB |
+| Min dimensions | 1024 × 768 px | — |
+| Max dimensions | 6000 × 6000 px | — |
+| Max per property | 30 | 5 |
+
+**SVG is rejected** (XSS vector via embedded JavaScript). **HEIC is rejected** (requires libheif; iPhone users can switch to "Most Compatible" in Settings → Camera → Formats, or the template can be extended with a client-side `heic2any` conversion).
+
+### EXIF / GPS stripping
+
+Phone cameras embed GPS coordinates in EXIF by default. Spatie strips EXIF from generated conversions (thumb/card/gallery) via its default optimizer chain, but **leaves the original file untouched** — a privacy leak if the original URL is ever served.
+
+`App\Actions\Media\StripExifAction` re-saves the original via `spatie/image` after every upload, dropping EXIF in the process. Runs synchronously in `MediaController::store()`.
+
+### Local development
+
+Uploads land in `storage/app/public/<id>/<filename>` and are served via the `/storage` symlink (`php artisan storage:link`). Conversions run synchronously (`QUEUE_CONVERSIONS_BY_DEFAULT=false`) so `php artisan serve` works out-of-the-box without a queue worker.
+
+```env
+FILESYSTEM_DISK=local
+MEDIA_DISK=public
+IMAGE_DRIVER=gd
+QUEUE_CONVERSIONS_BY_DEFAULT=false
+```
+
+### Production storage — Cloudflare R2 (recommended)
+
+[Cloudflare R2](https://developers.cloudflare.com/r2/) is S3-compatible, charges $0.015/GB/month for storage, and has **zero egress fees** (CDN reads are free). For a real estate site at 10k images × 2 MB avg = 20 GB, that's ~$0.30/month versus ~$15/month on AWS S3 once you account for egress.
+
+1. Create an R2 bucket + API token in the Cloudflare dashboard.
+2. Connect a custom domain in front of the bucket (optional but recommended).
+3. Set:
+
+   ```env
+   FILESYSTEM_DISK=s3
+   MEDIA_DISK=s3
+   IMAGE_DRIVER=imagick
+   QUEUE_CONNECTION=redis
+   QUEUE_CONVERSIONS_BY_DEFAULT=true
+
+   AWS_ACCESS_KEY_ID=<R2 token key>
+   AWS_SECRET_ACCESS_KEY=<R2 token secret>
+   AWS_DEFAULT_REGION=auto
+   AWS_BUCKET=sovereign-estates-media
+   AWS_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+   AWS_URL=https://cdn.yourdomain.com
+   AWS_USE_PATH_STYLE_ENDPOINT=true
+   ```
+
+4. Run a queue worker so conversions process asynchronously: `php artisan queue:work --queue=default`.
+
+**Alternatives:** AWS S3, DigitalOcean Spaces, Bunny Storage, Backblaze B2 — all S3-compatible, same config pattern, only the `AWS_ENDPOINT` / `AWS_DEFAULT_REGION` differ.
+
+### Client-side compression (optional)
+
+The template does not pre-compress images on the frontend — the server is authoritative. For slow connections, you can drop in [`browser-image-compression`](https://www.npmjs.com/package/browser-image-compression) inside `PropertyMediaTab.vue` before the FormData is built. ~30 KB gzipped, Web Worker support.
+
 ## Project Structure
 
 ```

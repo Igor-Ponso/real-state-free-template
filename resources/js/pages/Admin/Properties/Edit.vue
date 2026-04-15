@@ -17,6 +17,7 @@ import type {
 const props = defineProps<{
     property: AdminProperty;
     media: AdminMediaItem[];
+    floorPlans: AdminMediaItem[];
     propertyTypes: LookupOption[];
     cities: LookupOption[];
     listingTypes: LookupOption[];
@@ -43,7 +44,15 @@ const {
     <Head :title="`Edit: ${property.title}`" />
 
     <div class="space-y-6 p-6">
-        <h1 class="text-2xl font-bold tracking-tight">Edit Property</h1>
+        <div>
+            <h1 class="font-serif text-3xl font-semibold tracking-tight">
+                Edit Property
+            </h1>
+            <p class="mt-1 text-sm text-muted-foreground">
+                Update listing details or manage photos and floor plans in the
+                Media tab.
+            </p>
+        </div>
 
         <form @submit.prevent="submit">
             <Tabs :default-value="initialTab ?? 'basic'" class="w-full">
@@ -80,6 +89,7 @@ const {
                     <PropertyMediaTab
                         :property-slug="property.slug"
                         :media="media"
+                        :floor-plans="floorPlans"
                     />
                 </TabsContent>
             </Tabs>
