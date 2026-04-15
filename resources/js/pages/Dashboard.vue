@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
+import { Deferred, Head, Link, setLayoutProps, usePage } from '@inertiajs/vue3';
 import {
     Bath,
     BedDouble,
@@ -10,7 +10,7 @@ import {
     MapPin,
     Maximize,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,16 +57,19 @@ defineProps<{
     recentlyViewed?: DashboardPropertyCard[];
 }>();
 
-defineOptions({
-    layout: {
-        breadcrumbs: [{ title: 'Dashboard', href: dashboard() }],
-    },
-});
-
 const page = usePage<{ auth: { user: { name: string } | null } }>();
 const firstName = computed(
     () => page.props.auth.user?.name?.split(' ')[0] ?? 'there',
 );
+
+// Personalized title in the header — welcome the user by first name.
+watchEffect(() => {
+    setLayoutProps({
+        title: `Welcome back, ${firstName.value}`,
+        subtitle: 'Your saved properties, inquiries, and recent views',
+        breadcrumbs: [{ title: 'Dashboard', href: dashboard() }],
+    });
+});
 
 const statusClass = (slug: string | null) => ({
     'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400':
@@ -84,15 +87,10 @@ const statusClass = (slug: string | null) => ({
     <Head title="Dashboard" />
 
     <div class="space-y-10 p-6">
-        <!-- Welcome header -->
-        <header
-            class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between"
-        >
-            <div>
-                <p class="text-sm text-muted-foreground">Welcome back,</p>
-                <h1 class="font-serif text-3xl font-semibold tracking-tight">
-                    {{ firstName }}
-                </h1>
+        <!-- Browse CTA — welcome text now lives in the page header. -->
+        <header class="flex justify-end">
+            <div class="sr-only">
+                <h1>{{ firstName }}</h1>
             </div>
             <Button as-child variant="outline">
                 <Link :href="properties.index().url">Browse listings</Link>

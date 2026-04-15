@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Deferred, Head, Link, usePoll } from '@inertiajs/vue3';
+import { Deferred, Head, Link, setLayoutProps, usePoll } from '@inertiajs/vue3';
 import {
     Building2,
     CheckCircle2,
@@ -9,8 +9,9 @@ import {
     TrendingUp,
     Users,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
 
+import { index as adminDashboardRoute } from '@/actions/App/Http/Controllers/Admin/DashboardController';
 import { show as inquiryShow } from '@/actions/App/Http/Controllers/Admin/InquiryController';
 import InquiriesTrendChart from '@/components/admin/InquiriesTrendChart.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -162,19 +163,22 @@ const pageSubtitle = computed(() =>
         ? 'Your listings, inquiries, and response performance'
         : 'Platform-wide performance across properties, inquiries, and users',
 );
+
+// Hoist title + subtitle into the AppSidebarHeader so every page in the
+// authenticated shell uses the same breadcrumbs + title region.
+watchEffect(() => {
+    setLayoutProps({
+        title: pageTitle.value,
+        subtitle: pageSubtitle.value,
+        breadcrumbs: [{ title: pageTitle.value, href: adminDashboardRoute.url() }],
+    });
+});
 </script>
 
 <template>
     <Head :title="pageTitle" />
 
     <div class="space-y-8 p-6">
-        <div>
-            <h1 class="font-serif text-3xl font-semibold tracking-tight">
-                {{ pageTitle }}
-            </h1>
-            <p class="mt-1 text-sm text-muted-foreground">{{ pageSubtitle }}</p>
-        </div>
-
         <!-- Primary stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card

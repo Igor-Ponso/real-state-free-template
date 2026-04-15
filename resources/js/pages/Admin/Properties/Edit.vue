@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, setLayoutProps } from '@inertiajs/vue3';
+import { watchEffect } from 'vue';
 
+import { index as adminDashboard } from '@/actions/App/Http/Controllers/Admin/DashboardController';
+import {
+    edit as adminPropertiesEdit,
+    index as adminPropertiesIndex,
+} from '@/actions/App/Http/Controllers/Admin/PropertyController';
 import PropertyAmenitiesTab from '@/components/admin/PropertyAmenitiesTab.vue';
 import PropertyBasicInfoTab from '@/components/admin/PropertyBasicInfoTab.vue';
 import PropertyLocationTab from '@/components/admin/PropertyLocationTab.vue';
@@ -38,22 +44,30 @@ const {
     unitAmenities,
     buildingAmenities,
 } = usePropertyForm(props);
+
+// Dynamic title because it depends on the loaded property — defineOptions
+// can't reach reactive props.
+watchEffect(() => {
+    setLayoutProps({
+        title: props.property.title,
+        subtitle:
+            'Update listing details or manage photos and floor plans in the Media tab.',
+        breadcrumbs: [
+            { title: 'Dashboard', href: adminDashboard.url() },
+            { title: 'Properties', href: adminPropertiesIndex.url() },
+            {
+                title: props.property.title,
+                href: adminPropertiesEdit.url({ property: props.property.slug }),
+            },
+        ],
+    });
+});
 </script>
 
 <template>
     <Head :title="`Edit: ${property.title}`" />
 
     <div class="space-y-6 p-6">
-        <div>
-            <h1 class="font-serif text-3xl font-semibold tracking-tight">
-                Edit Property
-            </h1>
-            <p class="mt-1 text-sm text-muted-foreground">
-                Update listing details or manage photos and floor plans in the
-                Media tab.
-            </p>
-        </div>
-
         <form @submit.prevent="submit">
             <Tabs :default-value="initialTab ?? 'basic'" class="w-full">
                 <TabsList>

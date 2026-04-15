@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, setLayoutProps, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Calendar, Mail, Phone, Send, User } from 'lucide-vue-next';
+import { watchEffect } from 'vue';
 import { toast } from 'vue-sonner';
 
-import { update } from '@/actions/App/Http/Controllers/Admin/InquiryController';
+import { index as adminDashboard } from '@/actions/App/Http/Controllers/Admin/DashboardController';
+import {
+    show as adminInquiryShow,
+    update,
+} from '@/actions/App/Http/Controllers/Admin/InquiryController';
 import RevealablePII from '@/components/admin/RevealablePII.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,21 +57,35 @@ const sendReply = () => {
         },
     });
 };
+
+watchEffect(() => {
+    setLayoutProps({
+        title: `Inquiry from ${props.inquiry.name}`,
+        subtitle: props.inquiry.property_title
+            ? `About: ${props.inquiry.property_title}`
+            : undefined,
+        breadcrumbs: [
+            { title: 'Dashboard', href: adminDashboard.url() },
+            { title: 'Inquiries', href: adminInquiriesIndex.url() },
+            {
+                title: props.inquiry.name,
+                href: adminInquiryShow.url({ inquiry: props.inquiry.id }),
+            },
+        ],
+    });
+});
 </script>
 
 <template>
     <Head :title="`Inquiry from ${inquiry.name}`" />
 
     <div class="space-y-6 p-6">
-        <div class="flex items-center gap-3">
+        <div>
             <Button variant="ghost" size="sm" as-child>
                 <Link :href="adminInquiriesIndex.url()">
-                    <ArrowLeft class="mr-1 size-4" /> Back
+                    <ArrowLeft class="mr-1 size-4" /> Back to inquiries
                 </Link>
             </Button>
-            <h1 class="font-serif text-3xl font-semibold tracking-tight">
-                Inquiry Details
-            </h1>
         </div>
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">

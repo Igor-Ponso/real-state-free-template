@@ -2,6 +2,11 @@
 import { Head } from '@inertiajs/vue3';
 import { ImageIcon, Lock } from 'lucide-vue-next';
 
+import { index as adminDashboard } from '@/actions/App/Http/Controllers/Admin/DashboardController';
+import {
+    create as adminPropertiesCreate,
+    index as adminPropertiesIndex,
+} from '@/actions/App/Http/Controllers/Admin/PropertyController';
 import PropertyAmenitiesTab from '@/components/admin/PropertyAmenitiesTab.vue';
 import PropertyBasicInfoTab from '@/components/admin/PropertyBasicInfoTab.vue';
 import PropertyLocationTab from '@/components/admin/PropertyLocationTab.vue';
@@ -30,22 +35,25 @@ const {
     unitAmenities,
     buildingAmenities,
 } = usePropertyForm(props);
+
+defineOptions({
+    layout: {
+        title: 'Create property',
+        subtitle:
+            'Fill out the details below — photos and floor plans unlock once the listing is saved.',
+        breadcrumbs: [
+            { title: 'Dashboard', href: adminDashboard.url() },
+            { title: 'Properties', href: adminPropertiesIndex.url() },
+            { title: 'New', href: adminPropertiesCreate.url() },
+        ],
+    },
+});
 </script>
 
 <template>
     <Head title="Create Property" />
 
     <div class="space-y-6 p-6">
-        <div>
-            <h1 class="font-serif text-3xl font-semibold tracking-tight">
-                Create Property
-            </h1>
-            <p class="mt-1 text-sm text-muted-foreground">
-                Fill out the details below. Photos and floor plans can be added
-                once the listing is saved.
-            </p>
-        </div>
-
         <form @submit.prevent="submit">
             <Tabs default-value="basic" class="w-full">
                 <TabsList>

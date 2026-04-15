@@ -37,6 +37,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { index as adminDashboard } from '@/actions/App/Http/Controllers/Admin/DashboardController';
 import { index as adminPropertiesIndex } from '@/routes/admin/properties';
 import type { AdminProperty, LookupOption } from '@/types/admin';
 import type { PaginatedResponse } from '@/types/landing';
@@ -46,6 +47,17 @@ const props = defineProps<{
     statuses: LookupOption[];
     filters: { status?: string; search?: string };
 }>();
+
+defineOptions({
+    layout: {
+        title: 'Properties',
+        subtitle: 'Create, edit, and publish your real estate listings',
+        breadcrumbs: [
+            { title: 'Dashboard', href: adminDashboard.url() },
+            { title: 'Properties', href: adminPropertiesIndex.url() },
+        ],
+    },
+});
 
 const ALL_STATUSES = 'all';
 const searchQuery = ref(props.filters.search ?? '');
@@ -77,44 +89,46 @@ const deleteProperty = (slug: string) => {
     <Head title="Properties" />
 
     <div class="space-y-6 p-6">
-        <div class="flex items-center justify-between">
-            <h1 class="font-serif text-3xl font-semibold tracking-tight">
-                Properties
-            </h1>
+        <!-- Filters + primary action in a single row -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative">
+                    <Search
+                        class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        v-model="searchQuery"
+                        placeholder="Search properties..."
+                        class="w-64 pl-9"
+                        @keyup.enter="applyFilters"
+                    />
+                </div>
+                <Select
+                    v-model="statusFilter"
+                    @update:model-value="applyFilters"
+                >
+                    <SelectTrigger class="w-40">
+                        <SelectValue placeholder="All Statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem :value="ALL_STATUSES"
+                            >All Statuses</SelectItem
+                        >
+                        <SelectItem
+                            v-for="s in statuses"
+                            :key="s.slug"
+                            :value="s.slug"
+                            >{{ s.name }}</SelectItem
+                        >
+                    </SelectContent>
+                </Select>
+            </div>
+
             <Button as-child>
                 <Link :href="create.url()">
                     <Plus class="mr-2 size-4" /> New Property
                 </Link>
             </Button>
-        </div>
-
-        <!-- Filters -->
-        <div class="flex flex-wrap items-center gap-3">
-            <div class="relative">
-                <Search
-                    class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                />
-                <Input
-                    v-model="searchQuery"
-                    placeholder="Search properties..."
-                    class="w-64 pl-9"
-                    @keyup.enter="applyFilters"
-                />
-            </div>
-            <Select v-model="statusFilter" @update:model-value="applyFilters">
-                <SelectTrigger class="w-40">
-                    <SelectValue placeholder="All Statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem :value="ALL_STATUSES">All Statuses</SelectItem>
-                    <SelectItem
-                        v-for="s in statuses"
-                        :key="s.slug"
-                        :value="s.slug"
-                        >{{ s.name }}</SelectItem
-                    >
-                </SelectContent>
-            </Select>
         </div>
 
         <!-- Table -->

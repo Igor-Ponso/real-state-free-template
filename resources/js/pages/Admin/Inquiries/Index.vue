@@ -19,6 +19,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { index as adminDashboard } from '@/actions/App/Http/Controllers/Admin/DashboardController';
 import { index as adminInquiriesIndex } from '@/routes/admin/inquiries';
 import { show as propertiesShow } from '@/routes/properties';
 import type { AdminInquiry, LookupOption } from '@/types/admin';
@@ -29,6 +30,17 @@ const props = defineProps<{
     statuses: LookupOption[];
     filters: { status?: string };
 }>();
+
+defineOptions({
+    layout: {
+        title: 'Inquiries',
+        subtitle: 'Track and respond to every contact request from your listings',
+        breadcrumbs: [
+            { title: 'Dashboard', href: adminDashboard.url() },
+            { title: 'Inquiries', href: adminInquiriesIndex.url() },
+        ],
+    },
+});
 
 const ALL_STATUSES = 'all';
 const statusFilter = ref(props.filters.status ?? ALL_STATUSES);
@@ -62,10 +74,6 @@ const statusClass = (slug: string | null) => ({
     <Head title="Inquiries" />
 
     <div class="space-y-6 p-6">
-        <h1 class="font-serif text-3xl font-semibold tracking-tight">
-            Inquiries
-        </h1>
-
         <!-- Filters -->
         <div class="flex items-center gap-3">
             <Select v-model="statusFilter" @update:model-value="applyFilters">
