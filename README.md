@@ -1,4 +1,4 @@
-# Real State - Free Template
+# Real Estate - Free Template
 
 A complete, production-ready real estate website built with **Laravel 13**, **Vue 3**, **Inertia.js v3**, and **shadcn-vue**. Designed as a learning resource and starter template for the developer community.
 
